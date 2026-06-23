@@ -117,7 +117,7 @@ Build a full-stack e-commerce platform where customers can browse products, sear
 - React Router
 - TanStack Query
 - Axios
-- Redux Toolkit
+- Zustand
 - React Hook Form
 - Recharts
 
