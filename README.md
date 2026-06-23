@@ -4,7 +4,9 @@ MarketFlow is a full-stack MERN e-commerce platform with customer shopping featu
 
 ## Current Status
 
-Stage 1 completed: Project requirements, user roles, MVP features, advanced features, and build order are locked.
+- Stage 1 completed: Project requirements locked.
+- Stage 2 completed: Database design completed.
+- Stage 3 completed: Backend Express setup with app/server separation and env config.
 
 ## Tech Stack
 

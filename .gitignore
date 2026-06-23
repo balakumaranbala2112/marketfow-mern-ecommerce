@@ -1,6 +1,15 @@
-node modules
+# Node.js dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Environment files
 .env
 .env.local
-dist
-build
+server/.env
+client/.env
+
+# macOS system files
 .DS_Store

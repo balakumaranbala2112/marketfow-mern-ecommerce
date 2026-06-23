@@ -1,0 +1,32 @@
+import express from "express";
+import cors from "cors";
+
+import env from "./config/env.js";
+
+/* Routes */
+import indexRoutes from "./routes/index.routes.js";
+
+/* Middlewares */
+
+import notFound from "./middlewares/notFound.js";
+import errorHandler from "./middlewares/errorHandler.js";
+
+const app = express();
+
+app.use(
+  cors({
+    origin: env.clientUrl,
+    credentials: true,
+  }),
+);
+
+app.use(express.json({ limit: "10kb" }));
+
+app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+
+app.use("/", indexRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
+
+export default app;
