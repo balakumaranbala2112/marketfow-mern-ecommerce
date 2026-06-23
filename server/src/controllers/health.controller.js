@@ -1,5 +1,18 @@
+import mongoose from "mongoose";
+
 import sendResponse from "../utils/sendResponse.js";
 import env from "../config/env.js";
+
+function getDatabaseStatus() {
+  const states = {
+    0: "disconnected",
+    1: "connected",
+    2: "connecting",
+    3: "disconnecting",
+  };
+
+  return states[mongoose.connection.readyState] || "unknown";
+}
 
 function getHome(req, res) {
   return sendResponse(res, 200, "MarketFlow API is running", {
@@ -9,10 +22,14 @@ function getHome(req, res) {
 }
 
 function getHealth(req, res) {
-  return sendResponse(res, 200, "Health check successfull", {
+  return sendResponse(res, 200, "Health check successful", {
     status: "OK",
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
+    database: {
+      state: mongoose.connection.readyState,
+      status: getDatabaseStatus(),
+    },
   });
 }
 
