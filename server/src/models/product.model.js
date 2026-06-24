@@ -87,12 +87,6 @@ const productSchema = new Schema(
       type: Number,
       min: [0, "Discount price cannot be negative"],
       default: null,
-      validate: {
-        validator: function (value) {
-          return value === null || value < this.price;
-        },
-        message: "Discount price must be less than actual price",
-      },
     },
 
     category: {

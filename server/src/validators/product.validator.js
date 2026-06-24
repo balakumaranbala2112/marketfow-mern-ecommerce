@@ -9,6 +9,22 @@ import {
   isNonNegativeNumber,
 } from "../utils/validators.js";
 
+const allowedProductUpdateFields = [
+  "name",
+  "description",
+  "shortDescription",
+  "price",
+  "discountPrice",
+  "category",
+  "brand",
+  "images",
+  "stock",
+  "sku",
+  "isActive",
+  "isFeatured",
+  "specifications",
+];
+
 function isValidProductImage(image) {
   return (
     isPlainObject(image) &&
@@ -133,4 +149,123 @@ function validateCreateProduct(body) {
   return errors;
 }
 
-export { validateCreateProduct };
+function validateUpdateProduct(body) {
+  const errors = [];
+  const bodyKeys = Object.keys(body);
+
+  if (bodyKeys.length === 0) {
+    errors.push("At least one product field is required for update");
+  }
+
+  bodyKeys.forEach((key) => {
+    if (!allowedProductUpdateFields.includes(key)) {
+      errors.push(`${key} is not an allowed product update field`);
+    }
+  });
+
+  if (body.name !== undefined && !isNonEmptyString(body.name)) {
+    errors.push("Product name must be a non-empty string");
+  }
+
+  if (isNonEmptyString(body.name) && body.name.trim().length < 3) {
+    errors.push("Product name must be at least 3 characters");
+  }
+
+  if (isNonEmptyString(body.name) && body.name.trim().length > 150) {
+    errors.push("Product name cannot exceed 150 characters");
+  }
+
+  if (body.description !== undefined && !isNonEmptyString(body.description)) {
+    errors.push("Product description must be a non-empty string");
+  }
+
+  if (
+    isNonEmptyString(body.description) &&
+    body.description.trim().length < 10
+  ) {
+    errors.push("Product description must be at least 10 characters");
+  }
+
+  if (!isOptionalString(body.shortDescription)) {
+    errors.push("Product shortDescription must be a string");
+  }
+
+  if (
+    isOptionalString(body.shortDescription) &&
+    body.shortDescription !== undefined &&
+    body.shortDescription.length > 300
+  ) {
+    errors.push("Product shortDescription cannot exceed 300 characters");
+  }
+
+  if (body.price !== undefined && !isNonNegativeNumber(body.price)) {
+    errors.push("Product price must be a non-negative number");
+  }
+
+  if (!isOptionalNonNegativeNumber(body.discountPrice)) {
+    errors.push("Product discountPrice must be a non-negative number");
+  }
+
+  if (
+    body.price !== undefined &&
+    body.discountPrice !== undefined &&
+    isNonNegativeNumber(body.price) &&
+    isNonNegativeNumber(body.discountPrice) &&
+    body.discountPrice >= body.price
+  ) {
+    errors.push("Product discountPrice must be less than product price");
+  }
+
+  if (body.category !== undefined && !isMongoId(body.category)) {
+    errors.push("Product category must be a valid MongoDB id");
+  }
+
+  if (!isOptionalString(body.brand)) {
+    errors.push("Product brand must be a string");
+  }
+
+  if (!isOptionalArray(body.images)) {
+    errors.push("Product images must be an array");
+  }
+
+  if (
+    Array.isArray(body.images) &&
+    body.images.some((image) => !isValidProductImage(image))
+  ) {
+    errors.push("Each product image must have url and publicId");
+  }
+
+  if (body.stock !== undefined && !isNonNegativeNumber(body.stock)) {
+    errors.push("Product stock must be a non-negative number");
+  }
+
+  if (body.sku !== undefined && !isNonEmptyString(body.sku)) {
+    errors.push("Product SKU must be a non-empty string");
+  }
+
+  if (!isOptionalBoolean(body.isActive)) {
+    errors.push("Product isActive must be a boolean");
+  }
+
+  if (!isOptionalBoolean(body.isFeatured)) {
+    errors.push("Product isFeatured must be a boolean");
+  }
+
+  if (!isOptionalArray(body.specifications)) {
+    errors.push("Product specifications must be an array");
+  }
+
+  if (
+    Array.isArray(body.specifications) &&
+    body.specifications.some(
+      (specification) => !isValidSpecification(specification),
+    )
+  ) {
+    errors.push("Each specification must have key and value");
+  }
+
+  return errors;
+}
+
+export { validateCreateProduct, validateUpdateProduct };
+

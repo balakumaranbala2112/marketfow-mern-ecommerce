@@ -7,9 +7,14 @@ import {
   createProduct,
   getAllProducts,
   getProductById,
+  deleteProduct,
+  updateProduct,
 } from "../controllers/product.controller.js";
 
-import { validateCreateProduct } from "../validators/product.validator.js";
+import {
+  validateCreateProduct,
+  validateUpdateProduct,
+} from "../validators/product.validator.js";
 
 const router = express.Router();
 
@@ -18,6 +23,10 @@ router
   .get(asyncHandler(getAllProducts))
   .post(validateRequest(validateCreateProduct), asyncHandler(createProduct));
 
-router.route("/:productId").get(asyncHandler(getProductById));
+router
+  .route("/:productId")
+  .get(asyncHandler(getProductById))
+  .put(validateRequest(validateUpdateProduct), asyncHandler(updateProduct))
+  .delete(asyncHandler(deleteProduct));
 
 export default router;

@@ -4,6 +4,7 @@ import Product from "../models/product.model.js";
 import StatusCodes from "../constants/statusCodes.js";
 import AppError from "../utils/AppError.js";
 import createSlug from "../utils/createSlug.js";
+import removeUndefinedFields from "../utils/removeUndefinedFields.js";
 import sendResponse from "../utils/sendResponse.js";
 
 async function createProduct(req, res, next) {
@@ -95,4 +96,119 @@ async function getProductById(req, res, next) {
   );
 }
 
-export { createProduct, getAllProducts, getProductById };
+async function updateProduct(req, res, next) {
+  const { productId } = req.params;
+
+  const existingProduct = await Product.findById(productId);
+
+  if (!existingProduct) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "Product not found"));
+  }
+
+  const {
+    name,
+    description,
+    shortDescription,
+    price,
+    discountPrice,
+    category,
+    brand,
+    images,
+    stock,
+    sku,
+    isActive,
+    isFeatured,
+    specifications,
+  } = req.body;
+
+  if (category !== undefined) {
+    const categoryExists = await Category.exists({ _id: category });
+
+    if (!categoryExists) {
+      return next(new AppError(StatusCodes.NOT_FOUND, "Category not found"));
+    }
+  }
+
+  let updateData = {
+    description,
+    shortDescription,
+    price,
+    discountPrice,
+    category,
+    brand,
+    images,
+    stock,
+    sku,
+    isActive,
+    isFeatured,
+    specifications,
+  };
+
+  // Keep slug synced with name changes.
+  if (name !== undefined) {
+    updateData.name = name;
+    updateData.slug = createSlug(name);
+  }
+
+  updateData = removeUndefinedFields(updateData);
+
+  const finalPrice =
+    updateData.price !== undefined ? updateData.price : existingProduct.price;
+
+  const finalDiscountPrice =
+    updateData.discountPrice !== undefined
+      ? updateData.discountPrice
+      : existingProduct.discountPrice;
+
+  if (
+    finalDiscountPrice !== null &&
+    finalDiscountPrice !== undefined &&
+    finalDiscountPrice >= finalPrice
+  ) {
+    return next(
+      new AppError(StatusCodes.BAD_REQUEST, "Validation failed", [
+        "Product discountPrice must be less than product price",
+      ]),
+    );
+  }
+
+  const product = await Product.findByIdAndUpdate(productId, updateData, {
+    new: true,
+    runValidators: true,
+  }).populate("category", "name slug");
+
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "Product updated successfully",
+    product,
+  );
+}
+
+async function deleteProduct(req, res, next) {
+  const { productId } = req.params;
+
+  const product = await Product.findByIdAndDelete(productId).populate(
+    "category",
+    "name slug",
+  );
+
+  if (!product) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "Product not found"));
+  }
+
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "Product deleted successfully",
+    product,
+  );
+}
+
+export {
+  createProduct,
+  getAllProducts,
+  getProductById,
+  updateProduct,
+  deleteProduct,
+};
