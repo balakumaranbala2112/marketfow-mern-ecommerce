@@ -159,7 +159,8 @@ const productSchema = new Schema(
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "Product creator is required"],
+      // required: [true, "Product creator is required"],
+      default: null,
     },
 
     specifications: {

@@ -10,6 +10,7 @@ MarketFlow is a full-stack MERN e-commerce platform with customer shopping featu
 - Stage 4 completed: MongoDB connection and base error handling.
 - Stage 5 completed: Base Mongoose ecommerce models.
 - Stage 6 completed: Category CRUD APIs with validation.
+- Stage 7 completed: Product create API with category relationship validation.
 
 ## Tech Stack
 
