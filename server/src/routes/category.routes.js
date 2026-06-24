@@ -2,11 +2,14 @@ import express from "express";
 
 import asyncHandler from "../utils/asyncHandler.js";
 import validateRequest from "../middlewares/validateRequest.js";
+import validateQueryRequest from "../middlewares/validateQueryRequest.js";
 
 import {
   validateCreateCategory,
   validateUpdateCategory,
 } from "../validators/category.validator.js";
+
+import validateCategoryQuery from "../validators/categoryQuery.validator.js";
 
 import {
   createCategory,
@@ -20,7 +23,10 @@ const router = express.Router();
 
 router
   .route("/")
-  .get(asyncHandler(getAllCategories))
+  .get(
+    validateQueryRequest(validateCategoryQuery),
+    asyncHandler(getAllCategories),
+  )
   .post(validateRequest(validateCreateCategory), asyncHandler(createCategory));
 
 router

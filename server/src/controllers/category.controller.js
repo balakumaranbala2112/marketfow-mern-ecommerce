@@ -1,10 +1,12 @@
 import Category from "../models/category.model.js";
+import Product from "../models/product.model.js";
 
 import StatusCodes from "../constants/statusCodes.js";
+import ApiFeatures from "../utils/ApiFeatures.js";
 import AppError from "../utils/AppError.js";
 import createSlug from "../utils/createSlug.js";
-import sendResponse from "../utils/sendResponse.js";
 import removeUndefinedFields from "../utils/removeUndefinedFields.js";
+import sendResponse from "../utils/sendResponse.js";
 
 async function createCategory(req, res) {
   const { name, description, image, isActive } = req.body;
@@ -26,7 +28,15 @@ async function createCategory(req, res) {
 }
 
 async function getAllCategories(req, res) {
-  const categories = await Category.find().sort({ createdAt: -1 });
+  const features = new ApiFeatures(Category, req.query)
+    .search(["name", "description"])
+    .filterBoolean("isActive")
+    .sort(["name", "createdAt", "updatedAt"], "createdAt")
+    .paginate()
+    .lean();
+
+  const totalCategories = await features.count();
+  const categories = await features.execute();
 
   return sendResponse(
     res,
@@ -34,6 +44,11 @@ async function getAllCategories(req, res) {
     "Categories fetched successfully",
     categories,
     {
+      filters: features.getFiltersMeta(),
+      pagination: features.getPaginationMeta(
+        totalCategories,
+        "totalCategories",
+      ),
       count: categories.length,
     },
   );
@@ -94,11 +109,29 @@ async function updateCategory(req, res, next) {
 async function deleteCategory(req, res, next) {
   const { categoryId } = req.params;
 
-  const category = await Category.findByIdAndDelete(categoryId);
+  const category = await Category.findById(categoryId);
 
   if (!category) {
     return next(new AppError(StatusCodes.NOT_FOUND, "Category not found"));
   }
+
+  const productCount = await Product.countDocuments({
+    category: categoryId,
+  });
+
+  if (productCount > 0) {
+    return next(
+      new AppError(
+        StatusCodes.CONFLICT,
+        "Cannot delete category with existing products",
+        [
+          `This category is used by ${productCount} product(s). Move or delete those products before deleting this category.`,
+        ],
+      ),
+    );
+  }
+
+  await Category.findByIdAndDelete(categoryId);
 
   return sendResponse(
     res,
