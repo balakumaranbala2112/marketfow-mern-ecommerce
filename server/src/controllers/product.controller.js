@@ -59,4 +59,40 @@ async function createProduct(req, res, next) {
   );
 }
 
-export { createProduct };
+async function getAllProducts(req, res) {
+  const products = await Product.find()
+    .populate("category", "name slug")
+    .sort({ createdAt: -1 });
+
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "Products fetched successfully",
+    products,
+    {
+      count: products.length,
+    },
+  );
+}
+
+async function getProductById(req, res, next) {
+  const { productId } = req.params;
+
+  const product = await Product.findById(productId).populate(
+    "category",
+    "name slug description",
+  );
+
+  if (!product) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "Product not found"));
+  }
+
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "Product fetched successfully",
+    product,
+  );
+}
+
+export { createProduct, getAllProducts, getProductById };
