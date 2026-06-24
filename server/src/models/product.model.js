@@ -167,11 +167,21 @@ const productSchema = new Schema(
   },
 );
 
-// Common product listing queries filter by status/category and sort by newest.
+// Product listing queries commonly filter by status/category and sort by newest.
 productSchema.index({ isActive: 1, createdAt: -1 });
-productSchema.index({ category: 1, createdAt: -1 });
-productSchema.index({ price: 1 });
-productSchema.index({ ratingsAverage: -1 });
+productSchema.index({ category: 1, isActive: 1, createdAt: -1 });
+
+// Price-based filtering/sorting is common on category listing pages.
+productSchema.index({ category: 1, isActive: 1, price: 1 });
+
+// Homepage and admin screens often need featured/latest product lists.
+productSchema.index({ isFeatured: 1, isActive: 1, createdAt: -1 });
+
+// Brand pages commonly filter active products by brand.
+productSchema.index({ brand: 1, isActive: 1, createdAt: -1 });
+
+// Rating sort is useful for “top rated products” sections.
+productSchema.index({ ratingsAverage: -1, isActive: 1 });
 
 const Product = mongoose.model("Product", productSchema);
 

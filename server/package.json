@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "check:models":"node scripts/checkModels.js"
+    "check:models":"node scripts/checkModels.js",
+    "indexes:products": "node scripts/listIndexes.js"
   },
   "keywords": [],
   "author": "",

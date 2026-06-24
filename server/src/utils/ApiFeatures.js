@@ -1,5 +1,5 @@
 class ApiFeatures {
-  constructor(model, queryString) {
+  constructor(model, queryString = {}) {
     this.model = model;
     this.queryString = queryString;
 
