@@ -5,6 +5,7 @@ import env from "./config/env.js";
 
 /* Routes */
 import indexRoutes from "./routes/index.routes.js";
+import categoryRoutes from "./routes/category.routes.js";
 
 /* Middlewares */
 
@@ -25,6 +26,8 @@ app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 
 app.use("/", indexRoutes);
+
+app.use("/api/v1/categories", categoryRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
