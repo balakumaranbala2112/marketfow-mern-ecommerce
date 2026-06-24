@@ -2,12 +2,13 @@ import express from "express";
 
 import asyncHandler from "../utils/asyncHandler.js";
 import validateRequest from "../middlewares/validateRequest.js";
+import validateQueryRequest from "../middlewares/validateQueryRequest.js";
 
 import {
   createProduct,
+  deleteProduct,
   getAllProducts,
   getProductById,
-  deleteProduct,
   updateProduct,
 } from "../controllers/product.controller.js";
 
@@ -16,11 +17,13 @@ import {
   validateUpdateProduct,
 } from "../validators/product.validator.js";
 
+import validateProductQuery from "../validators/productQuery.validator.js";
+
 const router = express.Router();
 
 router
   .route("/")
-  .get(asyncHandler(getAllProducts))
+  .get(validateQueryRequest(validateProductQuery), asyncHandler(getAllProducts))
   .post(validateRequest(validateCreateProduct), asyncHandler(createProduct));
 
 router

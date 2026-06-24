@@ -13,6 +13,7 @@ MarketFlow is a full-stack MERN e-commerce platform with customer shopping featu
 - Stage 7 completed: Product create API with category relationship validation.
 - Stage 8 completed: Product read APIs with category population.
 - Stage 9 completed: Product update and delete APIs with validation.
+- Stage 10 completed: Product search, filter, sort, and pagination.
 
 ## Tech Stack
 

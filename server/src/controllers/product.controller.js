@@ -6,6 +6,7 @@ import AppError from "../utils/AppError.js";
 import createSlug from "../utils/createSlug.js";
 import removeUndefinedFields from "../utils/removeUndefinedFields.js";
 import sendResponse from "../utils/sendResponse.js";
+import ApiFeatures from "../utils/ApiFeatures.js";
 
 async function createProduct(req, res, next) {
   const {
@@ -61,9 +62,23 @@ async function createProduct(req, res, next) {
 }
 
 async function getAllProducts(req, res) {
-  const products = await Product.find()
+  const features = new ApiFeatures(Product, req.query)
+    .search(["name", "description", "brand"])
+    .filterExact("category")
+    .filterExact("brand")
+    .filterBoolean("isActive")
+    .filterBoolean("isFeatured")
+    .filterNumberRange("price", "minPrice", "maxPrice")
+    .sort(
+      ["name", "price", "ratingsAverage", "stock", "createdAt", "updatedAt"],
+      "createdAt",
+    )
+    .paginate()
     .populate("category", "name slug")
-    .sort({ createdAt: -1 });
+    .lean();
+
+  const totalProducts = await features.count;
+  const products = await features.execute();
 
   return sendResponse(
     res,
@@ -71,6 +86,8 @@ async function getAllProducts(req, res) {
     "Products fetched successfully",
     products,
     {
+      filters: features.getFiltersMeta(),
+      pagination: features.getPaginationMeta(totalProducts, "totalProducts"),
       count: products.length,
     },
   );
