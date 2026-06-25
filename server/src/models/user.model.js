@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+
+import Roles from "../constants/roles.js";
+
 const { Schema } = mongoose;
 
 const imageSchema = new Schema(
@@ -34,8 +37,13 @@ const userSchema = new Schema(
       unique: true,
       lowercase: true,
       trim: true,
+      match: [
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        "Please provide a valid email address",
+      ],
     },
 
+    // Password is hidden by default and will be manually selected only during login.
     password: {
       type: String,
       required: [true, "User password is required"],
@@ -46,10 +54,10 @@ const userSchema = new Schema(
     role: {
       type: String,
       enum: {
-        values: ["customer", "admin"],
+        values: [Roles.CUSTOMER, Roles.ADMIN],
         message: "Role must be customer or admin",
       },
-      default: "customer",
+      default: Roles.CUSTOMER,
     },
 
     avatar: {
@@ -68,7 +76,17 @@ const userSchema = new Schema(
       default: false,
     },
 
-    passwordChangeAt: {
+    emailVerified: {
+      type: Boolean,
+      default: false,
+    },
+
+    lastLoginAt: {
+      type: Date,
+      default: null,
+    },
+
+    passwordChangedAt: {
       type: Date,
       default: null,
     },
@@ -76,17 +94,23 @@ const userSchema = new Schema(
     passwordResetToken: {
       type: String,
       default: null,
+      select: false,
     },
 
     passwordResetExpires: {
       type: Date,
       default: null,
+      select: false,
     },
   },
   {
     timestamps: true,
   },
 );
+
+// Admin user screens commonly filter users by role/status and newest accounts.
+userSchema.index({ role: 1, createdAt: -1 });
+userSchema.index({ isBlocked: 1, createdAt: -1 });
 
 const User = mongoose.model("User", userSchema);
 
