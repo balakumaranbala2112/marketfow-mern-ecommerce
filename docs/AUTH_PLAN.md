@@ -188,3 +188,29 @@ Public:
 - GET /api/v1/categories/:categoryId
 - GET /api/v1/products
 - GET /api/v1/products/:productId
+
+
+## User Profile APIs
+
+Authenticated users can manage their own profile.
+
+Current profile APIs:
+
+- GET /api/v1/users/profile
+- PUT /api/v1/users/profile
+
+Allowed profile update fields:
+
+- name
+- phone
+- avatar
+
+Blocked from profile update:
+
+- email
+- password
+- role
+- isBlocked
+- emailVerified
+
+Email change and password change require separate secure flows.
