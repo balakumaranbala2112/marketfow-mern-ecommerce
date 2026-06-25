@@ -1,6 +1,7 @@
 import express from "express";
 
 import {
+    changeMyPassword,
     getMyProfile,
     updateMyProfile
 } from "../controllers/user.controller.js";
@@ -8,7 +9,11 @@ import {
 import { protect } from "../middlewares/auth.middleware.js";
 import validateRequest from "../middlewares/validateRequest.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import { validateUpdateProfile } from "../validators/user.validator.js";
+
+import {
+    validateChangePassword,
+    validateUpdateProfile
+} from "../validators/user.validator.js";
 
 const router = express.Router();
 
@@ -23,5 +28,12 @@ router
         validateRequest(validateUpdateProfile),
         asyncHandler(updateMyProfile)
     );
+
+router.put(
+    "/change-password",
+    protect,
+    validateRequest(validateChangePassword),
+    asyncHandler(changeMyPassword)
+);
 
 export default router;

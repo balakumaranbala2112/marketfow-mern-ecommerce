@@ -6,6 +6,12 @@ import {
 
 const allowedProfileUpdateFields = ["name", "phone", "avatar"];
 
+const allowedPasswordChangeFields = [
+    "currentPassword",
+    "newPassword",
+    "confirmPassword"
+];
+
 function validateUpdateProfile(body) {
     const errors = [];
     const bodyKeys = Object.keys(body);
@@ -51,6 +57,52 @@ function validateUpdateProfile(body) {
     return errors;
 }
 
+function validateChangePassword(body) {
+    const errors = [];
+    const bodyKeys = Object.keys(body);
+
+    bodyKeys.forEach((key) => {
+        if (!allowedPasswordChangeFields.includes(key)) {
+            errors.push(`${key} is not an allowed password change field`);
+        }
+    });
+
+    if (!isNonEmptyString(body.currentPassword)) {
+        errors.push("Current password is required");
+    }
+
+    if (!isNonEmptyString(body.newPassword)) {
+        errors.push("New password is required");
+    }
+
+    if (isNonEmptyString(body.newPassword) && body.newPassword.length < 8) {
+        errors.push("New password must be at least 8 characters");
+    }
+
+    if (!isNonEmptyString(body.confirmPassword)) {
+        errors.push("Confirm password is required");
+    }
+
+    if (
+        isNonEmptyString(body.newPassword) &&
+        isNonEmptyString(body.confirmPassword) &&
+        body.newPassword !== body.confirmPassword
+    ) {
+        errors.push("New password and confirm password do not match");
+    }
+
+    if (
+        isNonEmptyString(body.currentPassword) &&
+        isNonEmptyString(body.newPassword) &&
+        body.currentPassword === body.newPassword
+    ) {
+        errors.push("New password must be different from current password");
+    }
+
+    return errors;
+}
+
 export {
-    validateUpdateProfile
+    validateUpdateProfile,
+    validateChangePassword
 };

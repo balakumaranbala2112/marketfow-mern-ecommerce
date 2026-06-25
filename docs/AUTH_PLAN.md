@@ -214,3 +214,26 @@ Blocked from profile update:
 - emailVerified
 
 Email change and password change require separate secure flows.
+
+## Change Password Flow
+
+1. User must be authenticated.
+2. Receive currentPassword, newPassword, confirmPassword.
+3. Validate request body.
+4. Find current user and manually select password.
+5. Compare currentPassword with stored password hash.
+6. If current password is incorrect, return 401.
+7. Ensure new password is different from current password.
+8. Set user.password to newPassword.
+9. Save user document.
+10. User pre-save middleware hashes new password.
+11. Return safe user response and new access token.
+
+## Password Change Rules
+
+- Do not update password with findByIdAndUpdate.
+- Use user.save() so password hashing middleware runs.
+- Do not return password in response.
+- New password must be at least 8 characters.
+- New password and confirm password must match.
+- New password must be different from current password.
