@@ -8,4 +8,8 @@ function signAccessToken(payload) {
   });
 }
 
-export { signAccessToken };
+function verifyAccessToken(token) {
+  return jwt.verify(token, env.auth.jwtAccessSecret);
+}
+
+export { signAccessToken, verifyAccessToken };

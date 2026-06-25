@@ -131,3 +131,30 @@ The token does not contain:
 10. Update lastLoginAt.
 11. Generate access token.
 12. Send success response without password.
+
+## Login Security Rules
+
+- Do not reveal whether the email exists.
+- Use the same error message for unknown email and wrong password.
+- Do not return password in login response.
+- Blocked users cannot login.
+- Login response should include a short user object and access token.
+
+## Protected Route Flow
+
+1. Client sends Authorization header.
+2. Header format must be Bearer token.
+3. Backend extracts token from Authorization header.
+4. Backend verifies access token.
+5. Backend reads userId from token payload.
+6. Backend finds current user in database.
+7. If user does not exist, return 401.
+8. If user is blocked, return 403.
+9. Backend attaches user to req.user.
+10. Protected controller uses req.user.
+
+## Current Auth APIs
+
+- POST /api/v1/auth/register
+- POST /api/v1/auth/login
+- GET /api/v1/auth/me

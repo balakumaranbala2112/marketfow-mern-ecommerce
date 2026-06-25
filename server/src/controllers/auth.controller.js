@@ -41,19 +41,11 @@ async function registerUser(req, res, next) {
     role: Roles.CUSTOMER,
   });
 
-  const accessToken = signAccessToken({
-    userId: user._id.toString(),
-    role: user.role,
-  });
-
   return sendResponse(
     res,
     StatusCodes.CREATED,
     "User registered successfully",
-    {
-      user: sanitizeUser(user),
-      accessToken,
-    },
+    buildAuthResponse(user),
   );
 }
 
@@ -100,4 +92,15 @@ async function loginUser(req, res, next) {
   );
 }
 
-export { registerUser, loginUser };
+async function getMe(req, res) {
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "Current user fetched successfully",
+    {
+      user: sanitizeUser(req.user),
+    },
+  );
+}
+
+export { registerUser, loginUser, getMe };

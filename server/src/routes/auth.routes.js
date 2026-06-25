@@ -1,8 +1,15 @@
 import express from "express";
 
-import { loginUser, registerUser } from "../controllers/auth.controller.js";
+import {
+  getMe,
+  loginUser,
+  registerUser,
+} from "../controllers/auth.controller.js";
+
+import { protect } from "../middlewares/auth.middleware.js";
 import validateRequest from "../middlewares/validateRequest.js";
 import asyncHandler from "../utils/asyncHandler.js";
+
 import {
   validateLogin,
   validateRegister,
@@ -17,5 +24,7 @@ router.post(
 );
 
 router.post("/login", validateRequest(validateLogin), asyncHandler(loginUser));
+
+router.get("/me", protect, asyncHandler(getMe));
 
 export default router;
