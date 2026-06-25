@@ -46,6 +46,7 @@ async function createProduct(req, res, next) {
     isActive,
     isFeatured,
     specifications,
+    createdBy: req.user._id,
   });
 
   const populatedProduct = await Product.findById(product._id).populate(

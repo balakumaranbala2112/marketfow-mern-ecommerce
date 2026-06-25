@@ -9,7 +9,8 @@
     "start": "node server.js",
     "check:models": "node scripts/checkModels.js",
     "indexes:products": "node scripts/listIndexes.js",
-    "test:password": "node scripts/testPasswordHash.js"
+    "test:password": "node scripts/testPasswordHash.js",
+    "seed:admin": "node scripts/seedAdmin.js"
   },
   "keywords": [],
   "author": "",

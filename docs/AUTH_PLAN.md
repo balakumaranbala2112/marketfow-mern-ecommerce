@@ -158,3 +158,33 @@ The token does not contain:
 - POST /api/v1/auth/register
 - POST /api/v1/auth/login
 - GET /api/v1/auth/me
+
+## Admin Authorization Flow
+
+1. User must be authenticated first using protect middleware.
+2. protect middleware attaches current user to req.user.
+3. authorizeRoles middleware checks req.user.role.
+4. If role is admin, request continues.
+5. If role is not admin, return 403 Forbidden.
+
+## Current Protected APIs
+
+Authenticated:
+
+- GET /api/v1/auth/me
+
+Admin only:
+
+- POST /api/v1/categories
+- PUT /api/v1/categories/:categoryId
+- DELETE /api/v1/categories/:categoryId
+- POST /api/v1/products
+- PUT /api/v1/products/:productId
+- DELETE /api/v1/products/:productId
+
+Public:
+
+- GET /api/v1/categories
+- GET /api/v1/categories/:categoryId
+- GET /api/v1/products
+- GET /api/v1/products/:productId

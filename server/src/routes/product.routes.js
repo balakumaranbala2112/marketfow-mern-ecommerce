@@ -1,5 +1,7 @@
 import express from "express";
 
+import Roles from "../constants/roles.js";
+import { authorizeRoles, protect } from "../middlewares/auth.middleware.js";
 import asyncHandler from "../utils/asyncHandler.js";
 import validateRequest from "../middlewares/validateRequest.js";
 import validateQueryRequest from "../middlewares/validateQueryRequest.js";
@@ -24,12 +26,22 @@ const router = express.Router();
 router
   .route("/")
   .get(validateQueryRequest(validateProductQuery), asyncHandler(getAllProducts))
-  .post(validateRequest(validateCreateProduct), asyncHandler(createProduct));
+  .post(
+    protect,
+    authorizeRoles(Roles.ADMIN),
+    validateRequest(validateCreateProduct),
+    asyncHandler(createProduct),
+  );
 
 router
   .route("/:productId")
   .get(asyncHandler(getProductById))
-  .put(validateRequest(validateUpdateProduct), asyncHandler(updateProduct))
-  .delete(asyncHandler(deleteProduct));
+  .put(
+    protect,
+    authorizeRoles(Roles.ADMIN),
+    validateRequest(validateUpdateProduct),
+    asyncHandler(updateProduct),
+  )
+  .delete(protect, authorizeRoles(Roles.ADMIN), asyncHandler(deleteProduct));
 
 export default router;

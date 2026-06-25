@@ -15,7 +15,7 @@ function extractTokenFromHeader(authorizationHeader) {
 async function protect(req, res, next) {
   try {
     const token = extractTokenFromHeader(req.headers.authorization);
-    
+
     if (!token) {
       return next(
         new AppError(
@@ -71,4 +71,25 @@ async function protect(req, res, next) {
   }
 }
 
-export { protect };
+function authorizeRoles(...allowedRoles) {
+  return function (req, res, next) {
+    if (!req.user) {
+      return next(
+        new AppError(StatusCodes.UNAUTHORIZED, "Authentication is required"),
+      );
+    }
+  };
+
+  if (!allowedRoles.includes(req.user.role)) {
+    return next(
+      new AppError(
+        StatusCodes.FORBIDDEN,
+        "You do not have permission to perform this action",
+      ),
+    );
+  }
+
+  next();
+}
+
+export { protect, authorizeRoles };
