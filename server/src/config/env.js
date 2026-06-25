@@ -37,7 +37,7 @@ if (!Number.isInteger(bcryptSaltRounds) || bcryptSaltRounds < 10) {
 
 const jwtAccessSecret = process.env.JWT_ACCESS_SECRET;
 
-if (jwtAccessSecret.length < 32) {
+if (!jwtAccessSecret || jwtAccessSecret.length < 32) {
   throw new Error("JWT_ACCESS_SECRET must be at least 32 characters");
 }
 

@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
-import Category from "./category.model.js";
+// [BUG-FIX #4] Removed unused `import Category from "./category.model.js";`
+// The Category model was never used in this file — `ref: "Category"` uses a string
+// reference and does not require the import. It was dead code that created a
+// circular dependency risk.
 const { Schema } = mongoose;
 
 const productImageSchema = new Schema(
@@ -109,7 +112,6 @@ const productSchema = new Schema(
         },
         message: "At least one product image is required",
       },
-      default: [],
     },
 
     stock: {

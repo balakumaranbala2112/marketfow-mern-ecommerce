@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 import sendResponse from "../utils/sendResponse.js";
 import env from "../config/env.js";
+import StatusCodes from "../constants/statusCodes.js";
 
 function getDatabaseStatus() {
   const states = {
@@ -15,14 +16,14 @@ function getDatabaseStatus() {
 }
 
 function getHome(req, res) {
-  return sendResponse(res, 200, "MarketFlow API is running", {
+  return sendResponse(res, StatusCodes.OK, "MarketFlow API is running", {
     app: "MarketFlow",
     environment: env.nodeEnv,
   });
 }
 
 function getHealth(req, res) {
-  return sendResponse(res, 200, "Health check successful", {
+  return sendResponse(res, StatusCodes.OK, "Health check successful", {
     status: "OK",
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
@@ -34,7 +35,7 @@ function getHealth(req, res) {
 }
 
 function getApiVersion(req, res) {
-  return sendResponse(res, 200, "MarketFlow API version", {
+  return sendResponse(res, StatusCodes.OK, "MarketFlow API version", {
     version: env.apiVersion,
   });
 }

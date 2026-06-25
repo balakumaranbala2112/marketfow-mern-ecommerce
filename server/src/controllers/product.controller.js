@@ -78,7 +78,7 @@ async function getAllProducts(req, res) {
     .populate("category", "name slug")
     .lean();
 
-  const totalProducts = await features.count;
+  const totalProducts = await features.count();
   const products = await features.execute();
 
   return sendResponse(

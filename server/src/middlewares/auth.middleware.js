@@ -78,18 +78,18 @@ function authorizeRoles(...allowedRoles) {
         new AppError(StatusCodes.UNAUTHORIZED, "Authentication is required"),
       );
     }
+
+    if (!allowedRoles.includes(req.user.role)) {
+      return next(
+        new AppError(
+          StatusCodes.FORBIDDEN,
+          "You do not have permission to perform this action",
+        ),
+      );
+    }
+
+    next();
   };
-
-  if (!allowedRoles.includes(req.user.role)) {
-    return next(
-      new AppError(
-        StatusCodes.FORBIDDEN,
-        "You do not have permission to perform this action",
-      ),
-    );
-  }
-
-  next();
 }
 
 export { protect, authorizeRoles };
