@@ -1,12 +1,12 @@
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const requiredEnvVars = ["MONGO_URI"];
 
-function checkRequiredEnvvars() {
-  const missingEnvVars = requiredEnvVars.filter(
-    (envName) => !process.env[envName],
-  );
+function checkRequiredEnvVars() {
+  const missingEnvVars = requiredEnvVars.filter((key) => !process.env[key]);
+
   if (missingEnvVars.length > 0) {
     throw new Error(
       `Missing required environment variables: ${missingEnvVars.join(", ")}`,
@@ -14,16 +14,22 @@ function checkRequiredEnvvars() {
   }
 }
 
-checkRequiredEnvvars();
+checkRequiredEnvVars();
 
-const allowedFields = ["development", "test", "production"];
+const allowedNodeEnvs = ["development", "test", "production"];
 
 const nodeEnv = process.env.NODE_ENV || "development";
 
-if (!allowedFields.includes(nodeEnv)) {
+if (!allowedNodeEnvs.includes(nodeEnv)) {
   throw new Error(
-    `Invalid NODE_ENV. Allowed values: ${allowedFields.join(", ")}`,
+    `Invalid NODE_ENV. Allowed values: ${allowedNodeEnvs.join(", ")}`,
   );
+}
+
+const bcryptSaltRounds = Number(process.env.BCRYPT_SALT_ROUNDS) || 12;
+
+if (bcryptSaltRounds < 10) {
+  throw new Error("BCRYPT_SALT_ROUNDS must be at least 10");
 }
 
 const env = {
@@ -34,6 +40,10 @@ const env = {
 
   mongo: {
     uri: process.env.MONGO_URI,
+  },
+
+  auth: {
+    bcryptSaltRounds,
   },
 
   isDevelopment: nodeEnv === "development",

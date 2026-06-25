@@ -1,5 +1,7 @@
+import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 
+import env from "../config/env.js";
 import Roles from "../constants/roles.js";
 
 const { Schema } = mongoose;
@@ -43,7 +45,7 @@ const userSchema = new Schema(
       ],
     },
 
-    // Password is hidden by default and will be manually selected only during login.
+    // Password is hidden by default and manually selected only during login.
     password: {
       type: String,
       required: [true, "User password is required"],
@@ -107,6 +109,23 @@ const userSchema = new Schema(
     timestamps: true,
   },
 );
+
+// Hash password only when it is created or changed.
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) {
+    return;
+  }
+
+  this.password = await bcrypt.hash(this.password, env.auth.bcryptSaltRounds);
+
+  if (!this.isNew) {
+    this.passwordChangedAt = new Date(Date.now() - 1000);
+  }
+});
+
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
 
 // Admin user screens commonly filter users by role/status and newest accounts.
 userSchema.index({ role: 1, createdAt: -1 });

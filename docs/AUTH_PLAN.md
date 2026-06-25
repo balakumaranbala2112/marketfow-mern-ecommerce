@@ -81,3 +81,13 @@ Authorization means checking what the user is allowed to do.
 - Manage orders
 - Manage users
 - Dashboard analytics
+
+## Password Hashing Rules
+
+- Never store plain passwords.
+- Use bcrypt to hash passwords before saving.
+- Password hashing happens in User pre-save middleware.
+- Hash password only when password is created or changed.
+- Use comparePassword method during login.
+- Do not return password in normal API responses.
+- Password changes should use user.save(), not findByIdAndUpdate().
