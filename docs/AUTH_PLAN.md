@@ -91,3 +91,28 @@ Authorization means checking what the user is allowed to do.
 - Use comparePassword method during login.
 - Do not return password in normal API responses.
 - Password changes should use user.save(), not findByIdAndUpdate().
+
+## Register Flow
+
+1. Receive name, email, password.
+2. Validate request body.
+3. Reject unknown fields such as role.
+4. Normalize email to lowercase.
+5. Check whether email already exists.
+6. Create user with customer role by default.
+7. User model hashes password before save.
+8. Generate access token.
+9. Send success response without password.
+
+## JWT Access Token
+
+The access token contains:
+
+- userId
+- role
+
+The token does not contain:
+
+- password
+- reset token
+- private profile data

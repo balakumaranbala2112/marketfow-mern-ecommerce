@@ -18,6 +18,7 @@ MarketFlow is a full-stack MERN e-commerce platform with customer shopping featu
 - Stage 12 completed: Category query features and safe category deletion.
 - Stage 13 completed: User model preparation and auth planning.
 - Stage 14 completed: Password hashing with bcrypt and safe password handling.
+- Stage 15 completed: Register user API with JWT token generation.
 
 ## Tech Stack
 

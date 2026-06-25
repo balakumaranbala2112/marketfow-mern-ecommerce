@@ -7,6 +7,7 @@ import env from "./config/env.js";
 import indexRoutes from "./routes/index.routes.js";
 import categoryRoutes from "./routes/category.routes.js";
 import productRoutes from "./routes/product.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 
 /* Middlewares */
 
@@ -28,6 +29,7 @@ app.use(express.urlencoded({ extended: true, limit: "10kb" }));
 
 app.use("/", indexRoutes);
 
+app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/products", productRoutes);
 

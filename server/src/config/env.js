@@ -26,10 +26,19 @@ if (!allowedNodeEnvs.includes(nodeEnv)) {
   );
 }
 
-const bcryptSaltRounds = Number(process.env.BCRYPT_SALT_ROUNDS) || 12;
+const bcryptSaltRoundsRaw = process.env.BCRYPT_SALT_ROUNDS;
 
-if (bcryptSaltRounds < 10) {
-  throw new Error("BCRYPT_SALT_ROUNDS must be at least 10");
+const bcryptSaltRounds =
+  bcryptSaltRoundsRaw === undefined ? 12 : Number(bcryptSaltRoundsRaw);
+
+if (!Number.isInteger(bcryptSaltRounds) || bcryptSaltRounds < 10) {
+  throw new Error("BCRYPT_SALT_ROUNDS must be an integer of at least 10");
+}
+
+const jwtAccessSecret = process.env.JWT_ACCESS_SECRET;
+
+if (jwtAccessSecret.length < 32) {
+  throw new Error("JWT_ACCESS_SECRET must be at least 32 characters");
 }
 
 const env = {
@@ -44,6 +53,8 @@ const env = {
 
   auth: {
     bcryptSaltRounds,
+    jwtAccessSecret,
+    jwtAccessExpires: process.env.JWT_ACCESS_EXPIRES_IN || "1d",
   },
 
   isDevelopment: nodeEnv === "development",
