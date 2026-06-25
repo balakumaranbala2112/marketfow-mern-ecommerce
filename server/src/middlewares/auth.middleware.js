@@ -47,6 +47,15 @@ async function protect(req, res, next) {
       );
     }
 
+    if (user.changePasswordAfter(decoded.iat)) {
+      return next(
+        new AppError(
+          StatusCodes.UNAUTHORIZED,
+          "Your password has been changed. Please log in again.",
+        ),
+      );
+    }
+
     // Controllers after this middleware can access the logged-in user.
     req.user = user;
 

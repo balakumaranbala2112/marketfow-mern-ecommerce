@@ -237,3 +237,23 @@ Email change and password change require separate secure flows.
 - New password must be at least 8 characters.
 - New password and confirm password must match.
 - New password must be different from current password.
+
+## Token Invalidation After Password Change
+
+When a user changes password:
+
+1. User model updates passwordChangedAt.
+2. Old access tokens may still contain a valid signature.
+3. protect middleware compares token iat with passwordChangedAt.
+4. If token was issued before passwordChangedAt, reject the token.
+5. User must login again or use the new token returned from password change.
+
+## Stronger Protect Middleware Rules
+
+- Token must exist in Authorization header.
+- Token must use Bearer format.
+- Token signature must be valid.
+- Token must not be expired.
+- User from token must still exist.
+- User must not be blocked.
+- Token must not be older than passwordChangedAt.

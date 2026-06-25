@@ -127,6 +127,16 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
+userSchema.methods.changePasswordAfter = function (jwtIssuedAt) {
+  if (!this.passwordChangedAt) {
+    return false;
+  }
+
+  const passwordChangedTimestamp = Math.floor(this.passwordChangedAt.getTime() / 1000);
+
+  return jwtIssuedAt < passwordChangedTimestamp;
+};
+
 // Admin user screens commonly filter users by role/status and newest accounts.
 userSchema.index({ role: 1, createdAt: -1 });
 userSchema.index({ isBlocked: 1, createdAt: -1 });
