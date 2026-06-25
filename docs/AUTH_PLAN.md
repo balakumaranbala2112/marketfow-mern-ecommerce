@@ -116,3 +116,18 @@ The token does not contain:
 - password
 - reset token
 - private profile data
+
+## Login Flow
+
+1. Receive email and password.
+2. Validate request body.
+3. Reject unknown fields.
+4. Normalize email to lowercase.
+5. Find user by email and manually select password.
+6. If user does not exist, return generic invalid credentials error.
+7. If user is blocked, return 403 Forbidden.
+8. Compare entered password with hashed password.
+9. If password is wrong, return generic invalid credentials error.
+10. Update lastLoginAt.
+11. Generate access token.
+12. Send success response without password.

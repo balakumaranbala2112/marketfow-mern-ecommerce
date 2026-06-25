@@ -1,6 +1,7 @@
 import { isNonEmptyString } from "../utils/validators.js";
 
 const allowedRegisterFields = ["name", "email", "password"];
+const allowedLoginFields = ["email", "password"];
 
 function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
@@ -54,4 +55,29 @@ function validateRegister(body) {
   return errors;
 }
 
-export { validateRegister };
+function validateLogin(body) {
+  const errors = [];
+  const bodyKeys = Object.keys(body);
+
+  bodyKeys.forEach((key) => {
+    if (!allowedLoginFields.includes(key)) {
+      errors.push(`${key} is not an allowed login field`);
+    }
+  });
+
+  if (!isNonEmptyString(body.email)) {
+    errors.push("Email is required and must be a non-empty string");
+  }
+
+  if (isNonEmptyString(body.email) && !isValidEmail(body.email.trim())) {
+    errors.push("Please provide a valid email address");
+  }
+
+  if (!isNonEmptyString(body.password)) {
+    errors.push("Password is required and must be a non-empty string");
+  }
+
+  return errors;
+}
+
+export { validateRegister, validateLogin };
