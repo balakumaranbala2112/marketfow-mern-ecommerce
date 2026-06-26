@@ -463,3 +463,30 @@ Rules:
 - Revenue is calculated from paid orders only.
 - COD order revenue is counted after order is delivered and paymentStatus becomes paid.
 - Dashboard includes recent orders for admin overview.
+
+## Coupon Rules
+
+Coupon admin APIs:
+
+- POST /api/v1/coupons/admin
+- GET /api/v1/coupons/admin
+
+Coupon customer APIs:
+
+- POST /api/v1/coupons/apply
+- DELETE /api/v1/coupons/remove
+
+Rules:
+
+- Admin must be authenticated to create/view coupons.
+- Customer must be authenticated to apply/remove coupons.
+- Coupon applies to the current user's cart.
+- Coupon code is unique.
+- Coupon can be percentage or fixed discount.
+- Coupon may have a minimum order amount.
+- Coupon may have a maximum discount amount.
+- Coupon may have a usage limit.
+- Coupon must be active and not expired.
+- Coupon usedCount increases only after successful order creation.
+- Order stores coupon snapshot.
+- Backend calculates discount and final total.

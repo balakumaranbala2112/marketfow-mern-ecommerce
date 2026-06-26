@@ -51,6 +51,53 @@ const cartItemSchema = new Schema(
   },
 );
 
+const appliedCouponSchema = new Schema(
+  {
+    coupon: {
+      type: Schema.Types.ObjectId,
+      ref: "Coupon",
+      default: null,
+    },
+
+    code: {
+      type: String,
+      uppercase: true,
+      trim: true,
+    },
+
+    discountType: {
+      type: String,
+      enum: ["percentage", "fixed"],
+    },
+
+    discountValue: {
+      type: Number,
+      min: 0,
+    },
+
+    minOrderAmount: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+
+    maxDiscountAmount: {
+      type: Number,
+      min: 0,
+      default: null,
+    },
+
+    discountAmount: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+  },
+  {
+    _id: false,
+  },
+);
+
 const cartSchema = new Schema(
   {
     user: {
@@ -74,6 +121,23 @@ const cartSchema = new Schema(
     cartTotal: {
       type: Number,
       min: [0, "Cart total cannot be negative"],
+      default: 0,
+    },
+
+    coupon: {
+      type: appliedCouponSchema,
+      default: null,
+    },
+
+    discountPrice: {
+      type: Number,
+      min: [0, "Discount price cannot be negative"],
+      default: 0,
+    },
+
+    payableTotal: {
+      type: Number,
+      min: [0, "Payable total cannot be negative"],
       default: 0,
     },
   },

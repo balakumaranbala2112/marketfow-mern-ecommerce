@@ -130,6 +130,41 @@ const paymentInfoSchema = new Schema(
   },
 );
 
+const orderCouponSchema = new Schema(
+  {
+    coupon: {
+      type: Schema.Types.ObjectId,
+      ref: "Coupon",
+      default: null,
+    },
+
+    code: {
+      type: String,
+      uppercase: true,
+      trim: true,
+    },
+
+    discountType: {
+      type: String,
+      enum: ["percentage", "fixed"],
+    },
+
+    discountValue: {
+      type: Number,
+      min: 0,
+    },
+
+    discountAmount: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+  },
+  {
+    _id: false,
+  },
+);
+
 const orderSchema = new Schema(
   {
     user: {

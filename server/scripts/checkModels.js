@@ -8,7 +8,7 @@ import Order from "../src/models/order.model.js";
 import Review from "../src/models/review.model.js";
 import Wishlist from "../src/models/wishlist.model.js";
 
-const models = [User, Category, Product, Cart, Order, Review, Wishlist];
+const models = [User, Category, Product, Cart, Order, Review, Wishlist, Coupon];
 
 console.log("Mongoose models loaded successfully:");
 
