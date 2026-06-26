@@ -444,3 +444,22 @@ Rules:
 - Role changes are not allowed in this stage.
 - Blocked users cannot login.
 - Blocked users cannot use existing tokens on protected routes.
+
+## Admin Dashboard Analytics
+
+Admin dashboard API:
+
+- GET /api/v1/dashboard/admin/summary
+
+Rules:
+
+- Admin must be authenticated.
+- Admin role is required.
+- Dashboard includes user summary.
+- Dashboard includes product summary.
+- Dashboard includes order status summary.
+- Dashboard includes payment status summary.
+- Dashboard includes sales summary.
+- Revenue is calculated from paid orders only.
+- COD order revenue is counted after order is delivered and paymentStatus becomes paid.
+- Dashboard includes recent orders for admin overview.
