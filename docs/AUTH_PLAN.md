@@ -399,3 +399,24 @@ Rules:
 - User can delete only their own review.
 - Product ratingsAverage and ratingsCount must be recalculated after create, update, and delete.
 
+## Wishlist Auth Rules
+
+Wishlist APIs are authenticated user APIs.
+
+Current wishlist APIs:
+
+- GET /api/v1/wishlist
+- POST /api/v1/wishlist/items
+- DELETE /api/v1/wishlist/items/:productId
+
+Rules:
+
+- User must be logged in.
+- Wishlist belongs to req.user._id.
+- Users cannot access another user's wishlist.
+- Wishlist stores product references.
+- Product must exist before adding to wishlist.
+- Product must be active before adding to wishlist.
+- Same product cannot be added twice.
+- Removing from wishlist removes only the product reference.
+- Wishlist does not reduce stock.
