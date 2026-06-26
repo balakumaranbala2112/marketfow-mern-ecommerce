@@ -377,3 +377,25 @@ Rules:
 - Cancelled orders cannot be changed again.
 - Cancelling an order restores product stock.
 - Delivering a COD order marks paymentStatus as paid.
+
+## Review Auth Rules
+
+Review APIs:
+
+- GET /api/v1/products/:productId/reviews
+- POST /api/v1/products/:productId/reviews
+- PUT /api/v1/products/:productId/reviews/:reviewId
+- DELETE /api/v1/products/:productId/reviews/:reviewId
+
+Rules:
+
+- Anyone can view product reviews.
+- User must be logged in to create a review.
+- User can review only products they purchased and received.
+- Order must contain the product.
+- Order status must be delivered.
+- One user can review one product only once.
+- User can update only their own review.
+- User can delete only their own review.
+- Product ratingsAverage and ratingsCount must be recalculated after create, update, and delete.
+
