@@ -34,6 +34,12 @@ const cartItemSchema = new Schema(
       default: 1,
     },
 
+    stock: {
+      type: Number,
+      required: [true, "Cart item stock is required"],
+      min: [0, "Cart item stock cannot be negative"],
+    },
+
     subtotal: {
       type: Number,
       required: [true, "Cart item subtotal is required"],

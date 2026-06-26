@@ -257,3 +257,21 @@ When a user changes password:
 - User from token must still exist.
 - User must not be blocked.
 - Token must not be older than passwordChangedAt.
+
+## Cart Auth Rules
+
+Cart APIs are authenticated user APIs.
+
+Current cart API:
+
+- POST /api/v1/cart/items
+
+Rules:
+
+- User must be logged in.
+- Cart belongs to req.user._id.
+- Users cannot access another user's cart.
+- Product must exist before adding to cart.
+- Product must be active.
+- Quantity must not exceed stock.
+- If product already exists in cart, increase quantity.
