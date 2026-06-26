@@ -44,6 +44,23 @@ function validateOrderId(orderId, next) {
   return true;
 }
 
+async function populateOrder(query) {
+  return query
+    .populate("user", "name email phone")
+    .populate("orderItems.product", "name slug");
+}
+
+async function restoreOrderProductStock(order) {
+  for (const item of order.orderItems) {
+    const product = await Product.findById(item.product);
+
+    if (product) {
+      product.stock += item.quantity;
+      await product.save({ validateBeforeSave: false });
+    }
+  }
+}
+
 async function createOrderFromCart(req, res, next) {
   const { shippingAddress, paymentMethod } = req.body;
 
@@ -139,9 +156,7 @@ async function createOrderFromCart(req, res, next) {
   calculateCartTotals(cart);
   await cart.save();
 
-  const populatedOrder = await Order.findById(order._id)
-    .populate("user", "name email")
-    .populate("orderItems.product", "name slug");
+  const populatedOrder = await populateOrder(Order.findById(order._id));
 
   return sendResponse(
     res,
@@ -175,12 +190,12 @@ async function getMyOrderById(req, res, next) {
     return;
   }
 
-  const order = await Order.findOne({
-    _id: orderId,
-    user: req.user._id,
-  })
-    .populate("user", "name email")
-    .populate("orderItems.product", "name slug");
+  const order = await populateOrder(
+    Order.findOne({
+      _id: orderId,
+      user: req.user._id,
+    }),
+  );
 
   if (!order) {
     return next(new AppError(StatusCodes.NOT_FOUND, "Order not found"));
@@ -189,4 +204,104 @@ async function getMyOrderById(req, res, next) {
   return sendResponse(res, StatusCodes.OK, "Order fetched successfully", order);
 }
 
-export { createOrderFromCart, getMyOrders, getMyOrderById };
+async function getAllOrdersForAdmin(req, res) {
+  const orders = await Order.find()
+    .sort({ createdAt: -1 })
+    .populate("user", "name email phone")
+    .populate("orderItems.product", "name slug")
+    .lean();
+
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "All orders fetched successfully",
+    orders,
+    {
+      count: orders.length,
+    },
+  );
+}
+
+async function getOrderByIdForAdmin(req, res, next) {
+  const { orderId } = req.params;
+
+  if (!validateOrderId(orderId, next)) {
+    return;
+  }
+
+  const order = await populateOrder(Order.findById(orderId));
+
+  if (!order) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "Order not found"));
+  }
+
+  return sendResponse(res, StatusCodes.OK, "Order fetched successfully", order);
+}
+
+async function updateOrderStatusForAdmin(req, res, next) {
+  const { orderId } = req.params;
+  const { orderStatus } = req.body;
+
+  if (!validateOrderId(orderId, next)) {
+    return;
+  }
+
+  const order = await Order.findById(orderId);
+
+  if (!order) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "Order not found"));
+  }
+
+  if (order.orderStatus === "delivered" && orderStatus !== "delivered") {
+    return next(
+      new AppError(
+        StatusCodes.BAD_REQUEST,
+        "Delivered order status cannot be changed",
+      ),
+    );
+  }
+
+  if (order.orderStatus === "cancelled") {
+    return next(
+      new AppError(
+        StatusCodes.BAD_REQUEST,
+        "Cancelled order status cannot be changed",
+      ),
+    );
+  }
+
+  if (orderStatus === "cancelled") {
+    await restoreOrderProductStock(order);
+  }
+
+  order.orderStatus = orderStatus;
+
+  if (orderStatus === "delivered") {
+    order.deliveredAt = new Date();
+
+    if (order.paymentMethod === "cod") {
+      order.paymentStatus = "paid";
+      order.paidAt = new Date();
+    }
+  }
+
+  await order.save({ validateBeforeSave: true });
+
+  const populatedOrder = await populateOrder(Order.findById(order._id));
+
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "Order status updated successfully",
+    populatedOrder,
+  );
+}
+
+export {
+  createOrderFromCart,
+  getMyOrders,
+  getMyOrderById,
+  getAllOrdersForAdmin,
+  getOrderByIdForAdmin,
+  updateOrderStatusForAdmin,
+};

@@ -19,6 +19,17 @@ const allowedShippingAddressFields = [
 
 const allowedPaymentMethods = ["cod"];
 
+const allowedUpdateOrderStatusFields = ["orderStatus"];
+
+const allowedOrderStatuses = [
+  "pending",
+  "confirmed",
+  "processing",
+  "shipped",
+  "delivered",
+  "cancelled",
+];
+
 function validateShippingAddress(shippingAddress, errors) {
   if (!isPlainObject(shippingAddress)) {
     errors.push("Shipping address is required and must be an object");
@@ -92,4 +103,34 @@ function validateCreateOrder(body) {
   return errors;
 }
 
-export { validateCreateOrder };
+function validateUpdateOrderStatus(body) {
+  const errors = [];
+  const bodyKeys = Object.keys(body);
+
+  if (bodyKeys.length === 0) {
+    errors.push("Order status is required for update");
+  }
+
+  bodyKeys.forEach((key) => {
+    if (!allowedUpdateOrderStatusFields.includes(key)) {
+      errors.push(`${key} is not an allowed order status update field`);
+    }
+  });
+
+  if (!isNonEmptyString(body.orderStatus)) {
+    errors.push("Order status is required");
+  }
+
+  if (
+    isNonEmptyString(body.orderStatus) &&
+    !allowedOrderStatuses.includes(body.orderStatus)
+  ) {
+    errors.push(
+      `Order status must be one of: ${allowedOrderStatuses.join(", ")}`,
+    );
+  }
+
+  return errors;
+}
+
+export { validateCreateOrder, validateUpdateOrderStatus };

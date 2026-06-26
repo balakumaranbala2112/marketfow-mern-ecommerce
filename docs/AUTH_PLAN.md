@@ -357,4 +357,23 @@ Customer order read rules:
 - Invalid orderId returns 400.
 - Missing order or another user's order returns 404.
 
+## Admin Order Management
 
+Admin order APIs:
+
+- GET /api/v1/orders/admin
+- GET /api/v1/orders/admin/:orderId
+- PUT /api/v1/orders/admin/:orderId/status
+
+Rules:
+
+- Admin must be authenticated.
+- Admin role is required.
+- Admin can list all orders.
+- Admin can view any order.
+- Admin can update orderStatus only.
+- Admin cannot update price fields through status API.
+- Delivered orders cannot be changed backwards.
+- Cancelled orders cannot be changed again.
+- Cancelling an order restores product stock.
+- Delivering a COD order marks paymentStatus as paid.

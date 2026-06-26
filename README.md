@@ -29,6 +29,8 @@ MarketFlow is a full-stack MERN e-commerce platform with customer shopping featu
 - Stage 23 completed: Get cart, update cart item, remove cart item, and clear cart APIs.
 - Stage 24 completed: Create order from cart workflow.
 - Stage 25 completed: Customer order history and single order details APIs.
+- Stage 26 completed: Admin order management APIs.
+
 
 ## Tech Stack
 
