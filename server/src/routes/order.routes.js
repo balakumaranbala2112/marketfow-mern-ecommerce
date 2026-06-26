@@ -1,6 +1,11 @@
 import express from "express";
 
-import { createOrderFromCart } from "../controllers/order.controller.js";
+import {
+  createOrderFromCart,
+  getMyOrderById,
+  getMyOrders,
+} from "../controllers/order.controller.js";
+
 import { protect } from "../middlewares/auth.middleware.js";
 import validateRequest from "../middlewares/validateRequest.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -14,5 +19,9 @@ router.post(
   validateRequest(validateCreateOrder),
   asyncHandler(createOrderFromCart),
 );
+
+router.get("/my-orders", protect, asyncHandler(getMyOrders));
+
+router.get("/:orderId", protect, asyncHandler(getMyOrderById));
 
 export default router;

@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 import Cart from "../models/cart.model.js";
 import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
@@ -30,6 +32,16 @@ function normalizeShippingAddress(shippingAddress) {
     postalCode: shippingAddress.postalCode.trim(),
     country: shippingAddress.country.trim(),
   };
+}
+
+function validateOrderId(orderId, next) {
+  if (!mongoose.Types.ObjectId.isValid(orderId)) {
+    next(new AppError(StatusCodes.BAD_REQUEST, "Valid orderId is required"));
+
+    return false;
+  }
+
+  return true;
 }
 
 async function createOrderFromCart(req, res, next) {
@@ -139,4 +151,42 @@ async function createOrderFromCart(req, res, next) {
   );
 }
 
-export { createOrderFromCart };
+async function getMyOrders(req, res) {
+  const orders = await Order.find({ user: req.user._id })
+    .sort({ createdAt: -1 })
+    .populate("orderItems.product", "name slug")
+    .lean();
+
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "Orders fetched successfully",
+    orders,
+    {
+      count: orders.length,
+    },
+  );
+}
+
+async function getMyOrderById(req, res, next) {
+  const { orderId } = req.params;
+
+  if (!validateOrderId(orderId, next)) {
+    return;
+  }
+
+  const order = await Order.findOne({
+    _id: orderId,
+    user: req.user._id,
+  })
+    .populate("user", "name email")
+    .populate("orderItems.product", "name slug");
+
+  if (!order) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "Order not found"));
+  }
+
+  return sendResponse(res, StatusCodes.OK, "Order fetched successfully", order);
+}
+
+export { createOrderFromCart, getMyOrders, getMyOrderById };

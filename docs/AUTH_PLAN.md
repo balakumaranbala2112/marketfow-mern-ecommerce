@@ -324,3 +324,37 @@ Create order rules:
 - Backend clears cart after successful order creation.
 - COD is the only payment method supported for now.
 
+## Order Auth Rules
+
+Order APIs are authenticated user APIs.
+
+Current order APIs:
+
+- POST /api/v1/orders
+- GET /api/v1/orders/my-orders
+- GET /api/v1/orders/:orderId
+
+Create order rules:
+
+- User must be logged in.
+- Order is created from req.user._id cart.
+- User cannot send orderItems directly.
+- Backend checks cart is not empty.
+- Backend rechecks latest product existence.
+- Backend rechecks product active status.
+- Backend rechecks product stock.
+- Backend recalculates latest product price.
+- Backend creates order item snapshots.
+- Backend reduces product stock.
+- Backend clears cart after successful order creation.
+- COD is the only payment method supported for now.
+
+Customer order read rules:
+
+- User must be logged in.
+- User can list only their own orders.
+- User can view only an order that belongs to req.user._id.
+- Invalid orderId returns 400.
+- Missing order or another user's order returns 404.
+
+
