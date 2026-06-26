@@ -103,26 +103,45 @@ const paymentInfoSchema = new Schema(
   {
     provider: {
       type: String,
-      enum: {
-        values: ["cod", "razorpay", "stripe"],
-        message: "Payment provider must be cod, razorpay, or stripe",
-      },
+      enum: ["cod", "razorpay", "stripe"],
       default: "cod",
-    },
-
-    paymentId: {
-      type: String,
-      default: "",
     },
 
     providerOrderId: {
       type: String,
+      trim: true,
       default: "",
     },
 
-    signature: {
+    providerPaymentId: {
       type: String,
+      trim: true,
       default: "",
+    },
+
+    providerSignature: {
+      type: String,
+      trim: true,
+      default: "",
+      select: false,
+    },
+
+    providerStatus: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
+    receipt: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
+    rawResponse: {
+      type: Schema.Types.Mixed,
+      select: false,
+      default: null,
     },
   },
   {

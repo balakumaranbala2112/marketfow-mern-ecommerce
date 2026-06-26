@@ -17,7 +17,7 @@ const allowedShippingAddressFields = [
   "country",
 ];
 
-const allowedPaymentMethods = ["cod"];
+const allowedPaymentMethods = ["cod", "online"];
 
 const allowedUpdateOrderStatusFields = ["orderStatus"];
 
@@ -97,6 +97,12 @@ function validateCreateOrder(body) {
   ) {
     errors.push(
       `Payment method must be one of: ${allowedPaymentMethods.join(", ")}`,
+    );
+  }
+
+  if (body.paymentMethod === "online") {
+    errors.push(
+      "Online payment is planned but not enabled yet. Use cod for now.",
     );
   }
 

@@ -490,3 +490,26 @@ Rules:
 - Coupon usedCount increases only after successful order creation.
 - Order stores coupon snapshot.
 - Backend calculates discount and final total.
+
+## Payment Preparation Rules
+
+Payment methods:
+
+- cod
+- online
+
+Current behavior:
+
+- COD is enabled.
+- Online payment is planned but blocked until gateway integration.
+- COD paymentStatus starts as pending.
+- COD paymentStatus becomes paid when admin marks the order delivered.
+
+Payment security rules:
+
+- Frontend must never decide payment success.
+- Backend must verify payment before marking paymentStatus as paid.
+- Payment provider secrets must stay only in backend environment variables.
+- Payment signatures and raw provider responses should not be exposed in normal API responses.
+- Order stores paymentInfo for provider-level references.
+

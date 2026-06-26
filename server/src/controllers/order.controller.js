@@ -138,12 +138,17 @@ async function createOrderFromCart(req, res, next) {
     orderItems,
     shippingAddress: normalizeShippingAddress(shippingAddress),
     paymentMethod,
+    paymentInfo: {
+      provider: paymentMethod === "cod" ? "cod" : "",
+      providerStatus: paymentMethod === "cod" ? "pending" : "",
+    },
     paymentStatus: "pending",
     orderStatus: "pending",
     itemsPrice,
     shippingPrice,
     taxPrice,
     discountPrice,
+    coupon: appliedCoupon,
     totalPrice,
   });
 
@@ -282,6 +287,8 @@ async function updateOrderStatusForAdmin(req, res, next) {
     if (order.paymentMethod === "cod") {
       order.paymentStatus = "paid";
       order.paidAt = new Date();
+      order.paymentInfo.provider = "cod";
+      order.paymentInfo.providerStatus = "paid_on_delivery";
     }
   }
 
