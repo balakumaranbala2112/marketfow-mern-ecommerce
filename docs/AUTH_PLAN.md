@@ -300,3 +300,27 @@ Rules:
 - Updating quantity must recheck latest product stock.
 - Removing an item must recalculate totals.
 - Clearing cart keeps the cart document but removes all items.
+
+## Order Auth Rules
+
+Order APIs are authenticated user APIs.
+
+Current order API:
+
+- POST /api/v1/orders
+
+Create order rules:
+
+- User must be logged in.
+- Order is created from req.user._id cart.
+- User cannot send orderItems directly.
+- Backend checks cart is not empty.
+- Backend rechecks latest product existence.
+- Backend rechecks product active status.
+- Backend rechecks product stock.
+- Backend recalculates latest product price.
+- Backend creates order item snapshots.
+- Backend reduces product stock.
+- Backend clears cart after successful order creation.
+- COD is the only payment method supported for now.
+
