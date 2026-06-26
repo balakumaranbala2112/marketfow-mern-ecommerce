@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 import Cart from "../models/cart.model.js";
 import Product from "../models/product.model.js";
 
@@ -12,6 +14,42 @@ function getProductPrice(product) {
 
 function getProductImage(product) {
   return product.images?.[0]?.url || "";
+}
+
+async function getOrCreateCart(userId) {
+  let cart = await Cart.findOne({ user: userId });
+
+  if (!cart) {
+    cart = await Cart.create({
+      user: userId,
+      items: [],
+    });
+  }
+
+  return cart;
+}
+
+async function getPopulatedCart(cartId) {
+  return Cart.findById(cartId).populate(
+    "items.product",
+    "name slug price discountPrice stock isActive",
+  );
+}
+
+function findCartItem(cart, cartItemId) {
+  return cart.items.find((item) => {
+    return item._id.toString() === cartItemId;
+  });
+}
+
+function validateCartItemId(cartItemId, next) {
+  if (!mongoose.Types.ObjectId.isValid(cartItemId)) {
+    next(new AppError(StatusCodes.BAD_REQUEST, "Valid cartItemId is required"));
+
+    return false;
+  }
+
+  return true;
 }
 
 async function addToCart(req, res, next) {
@@ -40,14 +78,7 @@ async function addToCart(req, res, next) {
     );
   }
 
-  let cart = await Cart.findOne({ user: req.user._id });
-
-  if (!cart) {
-    cart = await Cart.create({
-      user: req.user._id,
-      items: [],
-    });
-  }
+  const cart = await getOrCreateCart(req.user._id);
 
   const existingItem = cart.items.find((item) => {
     return item.product.toString() === productId;
@@ -86,10 +117,7 @@ async function addToCart(req, res, next) {
 
   await cart.save();
 
-  const populatedCart = await Cart.findById(cart._id).populate(
-    "items.product",
-    "name slug price discountPrice stock isActive",
-  );
+  const populatedCart = await getPopulatedCart(cart._id);
 
   return sendResponse(
     res,
@@ -99,4 +127,141 @@ async function addToCart(req, res, next) {
   );
 }
 
-export { addToCart };
+async function getMyCart(req, res) {
+  const cart = await getOrCreateCart(req.user._id);
+  const populatedCart = await getPopulatedCart(cart._id);
+
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "Cart fetched successfully",
+    populatedCart,
+  );
+}
+
+async function updateCartItemQuantity(req, res, next) {
+  const { cartItemId } = req.params;
+  const { quantity } = req.body;
+
+  if (!validateCartItemId(cartItemId, next)) {
+    return;
+  }
+
+  const cart = await getOrCreateCart(req.user._id);
+
+  const cartItem = findCartItem(cart, cartItemId);
+
+  if (!cartItem) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "Cart item not found"));
+  }
+
+  const product = await Product.findById(cartItem.product);
+
+  if (!product) {
+    return next(
+      new AppError(
+        StatusCodes.NOT_FOUND,
+        "Product linked to this cart item no longer exists",
+      ),
+    );
+  }
+
+  if (!product.isActive) {
+    return next(
+      new AppError(
+        StatusCodes.BAD_REQUEST,
+        "Product is currently not available",
+      ),
+    );
+  }
+
+  if (quantity > product.stock) {
+    return next(
+      new AppError(StatusCodes.BAD_REQUEST, "Insufficient product stock", [
+        `Only ${product.stock} item(s) available in stock`,
+      ]),
+    );
+  }
+
+  const price = getProductPrice(product);
+
+  cartItem.name = product.name;
+  cartItem.image = getProductImage(product);
+  cartItem.price = price;
+  cartItem.stock = product.stock;
+  cartItem.quantity = quantity;
+  cartItem.subtotal = quantity * price;
+
+  calculateCartTotals(cart);
+
+  await cart.save();
+
+  const populatedCart = await getPopulatedCart(cart._id);
+
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "Cart item quantity updated successfully",
+    populatedCart,
+  );
+}
+
+async function removeCartItem(req, res, next) {
+  const { cartItemId } = req.params;
+
+  if (!validateCartItemId(cartItemId, next)) {
+    return;
+  }
+
+  const cart = await getOrCreateCart(req.user._id);
+
+  const cartItem = findCartItem(cart, cartItemId);
+
+  if (!cartItem) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "Cart item not found"));
+  }
+
+  cart.items = cart.items.filter((item) => {
+    return item._id.toString() !== cartItemId;
+  });
+
+  calculateCartTotals(cart);
+
+  await cart.save();
+
+  const populatedCart = await getPopulatedCart(cart._id);
+
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "Cart item removed successfully",
+    populatedCart,
+  );
+}
+
+async function clearCart(req, res) {
+  const cart = await getOrCreateCart(req.user._id);
+
+  cart.items = [];
+
+  calculateCartTotals(cart);
+
+  await cart.save();
+
+  const populatedCart = await getPopulatedCart(cart._id);
+
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "Cart cleared successfully",
+    populatedCart,
+  );
+}
+
+export {
+  addToCart,
+  getMyCart,
+  updateCartItemQuantity,
+  removeCartItem,
+  clearCart,
+};

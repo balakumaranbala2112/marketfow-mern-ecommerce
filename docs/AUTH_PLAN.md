@@ -275,3 +275,28 @@ Rules:
 - Product must be active.
 - Quantity must not exceed stock.
 - If product already exists in cart, increase quantity.
+
+## Cart Auth Rules
+
+Cart APIs are authenticated user APIs.
+
+Current cart APIs:
+
+- GET /api/v1/cart
+- POST /api/v1/cart/items
+- PUT /api/v1/cart/items/:cartItemId
+- DELETE /api/v1/cart/items/:cartItemId
+- DELETE /api/v1/cart
+
+Rules:
+
+- User must be logged in.
+- Cart belongs to req.user._id.
+- Users cannot access another user's cart.
+- Product must exist before adding to cart.
+- Product must be active.
+- Quantity must not exceed stock.
+- If product already exists in cart, increase quantity.
+- Updating quantity must recheck latest product stock.
+- Removing an item must recalculate totals.
+- Clearing cart keeps the cart document but removes all items.
