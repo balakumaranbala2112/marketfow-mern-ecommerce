@@ -420,3 +420,27 @@ Rules:
 - Same product cannot be added twice.
 - Removing from wishlist removes only the product reference.
 - Wishlist does not reduce stock.
+
+## Admin User Management
+
+Admin user management APIs:
+
+- GET /api/v1/users/admin
+- GET /api/v1/users/admin/:userId
+- PUT /api/v1/users/admin/:userId/block
+- PUT /api/v1/users/admin/:userId/unblock
+
+Rules:
+
+- Admin must be authenticated.
+- Admin role is required.
+- Admin can view all users.
+- Admin can view one user.
+- Admin can block customer accounts.
+- Admin can unblock customer accounts.
+- Admin cannot block their own account.
+- Admin accounts cannot be blocked from this endpoint.
+- Admin accounts cannot be unblocked from this endpoint.
+- Role changes are not allowed in this stage.
+- Blocked users cannot login.
+- Blocked users cannot use existing tokens on protected routes.

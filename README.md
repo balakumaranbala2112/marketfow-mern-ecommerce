@@ -32,6 +32,7 @@ MarketFlow is a full-stack MERN e-commerce platform with customer shopping featu
 - Stage 26 completed: Admin order management APIs.
 - Stage 27 completed: Product review APIs and rating recalculation.
 - Stage 28 completed: Wishlist add, get, and remove APIs.
+- Stage 29 completed: Admin user management and block/unblock APIs.
 
 
 ## Tech Stack

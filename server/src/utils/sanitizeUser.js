@@ -8,6 +8,7 @@ function sanitizeUser(user) {
     phone: user.phone,
     isBlocked: user.isBlocked,
     emailVerified: user.emailVerified,
+    lastLoginAt: user.lastLoginAt,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };

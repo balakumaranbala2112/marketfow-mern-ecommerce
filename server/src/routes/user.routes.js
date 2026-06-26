@@ -1,39 +1,71 @@
 import express from "express";
 
+import Roles from "../constants/roles.js";
+
 import {
-    changeMyPassword,
-    getMyProfile,
-    updateMyProfile
+  blockUserForAdmin,
+  changeMyPassword,
+  getAllUsersForAdmin,
+  getMyProfile,
+  getUserByIdForAdmin,
+  unblockUserForAdmin,
+  updateMyProfile,
 } from "../controllers/user.controller.js";
 
-import { protect } from "../middlewares/auth.middleware.js";
+import { authorizeRoles, protect } from "../middlewares/auth.middleware.js";
+
 import validateRequest from "../middlewares/validateRequest.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
 import {
-    validateChangePassword,
-    validateUpdateProfile
+  validateChangePassword,
+  validateUpdateProfile,
 } from "../validators/user.validator.js";
 
 const router = express.Router();
 
-router
-    .route("/profile")
-    .get(
-        protect,
-        asyncHandler(getMyProfile)
-    )
-    .put(
-        protect,
-        validateRequest(validateUpdateProfile),
-        asyncHandler(updateMyProfile)
-    );
+router.get(
+  "/admin",
+  protect,
+  authorizeRoles(Roles.ADMIN),
+  asyncHandler(getAllUsersForAdmin),
+);
+
+router.get(
+  "/admin/:userId",
+  protect,
+  authorizeRoles(Roles.ADMIN),
+  asyncHandler(getUserByIdForAdmin),
+);
 
 router.put(
-    "/change-password",
+  "/admin/:userId/block",
+  protect,
+  authorizeRoles(Roles.ADMIN),
+  asyncHandler(blockUserForAdmin),
+);
+
+router.put(
+  "/admin/:userId/unblock",
+  protect,
+  authorizeRoles(Roles.ADMIN),
+  asyncHandler(unblockUserForAdmin),
+);
+
+router
+  .route("/profile")
+  .get(protect, asyncHandler(getMyProfile))
+  .put(
     protect,
-    validateRequest(validateChangePassword),
-    asyncHandler(changeMyPassword)
+    validateRequest(validateUpdateProfile),
+    asyncHandler(updateMyProfile),
+  );
+
+router.put(
+  "/change-password",
+  protect,
+  validateRequest(validateChangePassword),
+  asyncHandler(changeMyPassword),
 );
 
 export default router;
