@@ -592,3 +592,25 @@ Rules:
 - SMTP credentials must stay in backend environment variables.
 - EMAIL_ENABLED controls whether emails are sent.
 - Controllers should call email service instead of creating SMTP transporters directly.
+
+## Password Reset Flow
+
+Password reset APIs:
+
+- POST /api/v1/auth/forgot-password
+- POST /api/v1/auth/reset-password/:resetToken
+
+Rules:
+
+- Forgot password route is public.
+- Reset password route is public.
+- Forgot password response must not reveal whether an email exists.
+- Backend generates a random reset token.
+- Raw reset token is sent only through email.
+- Hashed reset token is stored in database.
+- Reset token expires after a short time.
+- Reset token is single-use.
+- New password must be hashed through User model pre-save middleware.
+- Old JWT tokens become invalid after password reset.
+- Blocked users cannot reset password.
+

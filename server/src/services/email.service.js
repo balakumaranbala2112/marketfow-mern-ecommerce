@@ -7,6 +7,7 @@ import {
 import {
   buildOrderConfirmationEmail,
   buildOrderStatusUpdateEmail,
+  buildPasswordResetEmail,
 } from "../utils/emailTemplates.js";
 
 async function sendEmail({ to, subject, text, html }) {
@@ -67,9 +68,23 @@ async function sendOrderStatusUpdateEmail(order, previousStatus) {
   });
 }
 
+async function sendPasswordResetEmail({ user, resetUrl, expiresInMinutes }) {
+  const template = buildPasswordResetEmail({
+    user,
+    resetUrl,
+    expiresInMinutes,
+  });
+
+  return safeSendEmail({
+    to: user.email,
+    ...template,
+  });
+}
+
 export {
   sendEmail,
   safeSendEmail,
   sendOrderConfirmationEmail,
   sendOrderStatusUpdateEmail,
+  sendPasswordResetEmail,
 };

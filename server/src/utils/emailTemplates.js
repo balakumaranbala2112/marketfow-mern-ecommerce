@@ -188,4 +188,69 @@ Thank you for shopping with MarketFlow.
   };
 }
 
-export { buildOrderConfirmationEmail, buildOrderStatusUpdateEmail };
+function buildPasswordResetEmail({ user, resetUrl, expiresInMinutes }) {
+  const subject = "Reset your MarketFlow password";
+
+  const text = `
+Hi ${user.name},
+
+You requested to reset your MarketFlow password.
+
+Reset your password using this link:
+${resetUrl}
+
+This link will expire in ${expiresInMinutes} minutes.
+
+If you did not request this, you can safely ignore this email.
+  `.trim();
+
+  const body = `
+    <h2 style="margin-top: 0;">Reset your password</h2>
+
+    <p>Hi ${user.name},</p>
+
+    <p>You requested to reset your MarketFlow password.</p>
+
+    <p>
+      Click the button below to create a new password. This link will expire in
+      <strong>${expiresInMinutes} minutes</strong>.
+    </p>
+
+    <div style="margin: 24px 0;">
+      <a
+        href="${resetUrl}"
+        style="display: inline-block; background: #111827; color: white; padding: 12px 18px; border-radius: 8px; text-decoration: none; font-weight: bold;"
+      >
+        Reset Password
+      </a>
+    </div>
+
+    <p style="font-size: 14px; color: #6b7280;">
+      If the button does not work, copy and paste this link into your browser:
+    </p>
+
+    <p style="word-break: break-all; font-size: 14px; color: #374151;">
+      ${resetUrl}
+    </p>
+
+    <p>If you did not request this, you can safely ignore this email.</p>
+  `;
+
+  const html = buildBaseEmailLayout({
+    title: subject,
+    previewText: "Reset your MarketFlow password.",
+    body,
+  });
+
+  return {
+    subject,
+    text,
+    html,
+  };
+}
+
+export {
+  buildOrderConfirmationEmail,
+  buildOrderStatusUpdateEmail,
+  buildPasswordResetEmail,
+};

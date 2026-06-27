@@ -80,4 +80,69 @@ function validateLogin(body) {
   return errors;
 }
 
-export { validateRegister, validateLogin };
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function validateForgotPassword(body) {
+  const errors = [];
+  const allowedFields = ["email"];
+  const bodyKeys = Object.keys(body);
+
+  bodyKeys.forEach((key) => {
+    if (!allowedFields.includes(key)) {
+      errors.push(`${key} is not an allowed forgot password field`);
+    }
+  });
+
+  if (!isNonEmptyString(body.email)) {
+    errors.push("Email is required");
+  }
+
+  if (isNonEmptyString(body.email) && !isValidEmail(body.email)) {
+    errors.push("Valid email is required");
+  }
+
+  return errors;
+}
+
+function validateResetPassword(body) {
+  const errors = [];
+  const allowedFields = ["password", "confirmPassword"];
+  const bodyKeys = Object.keys(body);
+
+  bodyKeys.forEach((key) => {
+    if (!allowedFields.includes(key)) {
+      errors.push(`${key} is not an allowed reset password field`);
+    }
+  });
+
+  if (!isNonEmptyString(body.password)) {
+    errors.push("Password is required");
+  }
+
+  if (isNonEmptyString(body.password) && body.password.length < 8) {
+    errors.push("Password must be at least 8 characters");
+  }
+
+  if (!isNonEmptyString(body.confirmPassword)) {
+    errors.push("Confirm password is required");
+  }
+
+  if (
+    isNonEmptyString(body.password) &&
+    isNonEmptyString(body.confirmPassword) &&
+    body.password !== body.confirmPassword
+  ) {
+    errors.push("Password and confirm password do not match");
+  }
+
+  return errors;
+}
+
+export {
+  validateRegister,
+  validateLogin,
+  validateForgotPassword,
+  validateResetPassword,
+};
