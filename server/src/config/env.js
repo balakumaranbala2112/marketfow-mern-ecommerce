@@ -57,6 +57,14 @@ const env = {
     jwtAccessExpires: process.env.JWT_ACCESS_EXPIRES_IN || "1d",
   },
 
+  payment: {
+    razorpay: {
+      keyId: process.env.RAZORPAY_KEY_ID || "",
+      keySecret: process.env.RAZORPAY_KEY_SECRET || "",
+      currency: process.env.RAZORPAY_CURRENCY || "INR",
+    },
+  },
+
   isDevelopment: nodeEnv === "development",
   isTest: nodeEnv === "test",
   isProduction: nodeEnv === "production",

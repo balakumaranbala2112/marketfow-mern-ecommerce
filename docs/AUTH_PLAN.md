@@ -513,3 +513,22 @@ Payment security rules:
 - Payment signatures and raw provider responses should not be exposed in normal API responses.
 - Order stores paymentInfo for provider-level references.
 
+## Razorpay Payment Auth Rules
+
+Razorpay payment APIs:
+
+- POST /api/v1/payments/razorpay/create-order
+- POST /api/v1/payments/razorpay/verify
+
+Rules:
+
+- User must be authenticated.
+- Payment order is created from req.user._id cart.
+- User cannot send amount manually.
+- Backend calculates amount.
+- Backend creates Razorpay order.
+- Backend stores Razorpay order id in local order paymentInfo.
+- Backend verifies Razorpay signature before marking payment paid.
+- User can verify only their own local order.
+- Invalid signature marks payment as failed.
+
