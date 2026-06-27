@@ -158,8 +158,8 @@ function buildAppliedCoupon(cart) {
 
 async function reduceProductStock(productsToUpdate) {
   for (const item of productsToUpdate) {
-    item.product.stock == item.quantity;
-    await item.product.ave({ validatorBeforeSave: false });
+    item.product.stock -= item.quantity;
+    await item.product.save({ validateBeforeSave: false });
   }
 }
 
@@ -191,11 +191,13 @@ async function createRazorpayOrderFromCart(req, res, next) {
 
   const cartBuildResult = await buildOrderItemsFromCart(cart, next);
 
-  if (!cartBuildResult) return;
+  if (!cartBuildResult) {
+    return;
+  }
 
   const { orderItems, productsToUpdate, itemsPrice } = cartBuildResult;
 
-  const shippingPrice = calculateCartTotals(itemsPrice);
+  const shippingPrice = calculateShippingPrice(itemsPrice);
   const taxPrice = 0;
   const discountPrice = cart.discountPrice || 0;
   const totalPrice = itemsPrice + shippingPrice + taxPrice - discountPrice;
@@ -245,7 +247,7 @@ async function createRazorpayOrderFromCart(req, res, next) {
 
   await clearCart(cart);
 
-  const populateOrder = await populateOrder(order._id);
+  const populatedOrder = await populateOrder(order._id);
 
   return sendResponse(
     res,
@@ -343,6 +345,7 @@ async function verifyRazorpayPayment(req, res, next) {
       ),
     );
   }
+
   order.paymentStatus = "paid";
   order.paidAt = new Date();
   order.orderStatus =
@@ -363,7 +366,7 @@ async function verifyRazorpayPayment(req, res, next) {
   }
 
   const populatedOrder = await populateOrder(order._id);
-  
+
   return sendResponse(
     res,
     StatusCodes.OK,
