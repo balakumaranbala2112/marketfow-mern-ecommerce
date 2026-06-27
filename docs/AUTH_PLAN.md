@@ -532,3 +532,30 @@ Rules:
 - User can verify only their own local order.
 - Invalid signature marks payment as failed.
 
+## Razorpay Failure and Retry Auth Rules
+
+Payment failure and retry APIs:
+
+- POST /api/v1/payments/razorpay/failure
+- POST /api/v1/payments/razorpay/retry/:orderId
+
+Rules:
+
+- User must be authenticated.
+- User can mark failure only for their own online order.
+- User can retry only their own unpaid online order.
+- Paid orders cannot be retried.
+- Cancelled orders cannot be retried.
+- Retry must not reduce product stock again.
+
+Admin payment cleanup API:
+
+- PUT /api/v1/payments/admin/cleanup-pending-online-orders
+
+Rules:
+
+- Admin must be authenticated.
+- Admin role is required.
+- Cleanup restores stock only once.
+- Cleanup cancels expired unpaid online orders.
+

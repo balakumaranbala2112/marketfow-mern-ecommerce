@@ -231,6 +231,33 @@ const orderSchema = new Schema(
       default: () => ({}),
     },
 
+    paymentFailureReason: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
+    paymentRetryCount: {
+      type: Number,
+      min: [0, "Payment retry count cannot be negative"],
+      default: 0,
+    },
+
+    paymentExpiresAt: {
+      type: Date,
+      default: null,
+    },
+
+    stockRestoredAt: {
+      type: Date,
+      default: null,
+    },
+
+    cancelledAt: {
+      type: Date,
+      default: null,
+    },
+
     orderStatus: {
       type: String,
       enum: {

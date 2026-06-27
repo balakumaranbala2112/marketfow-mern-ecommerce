@@ -13,6 +13,13 @@ const allowedVerifyPaymentFields = [
   "razorpay_signature",
 ];
 
+const allowedFailureFields = [
+  "orderId",
+  "razorpay_order_id",
+  "razorpay_payment_id",
+  "reason",
+];
+
 const allowedShippingAddressFields = [
   "fullName",
   "phone",
@@ -113,4 +120,37 @@ function validateVerifyRazorpayPayment(body) {
   return errors;
 }
 
-export { validateCreateRazorpayOrder, validateVerifyRazorpayPayment };
+function validateRazorpayPaymentFailure(body) {
+  const errors = [];
+  const bodyKeys = Object.keys(body);
+
+  bodyKeys.forEach((key) => {
+    if (!allowedFailureFields.includes(key)) {
+      errors.push(`${key} is not an allowed payment failure field`);
+    }
+  });
+
+  if (!isNonEmptyString(body.orderId)) {
+    errors.push("Local orderId is required");
+  }
+
+  if (!isNonEmptyString(body.razorpay_order_id)) {
+    errors.push("razorpay_order_id is required");
+  }
+
+  if (!isOptionalString(body.razorpay_payment_id)) {
+    errors.push("razorpay_payment_id must be a string");
+  }
+
+  if (!isOptionalString(body.reason)) {
+    errors.push("reason must be a string");
+  }
+
+  return errors;
+}
+
+export {
+  validateCreateRazorpayOrder,
+  validateVerifyRazorpayPayment,
+  validateRazorpayPaymentFailure,
+};

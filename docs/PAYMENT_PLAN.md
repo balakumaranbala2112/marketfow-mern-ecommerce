@@ -101,3 +101,44 @@ Security rules:
 - Frontend must never decide payment success.
 - Backend verifies signature before marking payment as paid.
 - Failed signature verification must not fulfill the order.
+
+## Razorpay Failure, Retry, and Cleanup
+
+Implemented APIs:
+
+- POST /api/v1/payments/razorpay/failure
+- POST /api/v1/payments/razorpay/retry/:orderId
+- PUT /api/v1/payments/admin/cleanup-pending-online-orders
+
+Failure flow:
+
+1. User starts Razorpay payment.
+2. Razorpay payment fails or user closes Checkout.
+3. Frontend can call failure API.
+4. Backend marks paymentStatus as failed.
+5. Order remains pending so the user can retry.
+
+Retry flow:
+
+1. User retries an unpaid online order.
+2. Backend checks order belongs to user.
+3. Backend checks order is not paid or cancelled.
+4. Backend creates a new Razorpay order.
+5. Backend updates paymentInfo.providerOrderId.
+6. Backend does not reduce product stock again.
+
+Cleanup flow:
+
+1. Admin runs cleanup for expired pending online orders.
+2. Backend finds unpaid old online orders.
+3. Backend restores product stock only once.
+4. Backend marks paymentStatus as failed.
+5. Backend marks orderStatus as cancelled.
+6. Backend sets stockRestoredAt and cancelledAt.
+
+Future improvement:
+
+- Add Razorpay webhook endpoint for payment.captured and payment.failed.
+- Add scheduled cleanup job.
+- Add refund workflow.
+
