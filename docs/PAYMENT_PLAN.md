@@ -142,3 +142,28 @@ Future improvement:
 - Add scheduled cleanup job.
 - Add refund workflow.
 
+## Razorpay Webhook Foundation
+
+Implemented webhook API:
+
+- POST /api/v1/payments/razorpay/webhook
+
+Webhook rules:
+
+- Webhook route does not use JWT authentication.
+- Webhook route uses Razorpay signature verification.
+- Webhook route must receive the raw request body.
+- Webhook signature is verified using RAZORPAY_WEBHOOK_SECRET.
+- Duplicate webhook events are ignored using x-razorpay-event-id.
+- payment.captured marks local order as paid.
+- payment.failed marks local order as failed.
+- order.paid is handled through the payment entity when available.
+- Unsupported events are recorded as ignored.
+
+Important security rules:
+
+- Do not use express.json before webhook raw body parsing.
+- Do not expose webhook secret.
+- Do not trust webhook payload without signature verification.
+- Store webhook event ids for idempotency.
+

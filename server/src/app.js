@@ -20,6 +20,7 @@ import wishlistRoutes from "./routes/wishlist.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
+import paymentWebhookRoutes from "./routes/paymentWebhook.routes.js";
 
 const app = express();
 
@@ -28,6 +29,12 @@ app.use(
     origin: env.clientUrl,
     credentials: true,
   }),
+);
+
+app.use(
+  "/api/v1/payments/razorpay/webhook",
+  express.raw({ type: "application/json" }),
+  paymentWebhookRoutes,
 );
 
 app.use(express.json({ limit: "10kb" }));

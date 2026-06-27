@@ -559,3 +559,20 @@ Rules:
 - Cleanup restores stock only once.
 - Cleanup cancels expired unpaid online orders.
 
+## Razorpay Webhook Auth Rules
+
+Webhook API:
+
+- POST /api/v1/payments/razorpay/webhook
+
+Rules:
+
+- Webhook does not use JWT auth.
+- Razorpay authenticates webhook delivery using X-Razorpay-Signature.
+- Backend verifies signature using RAZORPAY_WEBHOOK_SECRET.
+- Webhook body must be raw request body during signature verification.
+- Missing signature returns 400.
+- Invalid signature returns 400.
+- Duplicate event id is ignored safely.
+- Webhook can update payment status only after signature verification.
+

@@ -7,8 +7,19 @@ import Cart from "../src/models/cart.model.js";
 import Order from "../src/models/order.model.js";
 import Review from "../src/models/review.model.js";
 import Wishlist from "../src/models/wishlist.model.js";
+import WebhookEvent from "../src/models/webhookEvent.model.js";
 
-const models = [User, Category, Product, Cart, Order, Review, Wishlist, Coupon];
+const models = [
+  User,
+  Category,
+  Product,
+  Cart,
+  Order,
+  Review,
+  Wishlist,
+  Coupon,
+  WebhookEvent,
+];
 
 console.log("Mongoose models loaded successfully:");
 

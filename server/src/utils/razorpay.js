@@ -7,10 +7,6 @@ function convertRupeesToPaise(amount) {
 }
 
 function safeCompare(valueA, valueB) {
-  if (typeof valueA !== "string" || typeof valueB !== "string") {
-    return false;
-  }
-
   const bufferA = Buffer.from(valueA);
   const bufferB = Buffer.from(valueB);
 
@@ -34,4 +30,17 @@ function verifyRazorpaySignature({
   return safeCompare(generatedSignature, razorpaySignature);
 }
 
-export { convertRupeesToPaise, verifyRazorpaySignature };
+function verifyRazorpayWebhookSignature({ rawBody, webhookSignature }) {
+  const generatedSignature = crypto
+    .createHmac("sha256", env.payment.razorpay.webhookSecret)
+    .update(rawBody)
+    .digest("hex");
+
+  return safeCompare(generatedSignature, webhookSignature);
+}
+
+export {
+  convertRupeesToPaise,
+  verifyRazorpaySignature,
+  verifyRazorpayWebhookSignature,
+};
