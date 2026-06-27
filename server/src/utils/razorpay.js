@@ -7,6 +7,10 @@ function convertRupeesToPaise(amount) {
 }
 
 function safeCompare(valueA, valueB) {
+  if (typeof valueA !== "string" || typeof valueB !== "string") {
+    return false;
+  }
+
   const bufferA = Buffer.from(valueA);
   const bufferB = Buffer.from(valueB);
 
