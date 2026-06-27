@@ -576,3 +576,19 @@ Rules:
 - Duplicate event id is ignored safely.
 - Webhook can update payment status only after signature verification.
 
+## Email Notification Rules
+
+Email notifications are internal backend side effects.
+
+Current email triggers:
+
+- Order confirmation email after COD order creation.
+- Order status update email after admin changes orderStatus.
+
+Rules:
+
+- Email sending must not break the main API response.
+- If email sending fails, the order API should still succeed.
+- SMTP credentials must stay in backend environment variables.
+- EMAIL_ENABLED controls whether emails are sent.
+- Controllers should call email service instead of creating SMTP transporters directly.

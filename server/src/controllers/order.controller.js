@@ -9,6 +9,11 @@ import AppError from "../utils/AppError.js";
 import calculateCartTotals from "../utils/calculateCartTotals.js";
 import sendResponse from "../utils/sendResponse.js";
 
+import {
+  sendOrderConfirmationEmail,
+  sendOrderStatusUpdateEmail,
+} from "../services/email.service.js";
+
 function getProductPrice(product) {
   return product.discountPrice ?? product.price;
 }
@@ -163,6 +168,8 @@ async function createOrderFromCart(req, res, next) {
 
   const populatedOrder = await populateOrder(Order.findById(order._id));
 
+  await sendOrderConfirmationEmail(populateOrder);
+
   return sendResponse(
     res,
     StatusCodes.CREATED,
@@ -257,6 +264,8 @@ async function updateOrderStatusForAdmin(req, res, next) {
     return next(new AppError(StatusCodes.NOT_FOUND, "Order not found"));
   }
 
+  const previousOrderStatus = order.orderStatus;
+
   if (order.orderStatus === "delivered" && orderStatus !== "delivered") {
     return next(
       new AppError(
@@ -295,6 +304,10 @@ async function updateOrderStatusForAdmin(req, res, next) {
   await order.save({ validateBeforeSave: true });
 
   const populatedOrder = await populateOrder(Order.findById(order._id));
+
+  if (previousOrderStatus !== populatedOrder.orderStatus) {
+    await sendOrderStatusUpdateEmail(populatedOrder, previousOrderStatus);
+  }
 
   return sendResponse(
     res,
