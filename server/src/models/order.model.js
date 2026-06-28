@@ -305,18 +305,8 @@ const orderSchema = new Schema(
     },
 
     coupon: {
-      code: {
-        type: String,
-        uppercase: true,
-        trim: true,
-        default: "",
-      },
-
-      discountAmount: {
-        type: Number,
-        min: [0, "Coupon discount cannot be negative"],
-        default: 0,
-      },
+      type: orderCouponSchema,
+      default: null,
     },
 
     paidAt: {

@@ -66,6 +66,20 @@ async function restoreOrderProductStock(order) {
   }
 }
 
+function buildAppliedCoupon(cart) {
+  if (!cart.coupon) {
+    return null;
+  }
+
+  return {
+    coupon: cart.coupon.coupon,
+    code: cart.coupon.code,
+    discountType: cart.coupon.discountType,
+    discountValue: cart.coupon.discountValue,
+    discountAmount: cart.discountPrice || 0,
+  };
+}
+
 async function createOrderFromCart(req, res, next) {
   const { shippingAddress, paymentMethod } = req.body;
 
@@ -135,7 +149,8 @@ async function createOrderFromCart(req, res, next) {
 
   const shippingPrice = calculateShippingPrice(itemsPrice);
   const taxPrice = 0;
-  const discountPrice = 0;
+  const appliedCoupon = buildAppliedCoupon(cart);
+  const discountPrice = appliedCoupon ? appliedCoupon.discountAmount : 0;
   const totalPrice = itemsPrice + shippingPrice + taxPrice - discountPrice;
 
   const order = await Order.create({
@@ -163,12 +178,13 @@ async function createOrderFromCart(req, res, next) {
   }
 
   cart.items = [];
+  cart.coupon = null;
   calculateCartTotals(cart);
   await cart.save();
 
   const populatedOrder = await populateOrder(Order.findById(order._id));
 
-  await sendOrderConfirmationEmail(populateOrder);
+  await sendOrderConfirmationEmail(populatedOrder);
 
   return sendResponse(
     res,

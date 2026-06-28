@@ -68,9 +68,18 @@ function authRateLimiter() {
 }
 
 function mongoSanitizeMiddleware() {
-  return mongoSanitize({
-    replaceWith: "_",
-  });
+  // Express 5 makes req.query a read-only getter, so the default
+  // express-mongo-sanitize middleware crashes when it tries to reassign it.
+  // We sanitize req.body and req.params manually instead.
+  return function (req, res, next) {
+    if (req.body) {
+      req.body = mongoSanitize.sanitize(req.body, { replaceWith: "_" });
+    }
+    if (req.params) {
+      req.params = mongoSanitize.sanitize(req.params, { replaceWith: "_" });
+    }
+    next();
+  };
 }
 
 function hppMiddleware() {

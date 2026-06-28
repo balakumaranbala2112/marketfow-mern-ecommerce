@@ -17,6 +17,7 @@ import couponRoutes from "./routes/coupon.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
 import paymentWebhookRoutes from "./routes/paymentWebhook.routes.js";
 import requestLogger from "./middlewares/requestLogger.middleware.js";
+import docsRoutes from "./routes/docs.routes.js";
 
 import notFound from "./middlewares/notFound.js";
 import errorHandler from "./middlewares/errorHandler.js";
@@ -70,6 +71,7 @@ app.use("/api/v1/wishlist", wishlistRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/coupons", couponRoutes);
 app.use("/api/v1/payments", paymentRoutes);
+app.use("/api-docs", docsRoutes);
 
 app.use(notFound);
 

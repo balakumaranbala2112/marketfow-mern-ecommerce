@@ -45,6 +45,7 @@ MarketFlow is a full-stack MERN e-commerce platform with customer shopping featu
 - Stage 39 completed: Category image upload and user avatar upload.
 - Stage 40 completed: Security hardening with Helmet, rate limits, sanitize, HPP, and CORS.
 - Stage 41 completed: Request logging and advanced error handling.
+- Stage 42 completed: API documentation with Swagger/OpenAPI.
 
 
 ## Tech Stack

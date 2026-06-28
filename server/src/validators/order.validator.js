@@ -100,12 +100,6 @@ function validateCreateOrder(body) {
     );
   }
 
-  if (body.paymentMethod === "online") {
-    errors.push(
-      "Online payment is planned but not enabled yet. Use cod for now.",
-    );
-  }
-
   return errors;
 }
 

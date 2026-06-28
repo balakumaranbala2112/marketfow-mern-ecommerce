@@ -709,3 +709,19 @@ Error handling:
 - Mongoose, JWT, and Multer errors are normalized into clean API responses.
 - unhandledRejection and uncaughtException are logged and shut down the server safely.
 
+
+## API Documentation Rules
+
+Swagger/OpenAPI docs:
+
+- GET /api-docs
+- GET /api-docs/openapi.json
+
+Rules:
+
+- API docs can be enabled or disabled using API_DOCS_ENABLED.
+- Swagger uses bearerAuth for protected routes.
+- Protected APIs must show Bearer JWT requirement.
+- Multipart upload routes must document exact file field names.
+- API docs should match real backend behavior.
+- In production, API docs may be disabled for security.

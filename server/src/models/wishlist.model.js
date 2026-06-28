@@ -25,10 +25,6 @@ const wishlistSchema = new Schema(
     timestamps: true,
   },
 );
-
-// One user should have only one wishlist document.
-wishlistSchema.index({ user: 1 }, { unique: true });
-
 const Wishlist = mongoose.model("Wishlist", wishlistSchema);
 
 export default Wishlist;

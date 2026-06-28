@@ -58,6 +58,10 @@ const env = {
   clientUrl: process.env.CLIENT_URL || "http://localhost:5173",
   apiVersion: process.env.API_VERSION || "v1",
 
+  docs: {
+    enabled: process.env.API_DOCS_ENABLED !== "false",
+  },
+
   mongo: {
     uri: process.env.MONGO_URI,
   },
