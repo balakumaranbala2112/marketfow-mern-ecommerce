@@ -43,6 +43,8 @@ MarketFlow is a full-stack MERN e-commerce platform with customer shopping featu
 - Stage 37 completed: Password reset flow with email reset token.
 - Stage 38 completed: Product image upload setup with Multer and Cloudinary.
 - Stage 39 completed: Category image upload and user avatar upload.
+- Stage 40 completed: Security hardening with Helmet, rate limits, sanitize, HPP, and CORS.
+
 
 
 ## Tech Stack

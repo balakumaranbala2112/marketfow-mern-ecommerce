@@ -665,3 +665,26 @@ Rules:
 - User has one avatar.
 - Replacing avatar deletes the old Cloudinary image.
 - Deleting avatar removes it from Cloudinary and database.
+
+## Security Hardening Rules
+
+Security middleware added:
+
+- Helmet
+- Global rate limiter
+- Auth rate limiter
+- Mongo sanitize
+- HPP protection
+- Strict CORS allowed origins
+
+Rules:
+
+- Only allowed origins can access the API from browsers.
+- Auth routes have stricter rate limits.
+- Global API routes have basic rate limits.
+- Dangerous MongoDB operator keys are sanitized before controllers.
+- Duplicate query parameters are controlled using HPP.
+- Helmet sets security-related HTTP headers.
+- Razorpay webhook route must stay before express.json because it requires raw body.
+- Security middleware does not replace validation, authentication, authorization, or ownership checks.
+

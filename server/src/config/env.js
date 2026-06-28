@@ -2,6 +2,17 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+function parseAllowedOrigins(value) {
+  if (!value) {
+    return [];
+  }
+
+  return value
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
+
 const requiredEnvVars = ["MONGO_URI"];
 
 function checkRequiredEnvVars() {
@@ -86,6 +97,26 @@ const env = {
     categoryFolder:
       process.env.CLOUDINARY_CATEGORY_FOLDER || "marketflow/categories",
     avatarFolder: process.env.CLOUDINARY_AVATAR_FOLDER || "marketflow/avatars",
+  },
+
+  security: {
+    corsAllowedOrigins: parseAllowedOrigins(
+      process.env.CORS_ALLOWED_ORIGINS || process.env.CLIENT_URL,
+    ),
+
+    globalRateLimit: {
+      windowMs:
+        (Number(process.env.GLOBAL_RATE_LIMIT_WINDOW_MINUTES) || 15) *
+        60 *
+        1000,
+      max: Number(process.env.GLOBAL_RATE_LIMIT_MAX_REQUESTS) || 500,
+    },
+
+    authRateLimit: {
+      windowMs:
+        (Number(process.env.AUTH_RATE_LIMIT_WINDOW_MINUTES) || 15) * 60 * 1000,
+      max: Number(process.env.AUTH_RATE_LIMIT_MAX_REQUESTS) || 20,
+    },
   },
 
   isDevelopment: nodeEnv === "development",
