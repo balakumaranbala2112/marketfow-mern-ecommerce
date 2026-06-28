@@ -1,48 +1,34 @@
 import app from "./src/app.js";
 import env from "./src/config/env.js";
-import { connectDB, disconnectDB } from "./src/config/db.js";
+import { connectDB } from "./src/config/db.js";
+import logger from "./src/config/logger.js";
 
 let server;
+
+process.on("uncaughtException", (err) => {
+  logger.error("UNCAUGHT EXCEPTION. Shutting down...", err);
+  process.exit(1);
+});
 
 async function startServer() {
   await connectDB();
 
-  // Start accepting requests only after database connection succeeds.
   server = app.listen(env.port, () => {
-    console.log(`MarketFlow API running on http://localhost:${env.port}`);
-    console.log(`Environment: ${env.nodeEnv}`);
-  });
-
-  server.on("error", (err) => {
-    console.error("Server startup error:", err.message);
-    process.exit(1);
+    logger.info(`MarketFlow API running on http://localhost:${env.port}`);
+    logger.info(`Environment: ${env.nodeEnv}`);
   });
 }
 
-function shutdown(signal) {
-  console.log(`${signal} received. Shutting down gracefully...`);
+startServer().catch((err) => {
+  logger.error("Server startup failed", err);
+  process.exit(1);
+});
 
-  if (!server) {
-    process.exit(0);
-  }
-
-  // Stop HTTP server first, then close database connection.
-  server.close(async () => {
-    console.log("HTTP server closed.");
-    await disconnectDB();
-    process.exit(0);
-  });
-}
-
-process.on("SIGINT", shutdown);
-process.on("SIGTERM", shutdown);
-
-process.on("unhandledRejection", (reason) => {
-  console.error("Unhandled rejection:", reason);
+process.on("unhandledRejection", (err) => {
+  logger.error("UNHANDLED REJECTION. Shutting down...", err);
 
   if (server) {
-    server.close(async () => {
-      await disconnectDB();
+    server.close(() => {
       process.exit(1);
     });
   } else {
@@ -50,9 +36,12 @@ process.on("unhandledRejection", (reason) => {
   }
 });
 
-process.on("uncaughtException", (err) => {
-  console.error("Uncaught exception:", err);
-  process.exit(1);
-});
+process.on("SIGTERM", () => {
+  logger.info("SIGTERM received. Shutting down gracefully.");
 
-startServer();
+  if (server) {
+    server.close(() => {
+      logger.info("Process terminated.");
+    });
+  }
+});

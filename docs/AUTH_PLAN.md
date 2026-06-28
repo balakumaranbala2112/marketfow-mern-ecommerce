@@ -688,3 +688,24 @@ Rules:
 - Razorpay webhook route must stay before express.json because it requires raw body.
 - Security middleware does not replace validation, authentication, authorization, or ownership checks.
 
+## Request Logging and Error Handling Rules
+
+Logging:
+
+- Morgan logs HTTP requests.
+- Winston handles application logs.
+- Development logs go to console.
+- Production can write error and combined logs to files.
+- Sensitive data like passwords, tokens, API secrets, and payment secrets must not be logged.
+
+Error handling:
+
+- Controllers should pass errors to next().
+- asyncHandler catches rejected promises.
+- Global error handler must be mounted after all routes.
+- Development error responses can include stack trace.
+- Production error responses must hide unknown/internal errors.
+- Operational errors can show safe messages.
+- Mongoose, JWT, and Multer errors are normalized into clean API responses.
+- unhandledRejection and uncaughtException are logged and shut down the server safely.
+

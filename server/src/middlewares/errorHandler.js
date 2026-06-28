@@ -1,64 +1,56 @@
 import env from "../config/env.js";
+import logger from "../config/logger.js";
 import StatusCodes from "../constants/statusCodes.js";
+import { normalizeError } from "../utils/errorHelpers.js";
+
+function sendErrorDev(err, res) {
+  return res.status(err.statusCode).json({
+    success: false,
+    status: err.status,
+    message: err.message,
+    errors: err.errors,
+    stack: err.stack,
+    error: err,
+  });
+}
+
+function sendErrorProd(err, res) {
+  if (err.isOperational) {
+    return res.status(err.statusCode).json({
+      success: false,
+      status: err.status,
+      message: err.message,
+      errors: err.errors,
+    });
+  }
+
+  return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+    success: false,
+    status: "error",
+    message: "Something went wrong",
+  });
+}
 
 function errorHandler(err, req, res, next) {
-  if (res.headersSent) {
-    return next(err);
-  }
+  let error = normalizeError(err);
 
-  if (err.name === "CastError") {
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      success: false,
-      message: "Invalid ID format",
-      errors: [`Invalid ${err.path}: ${err.value}`],
-      ...(env.isDevelopment && { stack: err.stack }),
-    });
-  }
+  error.statusCode = error.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
+  error.status = error.status || "error";
+  error.errors = error.errors || [];
 
-  if (err.name === "ValidationError") {
-    const errors = Object.values(err.errors).map((error) => error.message);
-
-    return res.status(StatusCodes.BAD_REQUEST).json({
-      success: false,
-      message: "Validation failed",
-      errors,
-      ...(env.isDevelopment && { stack: err.stack }),
-    });
-  }
-
-  if (err.code === 11000) {
-    const fields = Object.keys(err.keyValue || {});
-    const errors = fields.map((field) => `${field} already exists`);
-
-    return res.status(StatusCodes.CONFLICT).json({
-      success: false,
-      message: "Duplicate field value",
-      errors,
-      ...(env.isDevelopment && { stack: err.stack }),
-    });
-  }
-
-  const statusCode =
-    err.statusCode || err.status || StatusCodes.INTERNAL_SERVER_ERROR;
-
-  if (statusCode >= StatusCodes.INTERNAL_SERVER_ERROR) {
-    console.error(err);
-  }
-
-  const response = {
-    success: false,
-    message:
-      statusCode >= StatusCodes.INTERNAL_SERVER_ERROR
-        ? "Internal server error"
-        : err.message,
-    errors: err.details || null,
-  };
+  logger.error(
+    `${req.method} ${req.originalUrl} ${error.statusCode} - ${error.message}`,
+    {
+      stack: error.stack,
+      errors: error.errors,
+    },
+  );
 
   if (env.isDevelopment) {
-    response.stack = err.stack;
+    return sendErrorDev(error, res);
   }
 
-  return res.status(statusCode).json(response);
+  return sendErrorProd(error, res);
 }
 
 export default errorHandler;

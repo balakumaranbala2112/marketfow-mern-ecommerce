@@ -16,6 +16,7 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
 import paymentWebhookRoutes from "./routes/paymentWebhook.routes.js";
+import requestLogger from "./middlewares/requestLogger.middleware.js";
 
 import notFound from "./middlewares/notFound.js";
 import errorHandler from "./middlewares/errorHandler.js";
@@ -38,6 +39,8 @@ if (env.isProduction) {
 app.use(cors(buildCorsOptions()));
 
 app.use(helmetMiddleware());
+
+app.use(requestLogger());
 
 app.use(
   "/api/v1/payments/razorpay/webhook",

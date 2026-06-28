@@ -1,8 +1,6 @@
-function asyncHandler(controller) {
+function asyncHandler(fn) {
   return function (req, res, next) {
-    Promise.resolve()
-      .then(() => controller(req, res, next))
-      .catch((err) => next(err));
+    Promise.resolve(fn(req, res, next)).catch(next);
   };
 }
 
