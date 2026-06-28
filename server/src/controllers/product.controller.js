@@ -1,3 +1,10 @@
+import mongoose from "mongoose";
+
+import {
+  deleteImageFromCloudinary,
+  uploadProductImageFile,
+} from "../services/cloudinary.service.js";
+
 import Category from "../models/category.model.js";
 import Product from "../models/product.model.js";
 
@@ -7,6 +14,16 @@ import createSlug from "../utils/createSlug.js";
 import removeUndefinedFields from "../utils/removeUndefinedFields.js";
 import sendResponse from "../utils/sendResponse.js";
 import ApiFeatures from "../utils/ApiFeatures.js";
+
+function validateProductId(productId, next) {
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    next(new AppError(StatusCodes.BAD_REQUEST, "Valid productId is required"));
+
+    return false;
+  }
+
+  return true;
+}
 
 async function createProduct(req, res, next) {
   const {
@@ -223,10 +240,104 @@ async function deleteProduct(req, res, next) {
   );
 }
 
+async function uploadProductImagesController(req, res, next) {
+  const { productId } = req.params;
+
+  if (!validateProductId(productId, next)) {
+    return;
+  }
+
+  if (!req.files || req.files.length === 0) {
+    return next(
+      new AppError(
+        StatusCodes.BAD_REQUEST,
+        "At least one product image is required",
+      ),
+    );
+  }
+
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "Product not found"));
+  }
+
+  const currentImageCount = product.images.length;
+  const newImageCount = req.files.length;
+  const maxProductImages = 5;
+
+  if (currentImageCount + newImageCount > maxProductImages) {
+    return next(
+      new AppError(
+        StatusCodes.BAD_REQUEST,
+        `Product can have maximum ${maxProductImages} images`,
+      ),
+    );
+  }
+
+  const uploadedImages = [];
+
+  for (const file of req.files) {
+    const uploadedImage = await uploadProductImageFile(file, product._id);
+    uploadedImages.push(uploadedImage);
+  }
+
+  product.images.push(...uploadedImages);
+
+  await product.save();
+
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "Product images uploaded successfully",
+    product,
+  );
+}
+
+async function deleteProductImageController(req, res, next) {
+  const { productId } = req.params;
+  const { publicId } = req.body;
+
+  if (!validateProductId(productId, next)) {
+    return;
+  }
+
+  const product = await Product.findById(productId);
+
+  if (!product) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "Product not found"));
+  }
+
+  const imageExists = product.images.some((image) => {
+    return image.publicId === publicId;
+  });
+
+  if (!imageExists) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "Product image not found"));
+  }
+
+  await deleteImageFromCloudinary(publicId);
+
+  product.images = product.images.filter((image) => {
+    return image.publicId !== publicId;
+  });
+
+  await product.save();
+
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "Product image deleted successfully",
+    product,
+  );
+}
+
 export {
   createProduct,
   getAllProducts,
   getProductById,
   updateProduct,
   deleteProduct,
+  uploadProductImagesController,
+  deleteProductImageController,
 };

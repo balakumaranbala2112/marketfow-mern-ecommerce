@@ -12,6 +12,8 @@ import {
   getAllProducts,
   getProductById,
   updateProduct,
+  deleteProductImageController,
+  uploadProductImagesController,
 } from "../controllers/product.controller.js";
 
 import {
@@ -20,6 +22,10 @@ import {
 } from "../validators/product.validator.js";
 
 import validateProductQuery from "../validators/productQuery.validator.js";
+
+import { uploadProductImages } from "../middlewares/upload.middleware.js";
+
+import { validateDeleteProductImage } from "../validators/upload.validator.js";
 
 const router = express.Router();
 
@@ -43,5 +49,21 @@ router
     asyncHandler(updateProduct),
   )
   .delete(protect, authorizeRoles(Roles.ADMIN), asyncHandler(deleteProduct));
+
+router.post(
+  "/:productId/images",
+  protect,
+  authorizeRoles(Roles.ADMIN),
+  uploadProductImages.array("images", 5),
+  asyncHandler(uploadProductImagesController),
+);
+
+router.delete(
+  "/:productId/images",
+  protect,
+  authorizeRoles(Roles.ADMIN),
+  validateRequest(validateDeleteProductImage),
+  asyncHandler(deleteProductImageController),
+);
 
 export default router;

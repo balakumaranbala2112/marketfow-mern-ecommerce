@@ -80,10 +80,6 @@ function validateLogin(body) {
   return errors;
 }
 
-function isValidEmail(value) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
 function validateForgotPassword(body) {
   const errors = [];
   const allowedFields = ["email"];

@@ -77,6 +77,14 @@ const env = {
     fromAddress: process.env.EMAIL_FROM_ADDRESS || "no-reply@marketflow.com",
   },
 
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
+    apiKey: process.env.CLOUDINARY_API_KEY || "",
+    apiSecret: process.env.CLOUDINARY_API_SECRET || "",
+    productFolder:
+      process.env.CLOUDINARY_PRODUCT_FOLDER || "marketflow/products",
+  },
+
   isDevelopment: nodeEnv === "development",
   isTest: nodeEnv === "test",
   isProduction: nodeEnv === "production",

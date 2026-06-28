@@ -614,3 +614,23 @@ Rules:
 - Old JWT tokens become invalid after password reset.
 - Blocked users cannot reset password.
 
+## Product Image Upload Rules
+
+Product image APIs:
+
+- POST /api/v1/products/:productId/images
+- DELETE /api/v1/products/:productId/images
+
+Rules:
+
+- Admin must be authenticated.
+- Admin role is required.
+- Product images are uploaded using multipart/form-data.
+- Field name must be images.
+- Only jpeg, jpg, png, and webp images are allowed.
+- Image size is limited.
+- Uploaded images are stored in Cloudinary.
+- Product stores image url and Cloudinary publicId.
+- publicId is required to delete image from Cloudinary.
+- Customers cannot upload or delete product images.
+

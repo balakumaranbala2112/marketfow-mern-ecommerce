@@ -41,6 +41,7 @@ MarketFlow is a full-stack MERN e-commerce platform with customer shopping featu
 - Stage 35 completed: Razorpay webhook foundation and secure signature verification.
 - Stage 36 completed: Email notification setup with Nodemailer.
 - Stage 37 completed: Password reset flow with email reset token.
+- Stage 38 completed: Product image upload setup with Multer and Cloudinary.
 
 
 ## Tech Stack
