@@ -25,7 +25,7 @@ function imageFileFilter(req, file, cb) {
   cb(null, true);
 }
 
-const uploadProductImages = multer({
+const imageUpload = multer({
   storage,
   fileFilter: imageFileFilter,
   limits: {
@@ -34,4 +34,8 @@ const uploadProductImages = multer({
   },
 });
 
-export { uploadProductImages };
+const uploadProductImages = imageUpload;
+const uploadCategoryImage = imageUpload;
+const uploadUserAvatar = imageUpload;
+
+export { uploadProductImages, uploadCategoryImage, uploadUserAvatar };

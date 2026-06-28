@@ -10,6 +10,8 @@ import {
   getUserByIdForAdmin,
   unblockUserForAdmin,
   updateMyProfile,
+  deleteMyAvatar,
+  uploadMyAvatar,
 } from "../controllers/user.controller.js";
 
 import { authorizeRoles, protect } from "../middlewares/auth.middleware.js";
@@ -21,6 +23,8 @@ import {
   validateChangePassword,
   validateUpdateProfile,
 } from "../validators/user.validator.js";
+
+import { uploadUserAvatar } from "../middlewares/upload.middleware.js";
 
 const router = express.Router();
 
@@ -51,6 +55,15 @@ router.put(
   authorizeRoles(Roles.ADMIN),
   asyncHandler(unblockUserForAdmin),
 );
+
+router.post(
+  "/avatar",
+  protect,
+  uploadUserAvatar.single("avatar"),
+  asyncHandler(uploadMyAvatar),
+);
+
+router.delete("/avatar", protect, asyncHandler(deleteMyAvatar));
 
 router
   .route("/profile")

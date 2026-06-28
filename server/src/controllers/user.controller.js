@@ -10,6 +10,11 @@ import sanitizeUser from "../utils/sanitizeUser.js";
 import sendResponse from "../utils/sendResponse.js";
 import { signAccessToken } from "../utils/token.js";
 
+import {
+  deleteImageFromCloudinary,
+  uploadUserAvatarFile,
+} from "../services/cloudinary.service.js";
+
 function buildPasswordChangeResponse(user) {
   const accessToken = signAccessToken({
     userId: user._id.toString(),
@@ -39,12 +44,11 @@ async function getMyProfile(req, res) {
 }
 
 async function updateMyProfile(req, res, next) {
-  const { name, phone, avatar } = req.body;
+  const { name, phone } = req.body;
 
   let updateData = {
     name: name !== undefined ? name.trim() : undefined,
     phone: phone !== undefined ? phone.trim() : undefined,
-    avatar,
   };
 
   updateData = removeUndefinedFields(updateData);
@@ -215,6 +219,60 @@ async function unblockUserForAdmin(req, res, next) {
   });
 }
 
+async function uploadMyAvatar(req, res, next) {
+  if (!req.file) {
+    return next(
+      new AppError(StatusCodes.BAD_REQUEST, "Avatar image is required"),
+    );
+  }
+
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "User account not found"));
+  }
+
+  if (user.avatar?.publicId) {
+    await deleteImageFromCloudinary(user.avatar.publicId);
+  }
+
+  const uploadedAvatar = await uploadUserAvatarFile(req.file, user._id);
+
+  user.avatar = uploadedAvatar;
+
+  await user.save({ validateBeforeSave: false });
+
+  return sendResponse(res, StatusCodes.OK, "Avatar uploaded successfully", {
+    user: sanitizeUser(user),
+  });
+}
+
+async function deleteMyAvatar(req, res, next) {
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "User account not found"));
+  }
+
+  if (!user.avatar?.publicId) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "Avatar image not found"));
+  }
+
+  await deleteImageFromCloudinary(user.avatar.publicId);
+
+  user.avatar = {
+    url: "",
+    publicId: "",
+    alt: "",
+  };
+
+  await user.save({ validateBeforeSave: false });
+
+  return sendResponse(res, StatusCodes.OK, "Avatar deleted successfully", {
+    user: sanitizeUser(user),
+  });
+}
+
 export {
   getMyProfile,
   updateMyProfile,
@@ -223,4 +281,6 @@ export {
   getUserByIdForAdmin,
   blockUserForAdmin,
   unblockUserForAdmin,
+  uploadMyAvatar,
+  deleteMyAvatar,
 };

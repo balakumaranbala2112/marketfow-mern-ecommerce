@@ -19,7 +19,6 @@ function uploadBufferToCloudinary(fileBuffer, options = {}) {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
-        folder: env.cloudinary.productFolder,
         resource_type: "image",
         ...options,
       },
@@ -37,17 +36,42 @@ function uploadBufferToCloudinary(fileBuffer, options = {}) {
   });
 }
 
-async function uploadProductImageFile(file, productId) {
-  const result = await uploadBufferToCloudinary(file.buffer, {
-    public_id: `${productId}-${Date.now()}`,
-    overwrite: false,
-  });
-
+function buildImageObject(result, file) {
   return {
     url: result.secure_url,
     publicId: result.public_id,
     alt: file.originalname,
   };
+}
+
+async function uploadProductImageFile(file, productId) {
+  const result = await uploadBufferToCloudinary(file.buffer, {
+    folder: env.cloudinary.productFolder,
+    public_id: `${productId}-${Date.now()}`,
+    overwrite: false,
+  });
+
+  return buildImageObject(result, file);
+}
+
+async function uploadCategoryImageFile(file, categoryId) {
+  const result = await uploadBufferToCloudinary(file.buffer, {
+    folder: env.cloudinary.categoryFolder,
+    public_id: `${categoryId}-${Date.now()}`,
+    overwrite: false,
+  });
+
+  return buildImageObject(result, file);
+}
+
+async function uploadUserAvatarFile(file, userId) {
+  const result = await uploadBufferToCloudinary(file.buffer, {
+    folder: env.cloudinary.avatarFolder,
+    public_id: `${userId}-${Date.now()}`,
+    overwrite: false,
+  });
+
+  return buildImageObject(result, file);
 }
 
 async function deleteImageFromCloudinary(publicId) {
@@ -75,6 +99,8 @@ async function deleteManyImagesFromCloudinary(publicIds) {
 
 export {
   uploadProductImageFile,
+  uploadCategoryImageFile,
+  uploadUserAvatarFile,
   deleteImageFromCloudinary,
   deleteManyImagesFromCloudinary,
 };

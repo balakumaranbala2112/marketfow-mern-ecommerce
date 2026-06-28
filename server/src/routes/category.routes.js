@@ -19,7 +19,11 @@ import {
   getAllCategories,
   getCategoryById,
   updateCategory,
+  deleteCategoryImageController,
+  uploadCategoryImageController,
 } from "../controllers/category.controller.js";
+
+import { uploadCategoryImage } from "../middlewares/upload.middleware.js";
 
 const router = express.Router();
 
@@ -46,5 +50,20 @@ router
     asyncHandler(updateCategory),
   )
   .delete(protect, authorizeRoles(Roles.ADMIN), asyncHandler(deleteCategory));
+
+router.post(
+  "/:categoryId/image",
+  protect,
+  authorizeRoles(Roles.ADMIN),
+  uploadCategoryImage.single("image"),
+  asyncHandler(uploadCategoryImageController),
+);
+
+router.delete(
+  "/:categoryId/image",
+  protect,
+  authorizeRoles(Roles.ADMIN),
+  asyncHandler(deleteCategoryImageController),
+);
 
 export default router;

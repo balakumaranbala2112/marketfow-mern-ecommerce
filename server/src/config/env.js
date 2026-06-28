@@ -83,6 +83,9 @@ const env = {
     apiSecret: process.env.CLOUDINARY_API_SECRET || "",
     productFolder:
       process.env.CLOUDINARY_PRODUCT_FOLDER || "marketflow/products",
+    categoryFolder:
+      process.env.CLOUDINARY_CATEGORY_FOLDER || "marketflow/categories",
+    avatarFolder: process.env.CLOUDINARY_AVATAR_FOLDER || "marketflow/avatars",
   },
 
   isDevelopment: nodeEnv === "development",

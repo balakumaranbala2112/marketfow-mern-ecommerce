@@ -1,3 +1,10 @@
+import mongoose from "mongoose";
+
+import {
+  deleteImageFromCloudinary,
+  uploadCategoryImageFile,
+} from "../services/cloudinary.service.js";
+
 import Category from "../models/category.model.js";
 import Product from "../models/product.model.js";
 
@@ -7,6 +14,16 @@ import AppError from "../utils/AppError.js";
 import createSlug from "../utils/createSlug.js";
 import removeUndefinedFields from "../utils/removeUndefinedFields.js";
 import sendResponse from "../utils/sendResponse.js";
+
+function validateCategoryId(categoryId, next) {
+  if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+    next(new AppError(StatusCodes.BAD_REQUEST, "Valid categoryId is required"));
+
+    return false;
+  }
+
+  return true;
+}
 
 async function createCategory(req, res) {
   const { name, description, image, isActive } = req.body;
@@ -141,10 +158,86 @@ async function deleteCategory(req, res, next) {
   );
 }
 
+async function uploadCategoryImageController(req, res, next) {
+  const { categoryId } = req.params;
+
+  if (!validateCategoryId(categoryId, next)) {
+    return;
+  }
+
+  if (!req.file) {
+    return next(
+      new AppError(StatusCodes.BAD_REQUEST, "Category image is required"),
+    );
+  }
+
+  const category = await Category.findById(categoryId);
+
+  if (!category) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "Category not found"));
+  }
+
+  if (category.image?.publicId) {
+    await deleteImageFromCloudinary(category.image.publicId);
+  }
+
+  const uploadedImage = await uploadCategoryImageFile(req.file, category._id);
+
+  category.image = uploadedImage;
+
+  await category.save();
+
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "Category image uploaded successfully",
+    category,
+  );
+}
+
+async function deleteCategoryImageController(req, res, next) {
+  const { categoryId } = req.params;
+
+  if (!validateCategoryId(categoryId, next)) {
+    return;
+  }
+
+  const category = await Category.findById(categoryId);
+
+  if (!category) {
+    return next(new AppError(StatusCodes.NOT_FOUND, "Category not found"));
+  }
+
+  if (!category.image?.publicId) {
+    return next(
+      new AppError(StatusCodes.NOT_FOUND, "Category image not found"),
+    );
+  }
+
+  await deleteImageFromCloudinary(category.image.publicId);
+
+  category.image = {
+    url: "",
+    publicId: "",
+    alt: "",
+  };
+
+  await category.save();
+
+  return sendResponse(
+    res,
+    StatusCodes.OK,
+    "Category image deleted successfully",
+    category,
+  );
+}
+
 export {
   createCategory,
   getAllCategories,
   getCategoryById,
   updateCategory,
   deleteCategory,
+  uploadCategoryImageController,
+  deleteCategoryImageController,
 };

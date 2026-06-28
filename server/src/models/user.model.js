@@ -10,11 +10,18 @@ const imageSchema = new Schema(
   {
     url: {
       type: String,
+      trim: true,
       default: "",
     },
 
     publicId: {
       type: String,
+      trim: true,
+      default: "",
+    },
+    alt: {
+      type: String,
+      trim: true,
       default: "",
     },
   },
@@ -132,7 +139,9 @@ userSchema.methods.changePasswordAfter = function (jwtIssuedAt) {
     return false;
   }
 
-  const passwordChangedTimestamp = Math.floor(this.passwordChangedAt.getTime() / 1000);
+  const passwordChangedTimestamp = Math.floor(
+    this.passwordChangedAt.getTime() / 1000,
+  );
 
   return jwtIssuedAt < passwordChangedTimestamp;
 };

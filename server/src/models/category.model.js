@@ -6,11 +6,18 @@ const imageSchema = new Schema(
   {
     url: {
       type: String,
+      trim: true,
       default: "",
     },
 
     publicId: {
       type: String,
+      trim: true,
+      default: "",
+    },
+    alt: {
+      type: String,
+      trim: true,
       default: "",
     },
   },

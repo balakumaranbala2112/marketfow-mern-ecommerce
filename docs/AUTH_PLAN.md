@@ -634,3 +634,34 @@ Rules:
 - publicId is required to delete image from Cloudinary.
 - Customers cannot upload or delete product images.
 
+## Category Image and User Avatar Upload Rules
+
+Category image APIs:
+
+- POST /api/v1/categories/:categoryId/image
+- DELETE /api/v1/categories/:categoryId/image
+
+Rules:
+
+- Admin must be authenticated.
+- Admin role is required.
+- Category image upload uses multipart/form-data.
+- Field name must be image.
+- Category has one image.
+- Replacing category image deletes the old Cloudinary image.
+- Deleting category image removes it from Cloudinary and database.
+
+User avatar APIs:
+
+- POST /api/v1/users/avatar
+- DELETE /api/v1/users/avatar
+
+Rules:
+
+- User must be authenticated.
+- User can upload only their own avatar.
+- Avatar upload uses multipart/form-data.
+- Field name must be avatar.
+- User has one avatar.
+- Replacing avatar deletes the old Cloudinary image.
+- Deleting avatar removes it from Cloudinary and database.
