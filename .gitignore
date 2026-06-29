@@ -11,8 +11,13 @@ build/
 server/.env
 client/.env
 
+# Logs
+*.log
+logs/
+server/logs/
+
+# Test coverage
+coverage/
+
 # macOS system files
 .DS_Store
-
-logs/*.log
-server/logs/*.log
