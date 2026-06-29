@@ -725,3 +725,13 @@ Rules:
 - Multipart upload routes must document exact file field names.
 - API docs should match real backend behavior.
 - In production, API docs may be disabled for security.
+
+## API Documentation
+
+Swagger UI:
+
+http://localhost:5000/api-docs
+
+OpenAPI JSON:
+
+http://localhost:5000/api-docs/openapi.json

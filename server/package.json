@@ -11,7 +11,9 @@
     "indexes:products": "node scripts/listIndexes.js",
     "test:password": "node scripts/testPasswordHash.js",
     "seed:admin": "node scripts/seedAdmin.js",
-    "test:email": "node scripts/testEmail.js"
+    "test:email": "node scripts/testEmail.js",
+    "seed": "node scripts/seed.js",
+    "seed:fresh": "node scripts/seed.js --fresh"
   },
   "keywords": [],
   "author": "",
