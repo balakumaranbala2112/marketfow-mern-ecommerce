@@ -55,6 +55,7 @@ MarketFlow is a full-stack MERN e-commerce platform with customer shopping featu
 - Stage 49: Pending...
 - Stage 50: Pending...
 - Stage 51 completed: Frontend setup completed with React, Vite, Tailwind CSS, and base client structure.
+- Stage 52 completed: Frontend folder structure and routing setup completed with React Router layouts and protected route placeholders.
 
 ## Tech Stack
 
