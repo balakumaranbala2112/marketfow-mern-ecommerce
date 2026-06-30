@@ -1,7 +1,7 @@
 import axios from "axios";
 
 import config from "./config.js";
-import normalizeApiError from "./apiError.js";
+import { normalizeApiError } from "./apiError.js";
 
 const apiClient = axios.create({
   baseURL: config.apiUrl,
