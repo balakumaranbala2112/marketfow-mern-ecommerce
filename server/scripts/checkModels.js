@@ -7,6 +7,7 @@ import Cart from "../src/models/cart.model.js";
 import Order from "../src/models/order.model.js";
 import Review from "../src/models/review.model.js";
 import Wishlist from "../src/models/wishlist.model.js";
+import Coupon from "../src/models/coupon.model.js";
 import WebhookEvent from "../src/models/webhookEvent.model.js";
 
 const models = [

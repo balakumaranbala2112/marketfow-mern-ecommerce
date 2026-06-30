@@ -57,13 +57,46 @@ function generateSKU(prefix, index) {
   return `${prefix}-${String(index).padStart(4, "0")}`;
 }
 
-// ── Placeholder image helper (via placeholder services) ───
-function placeholderImage(label, width = 600, height = 600) {
-  const text = encodeURIComponent(label);
+const categoryImages = {
+  "Electronics": "https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=600&q=80",
+  "Fashion": "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=600&q=80",
+  "Home & Kitchen": "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=600&q=80",
+  "Books": "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=600&q=80",
+  "Sports & Fitness": "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=600&q=80",
+  "Beauty & Personal Care": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=600&q=80",
+  "Toys & Games": "https://images.unsplash.com/photo-1531525645387-7f14be1bdbbd?auto=format&fit=crop&w=600&q=80",
+  "Groceries": "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80"
+};
+
+const productImages = {
+  "iPhone 15 Pro Max 256GB": "https://images.unsplash.com/photo-1695048133142-1a20484d2569?auto=format&fit=crop&w=600&q=80",
+  "Samsung Galaxy S24 Ultra": "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?auto=format&fit=crop&w=600&q=80",
+  "Sony WH-1000XM5 Headphones": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80",
+  "MacBook Air M3 13-inch": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80",
+  "Classic Fit Oxford Shirt": "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=600&q=80",
+  "Men's Running Sneakers Pro": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80",
+  "Women's Silk Saree – Royal Blue": "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=600&q=80",
+  "Instant Pot Duo 7-in-1 Cooker": "https://images.unsplash.com/photo-1585238342024-78d387f4a707?auto=format&fit=crop&w=600&q=80",
+  "Dyson V15 Detect Vacuum": "https://images.unsplash.com/photo-1558317374-067fb5f30001?auto=format&fit=crop&w=600&q=80",
+  "Ceramic Non-Stick Cookware Set": "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?auto=format&fit=crop&w=600&q=80",
+  "Atomic Habits by James Clear": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
+  "The Psychology of Money": "https://images.unsplash.com/photo-1592492159418-09f31332c52d?auto=format&fit=crop&w=600&q=80",
+  "Adjustable Dumbbell Set 24kg": "https://images.unsplash.com/photo-1638536532686-d610adfc8e5c?auto=format&fit=crop&w=600&q=80",
+  "Yoga Mat – Premium 6mm": "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?auto=format&fit=crop&w=600&q=80",
+  "Smart Fitness Band Pro": "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?auto=format&fit=crop&w=600&q=80",
+  "Vitamin C Serum – 30ml": "https://images.unsplash.com/photo-1608248597481-496100c8c836?auto=format&fit=crop&w=600&q=80",
+  "Hair Dryer Professional 2200W": "https://images.unsplash.com/photo-1522337360788-8b13edd793be?auto=format&fit=crop&w=600&q=80",
+  "LEGO Creator 3-in-1 Space Shuttle": "https://images.unsplash.com/photo-1585366119957-e5733f3c7f76?auto=format&fit=crop&w=600&q=80",
+  "Chess Set – Wooden Premium": "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=600&q=80"
+};
+
+function getRealOrPlaceholderImage(name, type = "product") {
+  const map = type === "category" ? categoryImages : productImages;
+  const url = map[name] || `https://placehold.co/600x600/1a1a2e/eaeaea?text=${encodeURIComponent(name)}`;
   return {
-    url: `https://placehold.co/${width}x${height}/1a1a2e/eaeaea?text=${text}`,
-    publicId: `seed/${slugify(label)}`,
-    alt: label,
+    url,
+    publicId: `seed/${slugify(name)}`,
+    alt: name,
   };
 }
 
@@ -539,7 +572,7 @@ function buildProducts(categoryMap, adminId) {
     ...p,
     slug: slugify(p.name),
     sku: generateSKU(slugify(p.brand || "MF").substring(0, 4).toUpperCase(), idx + 1),
-    images: [placeholderImage(p.name.substring(0, 20))],
+    images: [getRealOrPlaceholderImage(p.name, "product")],
     createdBy: adminId,
   }));
 }
@@ -685,7 +718,7 @@ async function seed() {
       const categoryDocs = categoriesData.map((c) => ({
         ...c,
         slug: slugify(c.name),
-        image: placeholderImage(c.name),
+        image: getRealOrPlaceholderImage(c.name, "category"),
       }));
       categories = await Category.create(categoryDocs);
       console.log(`    ✔ Created ${categories.length} categories.`);

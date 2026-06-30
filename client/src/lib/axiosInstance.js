@@ -3,18 +3,6 @@ import axios from "axios";
 import config from "./config.js";
 import normalizeApiError from "./apiError.js";
 
-/* 
-
-axios.get("http://localhost:5000/api/v1/cart", {
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-  }
-});
-
-Better way: apiClient.get("/cart");
-
-*/
-
 const apiClient = axios.create({
   baseURL: config.apiUrl,
   headers: {

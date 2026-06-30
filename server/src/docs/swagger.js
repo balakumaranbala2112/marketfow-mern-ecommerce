@@ -18,6 +18,10 @@ const swaggerDefinition = {
       url: `http://localhost:${env.port}`,
       description: "Local development server",
     },
+    {
+      url: "/",
+      description: "Current environment host",
+    },
   ],
 
   tags: [

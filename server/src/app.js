@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
+import fs from "fs";
 
 import env from "./config/env.js";
 
@@ -32,6 +34,7 @@ import {
 } from "./middlewares/security.middleware.js";
 
 const app = express();
+const clientBuildPath = path.join(process.cwd(), "../client/dist");
 
 if (env.isProduction) {
   app.set("trust proxy", 1);
@@ -57,6 +60,10 @@ app.use(hppMiddleware());
 
 app.use("/api", globalRateLimiter());
 
+if (fs.existsSync(clientBuildPath)) {
+  app.use(express.static(clientBuildPath));
+}
+
 app.use("/", indexRoutes);
 
 app.use("/api/v1/auth", authRateLimiter(), authRoutes);
@@ -72,6 +79,18 @@ app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/coupons", couponRoutes);
 app.use("/api/v1/payments", paymentRoutes);
 app.use("/api-docs", docsRoutes);
+
+if (fs.existsSync(clientBuildPath)) {
+  app.use((req, res, next) => {
+    if (req.method !== "GET") {
+      return next();
+    }
+    if (req.originalUrl.startsWith("/api") || req.originalUrl.startsWith("/api-docs")) {
+      return next();
+    }
+    res.sendFile(path.join(clientBuildPath, "index.html"));
+  });
+}
 
 app.use(notFound);
 
