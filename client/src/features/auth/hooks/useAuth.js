@@ -21,7 +21,7 @@ export function useForgotPassword() {
 
 export function useResetPassword() {
   return useMutation({
-    mutationFn: ({ resetToken, password }) =>
-      resetPassword(resetToken, { password }),
+    mutationFn: ({ resetToken, password, confirmPassword }) =>
+      resetPassword({ resetToken, password, confirmPassword }),
   });
 }

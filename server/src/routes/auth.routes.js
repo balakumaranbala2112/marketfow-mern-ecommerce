@@ -9,6 +9,7 @@ import {
 } from "../controllers/auth.controller.js";
 
 import { protect } from "../middlewares/auth.middleware.js";
+import { authRateLimiter } from "../middlewares/security.middleware.js";
 import validateRequest from "../middlewares/validateRequest.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
@@ -23,20 +24,31 @@ const router = express.Router();
 
 router.post(
   "/register",
+  authRateLimiter(),
   validateRequest(validateRegister),
   asyncHandler(registerUser),
 );
 
-router.post("/login", validateRequest(validateLogin), asyncHandler(loginUser));
+router.post("/login", authRateLimiter(), validateRequest(validateLogin), asyncHandler(loginUser));
 
 router.post(
   "/forgot-password",
+  authRateLimiter(),
+  validateRequest(validateForgotPassword),
+  asyncHandler(forgotPassword),
+);
+
+// Alias for the common "/forget-password" misspelling.
+router.post(
+  "/forget-password",
+  authRateLimiter(),
   validateRequest(validateForgotPassword),
   asyncHandler(forgotPassword),
 );
 
 router.post(
   "/reset-password/:resetToken",
+  authRateLimiter(),
   validateRequest(validateResetPassword),
   asyncHandler(resetPassword),
 );

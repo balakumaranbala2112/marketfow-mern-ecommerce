@@ -8,8 +8,8 @@ export function updateMyProfile({ name, phone }) {
   return apiClient.put("/users/profile", { name, phone });
 }
 
-export function changeMyPassword({ currentPassword, newPassword }) {
-  return apiClient.put("/users/change-password", { currentPassword, newPassword });
+export function changeMyPassword({ currentPassword, newPassword, confirmPassword }) {
+  return apiClient.put("/users/change-password", { currentPassword, newPassword, confirmPassword });
 }
 
 export function uploadAvatar(formData) {

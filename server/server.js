@@ -3,7 +3,7 @@ import env from "./src/config/env.js";
 import { connectDB } from "./src/config/db.js";
 import logger from "./src/config/logger.js";
 
-let server;
+let server = null;
 
 process.on("uncaughtException", (err) => {
   logger.error("UNCAUGHT EXCEPTION. Shutting down...", err);

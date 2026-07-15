@@ -17,6 +17,7 @@ const orderStatuses = [
 
 const paymentStatuses = ["pending", "paid", "failed", "refunded"];
 
+// This helper converts MongoDB aggregation result into a clean object.
 function buildCountMap(stats, keys) {
   const countMap = {};
 

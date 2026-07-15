@@ -1,20 +1,20 @@
 import mongoose from "mongoose";
-
+import logger from "./logger.js";
 import env from "./env.js";
 
 async function connectDB() {
   try {
     const connection = await mongoose.connect(env.mongo.uri);
-    console.log(`MongoDB connected: ${connection.connection.host}`);
+    logger.info(`MongoDB connected: ${connection.connection.host}`);
   } catch (error) {
-    console.error("MongoDB connection failed", error.message);
+    logger.error("MongoDB connection failed", error.message);
     process.exit(1);
   }
 }
 
 async function disconnectDB() {
   await mongoose.disconnect();
-  console.log("MongoDB disconnected");
+  logger.info("MongoDB disconnected");
 }
 
 export { connectDB, disconnectDB };

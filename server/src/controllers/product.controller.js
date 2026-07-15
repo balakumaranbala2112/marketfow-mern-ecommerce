@@ -42,6 +42,10 @@ async function createProduct(req, res, next) {
     specifications,
   } = req.body;
 
+  if (!validateProductId(category, next)) {
+    return;
+  }
+
   const categoryExists = await Category.exists({ _id: category });
 
   if (!categoryExists) {
@@ -113,6 +117,10 @@ async function getAllProducts(req, res) {
 
 async function getProductById(req, res, next) {
   const { productId } = req.params;
+
+  if (!validateProductId(productId, next)) {
+    return;
+  }
 
   const product = await Product.findById(productId).populate(
     "category",

@@ -1,11 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMyWishlist, addToWishlist, removeFromWishlist } from "../wishlistApi.js";
+import useAuthStore from "../../../stores/authStore.js";
 
 export function useWishlist() {
+  const user = useAuthStore((s) => s.user);
   return useQuery({
     queryKey: ["wishlist"],
     queryFn: getMyWishlist,
     select: (res) => res.data.data,
+    enabled: !!user,
   });
 }
 

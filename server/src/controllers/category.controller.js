@@ -74,6 +74,10 @@ async function getAllCategories(req, res) {
 async function getCategoryById(req, res, next) {
   const { categoryId } = req.params;
 
+  if (!validateCategoryId(categoryId, next)) {
+    return;
+  }
+
   const category = await Category.findById(categoryId);
 
   if (!category) {
@@ -146,6 +150,10 @@ async function deleteCategory(req, res, next) {
         ],
       ),
     );
+  }
+
+  if (category.image?.publicId) {
+    await deleteImageFromCloudinary(category.image.publicId);
   }
 
   await Category.findByIdAndDelete(categoryId);

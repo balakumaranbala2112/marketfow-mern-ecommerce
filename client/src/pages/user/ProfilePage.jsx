@@ -149,7 +149,8 @@ function PasswordForm({ changePasswordMutation, setAuth, addToast }) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4 rounded-2xl border border-slate-200 bg-white p-6">
       <FormInput label="Current Password" id="pw-current" type="password" register={register("currentPassword", { required: "Required" })} error={errors.currentPassword?.message} />
-      <FormInput label="New Password" id="pw-new" type="password" register={register("newPassword", { required: "Required", minLength: { value: 6, message: "At least 6 characters" } })} error={errors.newPassword?.message} />
+      <FormInput label="New Password" id="pw-new" type="password" register={register("newPassword", { required: "Required", minLength: { value: 8, message: "At least 8 characters" } })} error={errors.newPassword?.message} />
+      <FormInput label="Confirm New Password" id="pw-confirm" type="password" register={register("confirmPassword", { required: "Required" })} error={errors.confirmPassword?.message} />
       <button
         type="submit"
         disabled={changePasswordMutation.isPending}

@@ -2,6 +2,7 @@ import axios from "axios";
 
 import config from "./config.js";
 import { normalizeApiError } from "./apiError.js";
+import useAuthStore from "../stores/authStore.js";
 
 const apiClient = axios.create({
   baseURL: config.apiUrl,
@@ -36,8 +37,7 @@ apiClient.interceptors.response.use(
     const normalizedError = normalizeApiError(error);
 
     if (normalizedError.statusCode === 401) {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("user");
+      useAuthStore.getState().clearAuth();
     }
 
     return Promise.reject(normalizedError);

@@ -16,6 +16,6 @@ export function forgotPassword({ email }) {
   return apiClient.post("/auth/forgot-password", { email });
 }
 
-export function resetPassword(resetToken, { password }) {
-  return apiClient.post(`/auth/reset-password/${resetToken}`, { password });
+export function resetPassword({ resetToken, password, confirmPassword }) {
+  return apiClient.post(`/auth/reset-password/${resetToken}`, { password, confirmPassword });
 }

@@ -19,6 +19,7 @@ const imageSchema = new Schema(
       trim: true,
       default: "",
     },
+
     alt: {
       type: String,
       trim: true,

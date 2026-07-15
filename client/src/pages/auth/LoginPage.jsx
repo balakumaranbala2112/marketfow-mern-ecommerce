@@ -103,7 +103,7 @@ function LoginPage() {
         </form>
 
         <p className="mt-6 text-center text-sm text-slate-500">
-          Don&apos;t have an account?{" "}
+          Don&apos;t have an account?
           <Link to={routePaths.register} className="font-semibold text-emerald-600 hover:text-emerald-700">
             Create one
           </Link>

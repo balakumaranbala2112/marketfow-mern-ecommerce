@@ -1,4 +1,4 @@
-const StatusCodes = {
+const StatusCodes = Object.freeze({
   OK: 200,
   CREATED: 201,
   NO_CONTENT: 204,
@@ -10,6 +10,6 @@ const StatusCodes = {
   CONFLICT: 409,
 
   INTERNAL_SERVER_ERROR: 500,
-};
+});
 
 export default StatusCodes;

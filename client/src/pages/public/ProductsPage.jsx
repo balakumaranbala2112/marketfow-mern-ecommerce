@@ -7,7 +7,7 @@ import { useCategories } from "../../features/categories/hooks/useCategories.js"
 import PageLoader from "../../components/common/PageLoader.jsx";
 import Pagination from "../../components/common/Pagination.jsx";
 import EmptyState from "../../components/common/EmptyState.jsx";
-import StarRating from "../../components/common/StarRating.jsx";
+import ProductCard from "../../components/home/ProductCard.jsx";
 
 function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -71,49 +71,27 @@ function ProductsPage() {
   const hasFilters = search || category || minPrice || maxPrice || isFeatured;
 
   return (
-    <main className="mx-auto max-w-7xl px-6 py-10">
+    <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8 md:py-12">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Products</p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">All Products</h1>
-        </div>
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 md:hidden"
-        >
-          <SlidersHorizontal size={16} />
-          Filters
-        </button>
+      <div className="mb-8 border-b border-slate-100 pb-6">
+        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">All Products</h1>
+        <p className="mt-2 text-sm text-slate-500">Discover our premium collection of handpicked items.</p>
       </div>
 
-      {/* Search bar */}
-      <form onSubmit={handleSearch} className="mt-6 flex gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Search products..."
-            className="w-full rounded-xl border border-slate-200 bg-white py-2.5 pl-10 pr-4 text-sm outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
-          />
-        </div>
-        <button type="submit" className="rounded-xl bg-slate-950 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800">
-          Search
-        </button>
-      </form>
-
-      <div className="mt-8 grid gap-8 md:grid-cols-[240px_1fr]">
+      <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar Filters */}
-        <aside className={`space-y-6 ${showFilters ? "block" : "hidden md:block"}`}>
+        <aside className={`w-full md:w-64 shrink-0 space-y-8 ${showFilters ? "block" : "hidden md:block"}`}>
           {/* Category */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">Category</h3>
-            <div className="mt-3 space-y-1.5">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">Category</h3>
+            <div className="mt-4 space-y-1">
               <button
                 onClick={() => updateParam("category", "")}
-                className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${!category ? "bg-emerald-50 font-semibold text-emerald-700" : "text-slate-600 hover:bg-slate-50"}`}
+                className={`block w-full rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all ${
+                  !category 
+                    ? "bg-slate-900 text-white shadow-md shadow-slate-900/10" 
+                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`}
               >
                 All Categories
               </button>
@@ -121,7 +99,11 @@ function ProductsPage() {
                 <button
                   key={cat._id}
                   onClick={() => updateParam("category", cat._id)}
-                  className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition-colors ${category === cat._id ? "bg-emerald-50 font-semibold text-emerald-700" : "text-slate-600 hover:bg-slate-50"}`}
+                  className={`block w-full rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all ${
+                    category === cat._id 
+                      ? "bg-slate-900 text-white shadow-md shadow-slate-900/10" 
+                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  }`}
                 >
                   {cat.name}
                 </button>
@@ -131,112 +113,105 @@ function ProductsPage() {
 
           {/* Price Range */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">Price Range</h3>
-            <div className="mt-3 flex gap-2">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">Price Range</h3>
+            <div className="mt-4 flex items-center gap-2">
               <input
                 type="number"
-                placeholder="Min"
+                placeholder="Min ₹"
                 value={minPrice}
                 onChange={(e) => updateParam("minPrice", e.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-emerald-500"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-all focus:border-slate-400 focus:bg-white focus:ring-4 focus:ring-slate-100"
               />
+              <span className="text-slate-400">-</span>
               <input
                 type="number"
-                placeholder="Max"
+                placeholder="Max ₹"
                 value={maxPrice}
                 onChange={(e) => updateParam("maxPrice", e.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-emerald-500"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-all focus:border-slate-400 focus:bg-white focus:ring-4 focus:ring-slate-100"
               />
             </div>
           </div>
 
-          {/* Sort */}
-          <div>
-            <h3 className="text-sm font-semibold text-slate-900">Sort By</h3>
-            <select
-              value={sort}
-              onChange={(e) => updateParam("sort", e.target.value)}
-              className="mt-3 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-emerald-500"
-            >
-              <option value="-createdAt">Newest</option>
-              <option value="createdAt">Oldest</option>
-              <option value="price">Price: Low to High</option>
-              <option value="-price">Price: High to Low</option>
-              <option value="-ratingsAverage">Top Rated</option>
-              <option value="name">Name: A-Z</option>
-            </select>
-          </div>
-
           {hasFilters && (
-            <button onClick={clearFilters} className="flex items-center gap-1.5 text-sm font-medium text-red-600 hover:text-red-700">
-              <X size={14} /> Clear All Filters
+            <button 
+              onClick={clearFilters} 
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-50 text-red-600 px-4 py-2.5 text-sm font-bold hover:bg-red-100 transition-colors"
+            >
+              <X size={16} /> Clear All Filters
             </button>
           )}
         </aside>
 
-        {/* Product Grid */}
-        <div>
+        {/* Main Content */}
+        <div className="flex-1 min-w-0">
+          {/* Toolbar */}
+          <div className="mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl bg-white border border-slate-100 p-3 shadow-sm">
+            {/* Search */}
+            <form onSubmit={handleSearch} className="flex w-full sm:max-w-md relative">
+              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Search products..."
+                className="w-full rounded-xl border-none bg-slate-50 py-2.5 pl-10 pr-24 text-sm outline-none transition-all focus:bg-white focus:ring-2 focus:ring-slate-200"
+              />
+              <button type="submit" className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-lg bg-slate-900 px-4 py-1.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors">
+                Search
+              </button>
+            </form>
+
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              {/* Sort By */}
+              <select
+                value={sort}
+                onChange={(e) => updateParam("sort", e.target.value)}
+                className="w-full sm:w-auto rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none font-medium text-slate-700 transition-all focus:border-slate-400 focus:bg-white"
+              >
+                <option value="-createdAt">Newest First</option>
+                <option value="createdAt">Oldest First</option>
+                <option value="price">Price: Low to High</option>
+                <option value="-price">Price: High to Low</option>
+                <option value="-ratingsAverage">Top Rated</option>
+                <option value="name">Name: A to Z</option>
+              </select>
+
+              {/* Mobile Filter Toggle */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex shrink-0 items-center justify-center h-10 w-10 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 md:hidden"
+              >
+                <SlidersHorizontal size={18} />
+              </button>
+            </div>
+          </div>
+
+          {/* Product Grid */}
           {isLoading ? (
             <PageLoader />
           ) : products.length === 0 ? (
             <EmptyState
               icon={ShoppingBag}
               title="No products found"
-              message="Try adjusting your search or filters"
+              message="Try adjusting your search or filters to find what you're looking for."
               actionLabel="Clear Filters"
               actionTo="/products"
             />
           ) : (
             <>
-              <p className="mb-4 text-sm text-slate-500">
-                {data?.meta?.count || products.length} product(s) found
-              </p>
-              <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-                {products.map((product) => {
-                  const image = product.images?.[0]?.url;
-                  const hasDiscount = product.discountPrice != null && product.discountPrice < product.price;
-                  return (
-                    <Link
-                      key={product._id}
-                      to={`/products/${product._id}`}
-                      className="group rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all hover:shadow-md hover:-translate-y-0.5"
-                    >
-                      <div className="relative aspect-square overflow-hidden rounded-xl bg-slate-100">
-                        {image ? (
-                          <img src={image} alt={product.name} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
-                        ) : (
-                          <div className="flex h-full items-center justify-center text-slate-300">
-                            <ShoppingBag size={40} />
-                          </div>
-                        )}
-                        {hasDiscount && (
-                          <span className="absolute left-2 top-2 rounded-lg bg-red-500 px-2 py-1 text-xs font-bold text-white">
-                            {Math.round(((product.price - product.discountPrice) / product.price) * 100)}% OFF
-                          </span>
-                        )}
-                      </div>
-                      <div className="mt-3 px-1 pb-1">
-                        <p className="text-xs font-medium text-emerald-600">{product.category?.name}</p>
-                        <h3 className="mt-1 line-clamp-1 text-sm font-semibold text-slate-900">{product.name}</h3>
-                        <div className="mt-1.5 flex items-center gap-1.5">
-                          <StarRating rating={product.ratingsAverage || 0} size={12} />
-                          <span className="text-xs text-slate-400">({product.ratingsCount || 0})</span>
-                        </div>
-                        <div className="mt-2 flex items-center gap-2">
-                          <span className="text-base font-bold text-slate-900">
-                            ₹{(hasDiscount ? product.discountPrice : product.price)?.toLocaleString("en-IN")}
-                          </span>
-                          {hasDiscount && (
-                            <span className="text-xs text-slate-400 line-through">₹{product.price?.toLocaleString("en-IN")}</span>
-                          )}
-                        </div>
-                      </div>
-                    </Link>
-                  );
-                })}
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-sm font-medium text-slate-500">
+                  Showing <span className="font-bold text-slate-900">{data?.meta?.count || products.length}</span> results
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
+                {products.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
               </div>
 
-              <div className="mt-10">
+              <div className="mt-12">
                 <Pagination
                   currentPage={page}
                   totalPages={totalPages}

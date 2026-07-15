@@ -3,12 +3,11 @@ import { useCategories } from "../../features/categories/hooks/useCategories.js"
 import routePaths from "../../routes/routePaths.js";
 
 import HeroCarousel from "../../components/home/HeroCarousel.jsx";
-import BenefitsRow from "../../components/home/BenefitsRow.jsx";
 import CategorySection from "../../components/home/CategorySection.jsx";
 import PromoBanner from "../../components/home/PromoBanner.jsx";
 import ProductSection from "../../components/home/ProductSection.jsx";
-import FlashSaleStrip from "../../components/home/FlashSaleStrip.jsx";
 import NewsletterSection from "../../components/home/NewsletterSection.jsx";
+import BenefitsRow from "../../components/home/BenefitsRow.jsx";
 
 function HomePage() {
   const { data: featuredData } = useProducts({
@@ -35,45 +34,36 @@ function HomePage() {
   const bestSellers = bestSellerData?.products || [];
 
   return (
-    <main className="space-y-0">
-      {/* Hero Carousel with Side Cards */}
+    <main className="home-page space-y-0">
+      {/* 1. Hero Carousel — purple gradient banner */}
       <HeroCarousel />
 
-      {/* Trust / Benefits Row */}
-      <BenefitsRow />
-
-      {/* Shop by Category */}
+      {/* 2. Category Icons — circular row */}
       <CategorySection categories={categories} />
 
-      {/* Promotional Banner */}
+      {/* 3. Promo Cards — flash sale + info cards */}
       <PromoBanner />
 
-      {/* Featured Deals */}
+      {/* 4. Best Deals for You */}
       <ProductSection
-        label="Hot Deals"
-        title="Featured Deals"
+        title="Best Deals for You"
         subtitle="Handpicked products at the best prices"
-        linkText="View All Deals"
+        linkText="View All"
         linkTo={`${routePaths.products}?isFeatured=true`}
         products={featuredProducts}
       />
 
-      {/* Flash Sale Countdown */}
-      <FlashSaleStrip />
-
-      {/* Just Landed */}
+      {/* 5. Recommended for You */}
       <ProductSection
-        label="Fresh Stock"
-        title="Just Landed"
+        title="Recommended for You"
         subtitle="Newest additions to the store"
-        linkText="See All New Arrivals"
+        linkText="View All"
         linkTo={`${routePaths.products}?sort=-createdAt`}
         products={newProducts}
       />
 
-      {/* Best Sellers */}
+      {/* 6. Best Sellers */}
       <ProductSection
-        label="Top Rated"
         title="Best Sellers"
         subtitle="Most loved by our customers"
         linkText="View All"
@@ -81,8 +71,11 @@ function HomePage() {
         products={bestSellers}
       />
 
-      {/* Newsletter */}
+      {/* 7. Newsletter — Join MarketFlow Club */}
       <NewsletterSection />
+
+      {/* 8. Trust Bar — Benefits at bottom */}
+      <BenefitsRow />
     </main>
   );
 }

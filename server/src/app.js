@@ -5,6 +5,7 @@ import fs from "fs";
 
 import env from "./config/env.js";
 
+/* Routes */
 import indexRoutes from "./routes/index.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
@@ -18,9 +19,11 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 import couponRoutes from "./routes/coupon.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
 import paymentWebhookRoutes from "./routes/paymentWebhook.routes.js";
-import requestLogger from "./middlewares/requestLogger.middleware.js";
 import docsRoutes from "./routes/docs.routes.js";
 
+
+/* Middlewares */
+import requestLogger from "./middlewares/requestLogger.middleware.js";
 import notFound from "./middlewares/notFound.js";
 import errorHandler from "./middlewares/errorHandler.js";
 
@@ -32,6 +35,7 @@ import {
   hppMiddleware,
   mongoSanitizeMiddleware,
 } from "./middlewares/security.middleware.js";
+
 
 const app = express();
 const clientBuildPath = path.join(process.cwd(), "../client/dist");
@@ -66,7 +70,7 @@ if (fs.existsSync(clientBuildPath)) {
 
 app.use("/", indexRoutes);
 
-app.use("/api/v1/auth", authRateLimiter(), authRoutes);
+app.use("/api/v1/auth", authRateLimiter, authRoutes);
 
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/categories", categoryRoutes);

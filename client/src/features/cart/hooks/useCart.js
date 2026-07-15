@@ -1,11 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMyCart, addToCart, updateCartItemQuantity, removeCartItem, clearCart, applyCoupon, removeCoupon } from "../cartApi.js";
+import useAuthStore from "../../../stores/authStore.js";
 
 export function useCart() {
+  const user = useAuthStore((s) => s.user);
   return useQuery({
     queryKey: ["cart"],
     queryFn: getMyCart,
     select: (res) => res.data.data,
+    enabled: !!user,
   });
 }
 

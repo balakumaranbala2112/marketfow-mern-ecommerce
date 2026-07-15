@@ -1,5 +1,3 @@
-import React from "react";
-
 const AuthCard = ({ title, subtitle, children }) => {
   return (
     <main>

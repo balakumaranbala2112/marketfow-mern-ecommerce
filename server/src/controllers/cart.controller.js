@@ -29,6 +29,23 @@ async function getOrCreateCart(userId) {
   return cart;
 }
 
+/* async function getOrCreateCart(userId) {
+  return Cart.findOneAndUpdate(
+    { user: userId },
+    {
+      $setOnInsert: {
+        user: userId,
+        items: [],
+      },
+    },
+    {
+      new: true,
+      upsert: true,
+      setDefaultsOnInsert: true,
+    },
+  );
+} */
+
 async function getPopulatedCart(cartId) {
   return Cart.findById(cartId).populate(
     "items.product",

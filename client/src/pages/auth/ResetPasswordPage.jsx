@@ -19,7 +19,7 @@ function ResetPasswordPage() {
 
   const onSubmit = (data) => {
     resetMutation.mutate(
-      { resetToken, password: data.password },
+      { resetToken, password: data.password, confirmPassword: data.confirmPassword },
       {
         onSuccess: (res) => {
           const { user, accessToken } = res.data.data;
@@ -50,12 +50,23 @@ function ResetPasswordPage() {
             label="New password"
             id="reset-password"
             type="password"
-            placeholder="At least 6 characters"
+            placeholder="At least 8 characters"
             register={register("password", {
               required: "Password is required",
-              minLength: { value: 6, message: "At least 6 characters" },
+              minLength: { value: 8, message: "At least 8 characters" },
             })}
             error={errors.password?.message}
+          />
+
+          <FormInput
+            label="Confirm password"
+            id="reset-confirm-password"
+            type="password"
+            placeholder="Re-enter your password"
+            register={register("confirmPassword", {
+              required: "Confirm password is required",
+            })}
+            error={errors.confirmPassword?.message}
           />
 
           <button

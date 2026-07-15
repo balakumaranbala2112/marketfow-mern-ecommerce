@@ -8,7 +8,6 @@ import Coupon from "../models/coupon.model.js";
 import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
 
-import Roles from "../constants/roles.js";
 import StatusCodes from "../constants/statusCodes.js";
 import AppError from "../utils/AppError.js";
 import calculateCartTotals from "../utils/calculateCartTotals.js";

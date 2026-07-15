@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 import Cart from "../models/cart.model.js";
+import Coupon from "../models/coupon.model.js";
 import Order from "../models/order.model.js";
 import Product from "../models/product.model.js";
 
@@ -56,6 +57,10 @@ async function populateOrder(query) {
 }
 
 async function restoreOrderProductStock(order) {
+  if (order.stockRestoredAt) {
+    return false;
+  }
+
   for (const item of order.orderItems) {
     const product = await Product.findById(item.product);
 
@@ -64,6 +69,10 @@ async function restoreOrderProductStock(order) {
       await product.save({ validateBeforeSave: false });
     }
   }
+
+  order.stockRestoredAt = new Date();
+
+  return true;
 }
 
 function buildAppliedCoupon(cart) {
@@ -184,6 +193,12 @@ async function createOrderFromCart(req, res, next) {
 
   const populatedOrder = await populateOrder(Order.findById(order._id));
 
+  if (order.coupon?.coupon) {
+    await Coupon.findByIdAndUpdate(order.coupon.coupon, {
+      $inc: { usedCount: 1 },
+    });
+  }
+
   await sendOrderConfirmationEmail(populatedOrder);
 
   return sendResponse(
@@ -302,6 +317,7 @@ async function updateOrderStatusForAdmin(req, res, next) {
 
   if (orderStatus === "cancelled") {
     await restoreOrderProductStock(order);
+    order.cancelledAt = new Date();
   }
 
   order.orderStatus = orderStatus;

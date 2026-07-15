@@ -4,7 +4,7 @@ import { ShoppingCart, Heart, Minus, Plus, ShoppingBag, ChevronLeft, Package, Tr
 
 import { useProduct, useProductReviews, useCreateReview } from "../../features/products/hooks/useProducts.js";
 import { useAddToCart } from "../../features/cart/hooks/useCart.js";
-import { useAddToWishlist } from "../../features/wishlist/hooks/useWishlist.js";
+import { useWishlist, useAddToWishlist, useRemoveFromWishlist } from "../../features/wishlist/hooks/useWishlist.js";
 import useAuthStore from "../../stores/authStore.js";
 import useToastStore from "../../stores/toastStore.js";
 import routePaths from "../../routes/routePaths.js";
@@ -20,8 +20,12 @@ function ProductDetailsPage() {
   const { data: product, isLoading } = useProduct(productId);
   const { data: reviewsData } = useProductReviews(productId);
   const addToCartMutation = useAddToCart();
+  const { data: wishlist } = useWishlist();
   const addToWishlistMutation = useAddToWishlist();
+  const removeFromWishlistMutation = useRemoveFromWishlist();
   const createReviewMutation = useCreateReview(productId);
+
+  const isWishlisted = wishlist?.products?.some((p) => p._id === product?._id) || false;
 
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -61,18 +65,26 @@ function ProductDetailsPage() {
     );
   }
 
-  function handleAddToWishlist() {
+  function handleWishlistToggle() {
     if (!user) {
       addToast({ type: "error", message: "Please login to add to wishlist" });
       return;
     }
-    addToWishlistMutation.mutate(
-      { productId: product._id },
-      {
-        onSuccess: () => addToast({ type: "success", message: "Added to wishlist!" }),
+
+    if (isWishlisted) {
+      removeFromWishlistMutation.mutate(product._id, {
+        onSuccess: () => addToast({ type: "success", message: "Removed from wishlist" }),
         onError: (err) => addToast({ type: "error", message: err.message }),
-      },
-    );
+      });
+    } else {
+      addToWishlistMutation.mutate(
+        { productId: product._id },
+        {
+          onSuccess: () => addToast({ type: "success", message: "Added to wishlist!" }),
+          onError: (err) => addToast({ type: "error", message: err.message }),
+        },
+      );
+    }
   }
 
   function handleSubmitReview(e) {
@@ -200,11 +212,16 @@ function ProductDetailsPage() {
               </button>
 
               <button
-                onClick={handleAddToWishlist}
-                disabled={addToWishlistMutation.isPending}
-                className="rounded-xl border border-slate-200 p-3 text-slate-600 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+                onClick={handleWishlistToggle}
+                disabled={addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
+                className={`rounded-xl border p-3 transition-colors cursor-pointer ${
+                  isWishlisted
+                    ? "border-red-200 bg-red-50 text-red-500 hover:bg-red-100"
+                    : "border-slate-200 text-slate-600 hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+                }`}
+                aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
               >
-                <Heart size={18} />
+                <Heart size={18} fill={isWishlisted ? "currentColor" : "none"} />
               </button>
             </div>
           )}

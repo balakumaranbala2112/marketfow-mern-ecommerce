@@ -16,41 +16,41 @@ function FlashSaleStrip() {
   }, []);
 
   return (
-    <section className="mx-auto max-w-7xl px-4 sm:px-6 py-4">
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 via-orange-400 to-amber-400 p-5 md:p-6 shadow-md">
-        {/* Decorative */}
-        <div className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-xl" />
-        <div className="absolute left-1/2 -bottom-6 h-24 w-24 rounded-full bg-white/10 blur-lg" />
+    <section className="mx-auto max-w-7xl px-4 sm:px-6 py-8">
+      <div className="relative overflow-hidden rounded-2xl bg-slate-900 p-6 md:p-8 shadow-2xl">
+        {/* Subtle Decorative */}
+        <div className="absolute -right-16 -top-16 h-48 w-48 rounded-full bg-orange-500/10 blur-3xl" />
+        <div className="absolute left-1/4 -bottom-12 h-32 w-32 rounded-full bg-slate-500/20 blur-2xl" />
 
-        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
           {/* Left: label + heading */}
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/20 backdrop-blur-sm">
-              <Zap size={20} className="text-white fill-white" />
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-800 border border-slate-700/50 shadow-inner">
+              <Zap size={24} className="text-orange-400 fill-orange-400/20" />
             </div>
             <div>
-              <h3 className="text-lg font-extrabold text-white sm:text-xl">
-                Flash Sale Ends In
+              <h3 className="text-xl font-extrabold tracking-tight text-white sm:text-2xl">
+                Flash Sale
               </h3>
-              <p className="text-xs text-orange-100">Limited time deals — don't miss out!</p>
+              <p className="text-sm text-slate-400 mt-0.5">Ends very soon.</p>
             </div>
           </div>
 
           {/* Countdown */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <TimeBlock value={timeLeft.hours} label="Hrs" />
-            <span className="text-xl font-bold text-white/80">:</span>
+            <span className="text-2xl font-black text-slate-700">:</span>
             <TimeBlock value={timeLeft.minutes} label="Min" />
-            <span className="text-xl font-bold text-white/80">:</span>
+            <span className="text-2xl font-black text-slate-700">:</span>
             <TimeBlock value={timeLeft.seconds} label="Sec" />
           </div>
 
           {/* CTA */}
           <Link
             to={routePaths.products}
-            className="inline-flex items-center gap-1.5 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-orange-600 hover:bg-orange-50 transition-all shadow-sm whitespace-nowrap"
+            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-slate-900 hover:bg-slate-100 transition-colors shadow-sm whitespace-nowrap"
           >
-            Shop Flash Deals <ArrowRight size={14} />
+            Shop Now <ArrowRight size={16} />
           </Link>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
-import { heroSlides, sideOfferCards } from "../../data/homeData.js";
+import { heroSlides } from "../../data/homeData.js";
 
 function HeroCarousel() {
   const [current, setCurrent] = useState(0);
@@ -11,128 +11,115 @@ function HeroCarousel() {
     () => setCurrent((prev) => (prev + 1) % slideCount),
     [slideCount]
   );
+
   const prev = useCallback(
     () => setCurrent((prev) => (prev - 1 + slideCount) % slideCount),
     [slideCount]
   );
 
   useEffect(() => {
-    const timer = setInterval(next, 4000);
+    const timer = setInterval(next, 5000);
     return () => clearInterval(timer);
   }, [next]);
 
   const slide = heroSlides[current];
 
   return (
-    <section className="bg-white">
-      {/* Edge-to-Edge slide background (100% viewport width, no outer margin or padding, no rounded corners) */}
+    <section className="relative w-screen h-screen overflow-hidden">
+      {/* Full-viewport Hero */}
       <div
-        className="w-full relative overflow-hidden min-h-[340px] md:min-h-[440px] bg-cover bg-center transition-all duration-700 flex items-center shadow-sm"
-        style={{ backgroundImage: `url(${slide.image})` }}
+        className={`absolute inset-0 bg-gradient-to-br ${slide.gradient} transition-all duration-700`}
       >
-        {/* Soft dark gradient overlay for text readability */}
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-900/35 via-slate-900/10 to-transparent" />
+        {/* Background Image with Overlay */}
+        <img
+          src={slide.image}
+          alt={slide.heading}
+          className="absolute inset-0 w-full h-full object-cover opacity-20 transition-all duration-700"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/50 to-transparent" />
+      </div>
 
-        {/* Content alignment wrapper inside the full-width carousel */}
-        <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 relative z-10">
-          {/* Left-aligned Frosted Glass Card overlay */}
-          <div className="max-w-md w-full rounded-2xl bg-white/90 backdrop-blur-md border border-white/50 p-6 md:p-8 shadow-xl animate-fade-in">
-            <span
-              className={`inline-flex w-fit items-center gap-1.5 rounded-full ${slide.badgeColor} px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide shadow-sm`}
+      {/* Content Grid */}
+      <div className="relative z-10 flex h-full items-center">
+        {/* Left — Text Content */}
+        <div className="flex-1 px-8 md:px-16 lg:px-24 xl:px-32">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/80 backdrop-blur-sm px-5 py-2 text-xs font-bold text-purple-700 shadow-sm animate-fade-in">
+            {slide.badge}
+          </span>
+
+          <h1 className="mt-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-slate-900 leading-tight whitespace-pre-line animate-slide-up">
+            {slide.heading}
+          </h1>
+
+          <p className="mt-5 text-base sm:text-lg md:text-xl text-slate-600 max-w-xl leading-relaxed animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            {slide.copy}
+          </p>
+
+          <div className="mt-8 flex flex-wrap items-center gap-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <Link
+              to={slide.ctaLink}
+              className="inline-flex items-center gap-2 rounded-full bg-purple-600 hover:bg-purple-700 px-8 py-4 text-base font-bold text-white transition-all shadow-lg shadow-purple-600/25 hover:shadow-purple-600/40 hover:scale-[1.02] active:scale-[0.98]"
             >
-              {slide.badge}
-            </span>
-            <h1 className="mt-3 text-2xl md:text-3xl font-extrabold text-slate-900 leading-tight">
-              {slide.heading}
-            </h1>
-            <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
-              {slide.copy}
-            </p>
-            <p className="mt-3 text-xs text-slate-500 font-medium">
-              Starting from{" "}
-              <span className="text-lg font-black text-slate-900">
-                {slide.startingPrice}
-              </span>
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2.5">
-              <Link
-                to={slide.ctaLink}
-                className="inline-flex items-center gap-1.5 rounded-full bg-orange-500 hover:bg-orange-600 px-5 py-2.5 text-xs font-bold text-white transition-all shadow-md shadow-orange-500/20"
-              >
-                {slide.cta} <ArrowRight size={13} />
-              </Link>
-              <Link
-                to={slide.secondaryCtaLink}
-                className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all"
-              >
-                {slide.secondaryCta}
-              </Link>
-            </div>
+              {slide.cta} <ArrowRight size={18} />
+            </Link>
           </div>
         </div>
 
-        {/* Carousel navigation arrows on absolute edges of the screen */}
-        <button
-          onClick={prev}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-md hover:bg-white hover:scale-105 active:scale-95 transition-all border border-slate-200 cursor-pointer"
-          aria-label="Previous slide"
-        >
-          <ChevronLeft size={18} />
-        </button>
-        <button
-          onClick={next}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-slate-700 shadow-md hover:bg-white hover:scale-105 active:scale-95 transition-all border border-slate-200 cursor-pointer"
-          aria-label="Next slide"
-        >
-          <ChevronRight size={18} />
-        </button>
-
-        {/* Dots */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-20 bg-slate-900/10 backdrop-blur-sm px-3.5 py-1.5 rounded-full">
-          {heroSlides.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrent(idx)}
-              className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                idx === current ? "w-5 bg-white" : "w-1.5 bg-white/50 hover:bg-white/80"
-              }`}
-              aria-label={`Go to slide ${idx + 1}`}
+        {/* Right — Image */}
+        <div className="hidden md:flex items-center justify-center flex-1 pr-12 lg:pr-20 xl:pr-28">
+          <div className="relative w-full max-w-md lg:max-w-lg xl:max-w-xl aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl shadow-purple-900/20 ring-1 ring-white/30">
+            <img
+              src={slide.image}
+              alt={slide.heading}
+              className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
             />
-          ))}
+            {/* Subtle gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+          </div>
         </div>
       </div>
 
-      {/* Offer Cards aligned with standard max-width page container */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {sideOfferCards.map((card) => (
-            <Link
-              key={card.id}
-              to={card.ctaLink}
-              className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white hover:shadow-md transition-all p-5 flex items-center justify-between"
-            >
-              <div className="z-10 max-w-[65%]">
-                <span className="inline-block rounded-full bg-orange-500 text-white px-2.5 py-0.5 text-[10px] font-bold">
-                  {card.discount}
-                </span>
-                <h3 className="mt-2 text-base font-extrabold text-slate-900">
-                  {card.title}
-                </h3>
-                <p className="text-xs text-slate-600 mt-0.5">{card.subtitle}</p>
-                <span className="inline-flex items-center gap-1 text-xs font-bold text-indigo-650 group-hover:gap-2 transition-all mt-3">
-                  {card.cta} <ArrowRight size={12} />
-                </span>
-              </div>
-              <div className="shrink-0 w-24 h-20 md:w-32 md:h-24 overflow-hidden rounded-xl bg-slate-50 border border-slate-100 shadow-sm relative">
-                <img
-                  src={card.image}
-                  alt={card.title}
-                  className="w-full h-full object-cover transition-transform duration-355 group-hover:scale-105"
-                />
-              </div>
-            </Link>
-          ))}
-        </div>
+      {/* Decorative Circles */}
+      <div className="absolute -top-32 -right-32 w-[500px] h-[500px] rounded-full bg-purple-200/30 blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 rounded-full bg-pink-200/20 blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full bg-violet-200/15 blur-3xl pointer-events-none" />
+
+      {/* Navigation Arrows */}
+      <button
+        onClick={prev}
+        className="absolute left-6 top-1/2 -translate-y-1/2 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm text-slate-600 shadow-lg hover:bg-white hover:scale-110 active:scale-95 transition-all border border-white/50 cursor-pointer"
+        aria-label="Previous slide"
+      >
+        <ChevronLeft size={20} />
+      </button>
+      <button
+        onClick={next}
+        className="absolute right-6 top-1/2 -translate-y-1/2 z-20 flex h-12 w-12 items-center justify-center rounded-full bg-white/90 backdrop-blur-sm text-slate-600 shadow-lg hover:bg-white hover:scale-110 active:scale-95 transition-all border border-white/50 cursor-pointer"
+        aria-label="Next slide"
+      >
+        <ChevronRight size={20} />
+      </button>
+
+      {/* Dots */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2.5 z-20">
+        {heroSlides.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => setCurrent(idx)}
+            className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+              idx === current
+                ? "w-8 bg-purple-600 shadow-md shadow-purple-600/30"
+                : "w-2.5 bg-slate-400/40 hover:bg-slate-400/70"
+            }`}
+            aria-label={`Go to slide ${idx + 1}`}
+          />
+        ))}
+      </div>
+
+      {/* Scroll indicator */}
+      <div className="absolute bottom-8 right-8 z-20 flex flex-col items-center gap-2 text-slate-400 animate-bounce">
+        <span className="text-xs font-medium tracking-wider uppercase">Scroll</span>
+        <ChevronLeft size={16} className="rotate-[-90deg]" />
       </div>
     </section>
   );

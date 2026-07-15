@@ -6,37 +6,34 @@ function ProductSection({ label, title, subtitle, linkText, linkTo, products }) 
   if (!products || products.length === 0) return null;
 
   return (
-    <section className="bg-white py-8 lg:py-10">
+    <section className="home-section">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Section header */}
-        <div className="flex items-end justify-between border-b border-slate-100 pb-4 mb-6">
+        <div className="flex items-center justify-between mb-7">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-indigo-600">
-              {label}
-            </span>
-            <h2 className="mt-0.5 text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">
+            <h2 className="text-xl font-extrabold tracking-tight text-slate-900 sm:text-2xl">
               {title}
             </h2>
             {subtitle && (
-              <p className="text-sm text-slate-500 mt-0.5">{subtitle}</p>
+              <p className="text-sm text-slate-400 mt-1">{subtitle}</p>
             )}
           </div>
           {linkText && linkTo && (
             <Link
               to={linkTo}
-              className="group flex items-center gap-1 text-sm font-bold text-indigo-600 hover:text-indigo-700 transition-colors"
+              className="group flex items-center gap-1.5 text-sm font-semibold text-violet-600 hover:text-violet-700 transition-colors"
             >
               {linkText}
               <ArrowRight
-                size={14}
-                className="transition-transform group-hover:translate-x-0.5"
+                size={15}
+                className="transition-transform group-hover:translate-x-1"
               />
             </Link>
           )}
         </div>
 
         {/* Product grid */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
           {products.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}

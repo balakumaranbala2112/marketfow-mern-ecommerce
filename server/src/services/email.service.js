@@ -4,6 +4,8 @@ import {
   isEmailConfigured,
 } from "../config/email.js";
 
+import logger from "../config/logger.js";
+
 import {
   buildOrderConfirmationEmail,
   buildOrderStatusUpdateEmail,
@@ -12,7 +14,7 @@ import {
 
 async function sendEmail({ to, subject, text, html }) {
   if (!isEmailConfigured()) {
-    console.warn("Email is not configured or EMAIL_ENABLED is false");
+    logger.warn("Email is not configured or EMAIL_ENABLED is false");
     return null;
   }
 
@@ -31,7 +33,7 @@ async function safeSendEmail(emailPayload) {
   try {
     return await sendEmail(emailPayload);
   } catch (err) {
-    console.error("Email sending failed:", err.message);
+    logger.error("Email sending failed:", { error: err.message });
     return null;
   }
 }
@@ -40,7 +42,7 @@ async function sendOrderConfirmationEmail(order) {
   const customerEmail = order.user?.email;
 
   if (!customerEmail) {
-    console.warn("Order confirmation email skipped: customer email missing");
+    logger.warn("Order confirmation email skipped: customer email missing");
     return null;
   }
 
@@ -56,7 +58,7 @@ async function sendOrderStatusUpdateEmail(order, previousStatus) {
   const customerEmail = order.user?.email;
 
   if (!customerEmail) {
-    console.warn("Order status update email skipped: customer email missing");
+    logger.warn("Order status update email skipped: customer email missing");
     return null;
   }
 
@@ -75,7 +77,7 @@ async function sendPasswordResetEmail({ user, resetUrl, expiresInMinutes }) {
     expiresInMinutes,
   });
 
-  return safeSendEmail({
+  return sendEmail({
     to: user.email,
     ...template,
   });

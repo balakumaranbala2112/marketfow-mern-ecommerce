@@ -1,14 +1,15 @@
+import crypto from "node:crypto";
+
 import User from "../models/user.model.js";
 
+import env from "../config/env.js";
+import logger from "../config/logger.js";
 import Roles from "../constants/roles.js";
 import StatusCodes from "../constants/statusCodes.js";
 import AppError from "../utils/AppError.js";
 import sanitizeUser from "../utils/sanitizeUser.js";
 import sendResponse from "../utils/sendResponse.js";
 import { signAccessToken } from "../utils/token.js";
-
-import crypto from "node:crypto";
-import env from "../config/env.js";
 import { sendPasswordResetEmail } from "../services/email.service.js";
 
 const PASSWORD_RESET_TOKEN_EXPIRES_MINUTES = 10;
@@ -88,6 +89,7 @@ async function loginUser(req, res, next) {
   }
 
   user.lastLoginAt = new Date();
+
   await user.save({ validateBeforeSave: false });
 
   return sendResponse(
@@ -159,11 +161,19 @@ async function forgotPassword(req, res) {
 
   const resetUrl = buildResetPasswordUrl(resetToken);
 
-  await sendPasswordResetEmail({
-    user,
-    resetUrl,
-    expiresInMinutes: PASSWORD_RESET_TOKEN_EXPIRES_MINUTES,
-  });
+  try {
+    await sendPasswordResetEmail({
+      user,
+      resetUrl,
+      expiresInMinutes: PASSWORD_RESET_TOKEN_EXPIRES_MINUTES,
+    });
+  } catch (error) {
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save({ validateBeforeSave: false });
+    logger.error("Password reset email failed", { error: error.message });
+    throw new AppError(StatusCodes.INTERNAL_SERVER_ERROR, "Unable to send password reset email. Please try again later.");
+  }
 
   return buildGenericForgotPasswordResponse(res);
 }
@@ -205,6 +215,7 @@ async function resetPassword(req, res, next) {
   user.password = password;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
+  user.passwordChangedAt = new Date();
 
   await user.save();
 
