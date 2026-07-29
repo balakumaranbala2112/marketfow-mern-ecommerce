@@ -25,45 +25,55 @@ function ForgotPasswordPage() {
   };
 
   return (
-    <main className="mx-auto flex min-h-[75vh] max-w-md flex-col justify-center px-6 py-12">
-      <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-        <div className="mb-6">
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50">
-            <KeyRound className="h-6 w-6 text-amber-600" />
+    <main className="flex min-h-[80vh] items-center justify-center px-4 py-12 sm:px-6">
+      <div className="animate-fade-in w-full max-w-md">
+        <div className="rounded-2xl border border-gray-200 bg-white p-8 sm:p-10 shadow-xl shadow-gray-900/5">
+          {/* Header */}
+          <div className="mb-8">
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-amber-50">
+              <KeyRound className="h-6 w-6 text-amber-600" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+              Forgot password?
+            </h1>
+            <p className="mt-2 text-sm text-gray-500">
+              Enter your email and we&apos;ll send a reset link
+            </p>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Forgot password?</h1>
-          <p className="mt-1.5 text-sm text-slate-500">
-            Enter your email and we&apos;ll send a reset link
+
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <FormInput
+              label="Email address"
+              id="forgot-email"
+              type="email"
+              placeholder="you@example.com"
+              register={register("email", {
+                required: "Email is required",
+                pattern: { value: /^\S+@\S+$/i, message: "Invalid email" },
+              })}
+              error={errors.email?.message}
+            />
+
+            <button
+              type="submit"
+              disabled={forgotMutation.isPending}
+              className="w-full rounded-lg bg-primary-600 py-3 text-sm font-semibold text-white shadow-sm shadow-primary-600/25 transition-all duration-200 hover:bg-primary-700 hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {forgotMutation.isPending ? "Sending…" : "Send reset link"}
+            </button>
+          </form>
+
+          {/* Footer */}
+          <p className="mt-8 text-center text-sm text-gray-500">
+            <Link
+              to={routePaths.login}
+              className="font-semibold text-primary-600 hover:text-primary-700 transition-colors"
+            >
+              Back to login
+            </Link>
           </p>
         </div>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <FormInput
-            label="Email address"
-            id="forgot-email"
-            type="email"
-            placeholder="you@example.com"
-            register={register("email", {
-              required: "Email is required",
-              pattern: { value: /^\S+@\S+$/i, message: "Invalid email" },
-            })}
-            error={errors.email?.message}
-          />
-
-          <button
-            type="submit"
-            disabled={forgotMutation.isPending}
-            className="w-full rounded-xl bg-slate-950 py-3 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:opacity-60"
-          >
-            {forgotMutation.isPending ? "Sending..." : "Send reset link"}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-slate-500">
-          <Link to={routePaths.login} className="font-semibold text-emerald-600 hover:text-emerald-700">
-            Back to login
-          </Link>
-        </p>
       </div>
     </main>
   );

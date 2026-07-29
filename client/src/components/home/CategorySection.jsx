@@ -4,14 +4,15 @@ import routePaths from "../../routes/routePaths.js";
 import { fallbackCategories } from "../../data/homeData.js";
 
 function CategorySection({ categories }) {
-  // Use API categories if available, otherwise use fallback mock data
   const hasApiCategories = categories && categories.length > 0;
 
   return (
-    <section className="home-section bg-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        {/* Circular Category Icons */}
-        <div className="flex items-center justify-center gap-6 sm:gap-8 md:gap-12 lg:gap-16 overflow-x-auto pb-2 scrollbar-none">
+    <section className="home-section border-b border-gray-100 bg-white">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h2 className="mb-6 text-center text-sm font-bold uppercase tracking-widest text-gray-400">
+          Shop by category
+        </h2>
+        <div className="flex items-center justify-start gap-6 overflow-x-auto pb-2 scrollbar-none sm:justify-center sm:gap-8 md:gap-12">
           {hasApiCategories
             ? categories.slice(0, 6).map((cat, index) => (
                 <Link
@@ -20,7 +21,7 @@ function CategorySection({ categories }) {
                   className="group flex flex-col items-center gap-3 flex-shrink-0 transition-all duration-300 animate-fade-in"
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  <div className="flex h-16 w-16 sm:h-[72px] sm:w-[72px] items-center justify-center rounded-full bg-violet-50 border-2 border-violet-100 transition-all duration-300 group-hover:bg-violet-100 group-hover:border-violet-200 group-hover:shadow-lg group-hover:shadow-violet-200/50 group-hover:scale-110">
+                  <div className="flex h-16 w-16 sm:h-[72px] sm:w-[72px] items-center justify-center rounded-full bg-primary-50 border-2 border-primary-100 transition-all duration-300 group-hover:bg-primary-100 group-hover:border-primary-200 group-hover:shadow-lg group-hover:shadow-primary-200/50 group-hover:scale-110">
                     {cat.image?.url ? (
                       <img
                         src={cat.image.url}
@@ -28,10 +29,10 @@ function CategorySection({ categories }) {
                         className="h-8 w-8 sm:h-9 sm:w-9 object-cover rounded-full"
                       />
                     ) : (
-                      <ShoppingBag size={24} className="text-violet-500" strokeWidth={1.5} />
+                      <ShoppingBag size={24} className="text-primary-500" strokeWidth={1.5} />
                     )}
                   </div>
-                  <span className="text-xs sm:text-sm font-semibold text-slate-600 group-hover:text-violet-700 transition-colors whitespace-nowrap">
+                  <span className="text-xs sm:text-sm font-semibold text-gray-600 group-hover:text-primary-700 transition-colors whitespace-nowrap">
                     {cat.name}
                   </span>
                 </Link>
@@ -43,12 +44,12 @@ function CategorySection({ categories }) {
                   className="group flex flex-col items-center gap-3 flex-shrink-0 transition-all duration-300 animate-fade-in"
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  <div className="flex h-16 w-16 sm:h-[72px] sm:w-[72px] items-center justify-center rounded-full bg-violet-50 border-2 border-violet-100 transition-all duration-300 group-hover:bg-violet-100 group-hover:border-violet-200 group-hover:shadow-lg group-hover:shadow-violet-200/50 group-hover:scale-110">
+                  <div className="flex h-16 w-16 sm:h-[72px] sm:w-[72px] items-center justify-center rounded-full bg-primary-50 border-2 border-primary-100 transition-all duration-300 group-hover:bg-primary-100 group-hover:border-primary-200 group-hover:shadow-lg group-hover:shadow-primary-200/50 group-hover:scale-110">
                     <span className="text-2xl sm:text-[28px] select-none transition-transform duration-300 group-hover:scale-110">
                       {cat.icon}
                     </span>
                   </div>
-                  <span className="text-xs sm:text-sm font-semibold text-slate-600 group-hover:text-violet-700 transition-colors whitespace-nowrap">
+                  <span className="text-xs sm:text-sm font-semibold text-gray-600 group-hover:text-primary-700 transition-colors whitespace-nowrap">
                     {cat.name}
                   </span>
                 </Link>

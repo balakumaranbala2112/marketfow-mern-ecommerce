@@ -8,15 +8,21 @@ const icons = {
 };
 
 const colors = {
-  success: "border-emerald-200 bg-emerald-50 text-emerald-800",
-  error: "border-red-200 bg-red-50 text-red-800",
-  info: "border-sky-200 bg-sky-50 text-sky-800",
+  success: "bg-emerald-50 text-emerald-800 border-emerald-200/60",
+  error: "bg-red-50 text-red-800 border-red-200/60",
+  info: "bg-primary-50 text-primary-800 border-primary-200/60",
 };
 
 const iconColors = {
   success: "text-emerald-500",
   error: "text-red-500",
-  info: "text-sky-500",
+  info: "text-primary-500",
+};
+
+const progressColors = {
+  success: "bg-emerald-400",
+  error: "bg-red-400",
+  info: "bg-primary-400",
 };
 
 function Toast() {
@@ -32,17 +38,28 @@ function Toast() {
         return (
           <div
             key={toast.id}
-            className={`flex items-start gap-3 rounded-xl border px-4 py-3 shadow-lg backdrop-blur-sm transition-all duration-300 ${colors[toast.type] || colors.info}`}
-            style={{ minWidth: 300, maxWidth: 420 }}
+            className={`animate-slide-in-right overflow-hidden rounded-xl border shadow-xl shadow-black/8 backdrop-blur-sm ${colors[toast.type] || colors.info}`}
+            style={{ minWidth: 320, maxWidth: 440 }}
           >
-            <Icon className={`mt-0.5 h-5 w-5 shrink-0 ${iconColors[toast.type] || iconColors.info}`} />
-            <p className="flex-1 text-sm font-medium">{toast.message}</p>
-            <button
-              onClick={() => removeToast(toast.id)}
-              className="shrink-0 rounded-lg p-1 opacity-60 hover:opacity-100"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <div className="flex items-start gap-3 px-4 py-3.5">
+              <Icon
+                className={`mt-0.5 h-5 w-5 shrink-0 ${iconColors[toast.type] || iconColors.info}`}
+              />
+              <p className="flex-1 text-sm font-medium leading-relaxed">
+                {toast.message}
+              </p>
+              <button
+                onClick={() => removeToast(toast.id)}
+                className="shrink-0 rounded-md p-0.5 opacity-50 transition-opacity hover:opacity-100"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <div className="h-0.5 w-full bg-black/5">
+              <div
+                className={`h-full animate-toast-progress rounded-full ${progressColors[toast.type] || progressColors.info}`}
+              />
+            </div>
           </div>
         );
       })}

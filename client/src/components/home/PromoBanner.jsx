@@ -22,11 +22,10 @@ function PromoBanner() {
           {/* Flash Sale Card */}
           <Link
             to={promoBanners[0].ctaLink}
-            className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 via-violet-600 to-purple-700 p-6 text-white shadow-lg shadow-purple-600/20 hover:shadow-xl hover:shadow-purple-600/30 transition-all duration-300 hover:-translate-y-0.5"
+            className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-primary-600 via-primary-600 to-violet-700 p-6 text-white shadow-lg shadow-primary-600/20 hover:shadow-xl hover:shadow-primary-600/30 transition-all duration-300 hover:-translate-y-0.5"
           >
-            {/* Decorative blurs */}
             <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10 blur-2xl" />
-            <div className="absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-purple-400/20 blur-xl" />
+            <div className="absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-primary-400/20 blur-xl" />
 
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-3">
@@ -37,74 +36,71 @@ function PromoBanner() {
                   {promoBanners[0].title}
                 </h3>
               </div>
-              <p className="text-sm text-purple-100 mb-4">
+              <p className="text-sm text-primary-100 mb-4">
                 {promoBanners[0].subtitle}
               </p>
 
               {/* Countdown */}
               <div className="flex items-center gap-2">
                 <TimeBlock value={timeLeft.hours} label="h" />
-                <span className="text-lg font-bold text-purple-200">:</span>
+                <span className="text-lg font-bold text-primary-200">:</span>
                 <TimeBlock value={timeLeft.minutes} label="m" />
-                <span className="text-lg font-bold text-purple-200">:</span>
+                <span className="text-lg font-bold text-primary-200">:</span>
                 <TimeBlock value={timeLeft.seconds} label="s" />
               </div>
             </div>
 
-            {/* Hover shimmer */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-shimmer" />
           </Link>
 
           {/* Free Shipping Card */}
           <Link
             to={promoBanners[1].ctaLink}
-            className="group relative overflow-hidden rounded-2xl bg-white border border-slate-100 p-6 shadow-sm hover:shadow-lg hover:border-violet-100 transition-all duration-300 hover:-translate-y-0.5"
+            className="group relative overflow-hidden rounded-xl bg-white border border-gray-200 p-6 shadow-sm hover:shadow-lg hover:border-primary-200 transition-all duration-300 hover:-translate-y-0.5"
           >
             <div className="flex items-center gap-3 mb-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600 group-hover:bg-violet-100 transition-colors">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-50 text-primary-600 group-hover:bg-primary-100 transition-colors">
                 <Truck size={20} />
               </div>
               <div>
-                <h3 className="text-base font-extrabold text-slate-900 tracking-tight">
+                <h3 className="text-base font-extrabold text-gray-900 tracking-tight">
                   {promoBanners[1].title}
                 </h3>
               </div>
             </div>
-            <p className="text-sm text-slate-500 mb-4">
+            <p className="text-sm text-gray-500 mb-4">
               {promoBanners[1].subtitle}
             </p>
-            <span className="inline-flex items-center gap-1 text-sm font-bold text-violet-600 group-hover:gap-2 transition-all">
+            <span className="inline-flex items-center gap-1 text-sm font-bold text-primary-600 group-hover:gap-2 transition-all">
               {promoBanners[1].cta}
             </span>
 
-            {/* Decorative */}
-            <div className="absolute -bottom-4 -right-4 w-20 h-20 rounded-full bg-violet-50 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute -bottom-4 -right-4 w-20 h-20 rounded-full bg-primary-50 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
           </Link>
 
           {/* New Arrivals Card */}
           <Link
             to={promoBanners[2].ctaLink}
-            className="group relative overflow-hidden rounded-2xl bg-white border border-slate-100 p-6 shadow-sm hover:shadow-lg hover:border-violet-100 transition-all duration-300 hover:-translate-y-0.5"
+            className="group relative overflow-hidden rounded-xl bg-white border border-gray-200 p-6 shadow-sm hover:shadow-lg hover:border-primary-200 transition-all duration-300 hover:-translate-y-0.5"
           >
             <div className="flex items-center gap-3 mb-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600 group-hover:bg-violet-100 transition-colors">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-50 text-primary-600 group-hover:bg-primary-100 transition-colors">
                 <Sparkles size={20} />
               </div>
               <div>
-                <h3 className="text-base font-extrabold text-slate-900 tracking-tight">
+                <h3 className="text-base font-extrabold text-gray-900 tracking-tight">
                   {promoBanners[2].title}
                 </h3>
               </div>
             </div>
-            <p className="text-sm text-slate-500 mb-4">
+            <p className="text-sm text-gray-500 mb-4">
               {promoBanners[2].subtitle}
             </p>
-            <span className="inline-flex items-center gap-1 text-sm font-bold text-violet-600 group-hover:gap-2 transition-all">
+            <span className="inline-flex items-center gap-1 text-sm font-bold text-primary-600 group-hover:gap-2 transition-all">
               {promoBanners[2].cta}
             </span>
 
-            {/* Decorative */}
-            <div className="absolute -bottom-4 -right-4 w-20 h-20 rounded-full bg-violet-50 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute -bottom-4 -right-4 w-20 h-20 rounded-full bg-primary-50 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
           </Link>
         </div>
       </div>
@@ -118,7 +114,7 @@ function TimeBlock({ value, label }) {
       <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20 text-base font-extrabold text-white backdrop-blur-sm border border-white/20">
         {String(value).padStart(2, "0")}
       </span>
-      <span className="text-[10px] font-bold text-purple-200 uppercase">
+      <span className="text-[10px] font-bold text-primary-200 uppercase">
         {label}
       </span>
     </div>

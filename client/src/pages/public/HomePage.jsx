@@ -15,67 +15,85 @@ function HomePage() {
     limit: 8,
     isActive: "true",
   });
+
   const { data: newData } = useProducts({
     sort: "createdAt",
     order: "desc",
     limit: 8,
     isActive: "true",
   });
-  const { data: bestSellerData } = useProducts({
+
+  const { data: topRatedData } = useProducts({
     sort: "ratingsAverage",
     order: "desc",
     limit: 4,
     isActive: "true",
   });
+
   const { data: categories } = useCategories();
 
   const featuredProducts = featuredData?.products || [];
   const newProducts = newData?.products || [];
-  const bestSellers = bestSellerData?.products || [];
+  const topRatedProducts = topRatedData?.products || [];
 
   return (
-    <main className="home-page space-y-0">
-      {/* 1. Hero Carousel — purple gradient banner */}
-      <HeroCarousel />
+    <main className="home-page">
+      {/* Hero */}
+      <div className="relative z-10 pt-3 sm:pt-5 lg:pt-7">
+        <HeroCarousel />
+      </div>
 
-      {/* 2. Category Icons — circular row */}
-      <CategorySection categories={categories} />
+      {/* Categories */}
+      <div className="relative z-10 mt-2 sm:mt-4">
+        <CategorySection categories={categories} />
+      </div>
 
-      {/* 3. Promo Cards — flash sale + info cards */}
-      <PromoBanner />
+      {/* Promotional content */}
+      <div className="relative z-10">
+        <PromoBanner />
+      </div>
 
-      {/* 4. Best Deals for You */}
-      <ProductSection
-        title="Best Deals for You"
-        subtitle="Handpicked products at the best prices"
-        linkText="View All"
-        linkTo={`${routePaths.products}?isFeatured=true`}
-        products={featuredProducts}
-      />
+      {/* Main product discovery area */}
+      <div className="home-surface-band relative z-10 mt-2">
+        <ProductSection
+          title="Featured Picks"
+          subtitle="Carefully selected products worth discovering"
+          linkText="View All"
+          linkTo={`${routePaths.products}?isFeatured=true`}
+          products={featuredProducts}
+        />
 
-      {/* 5. Recommended for You */}
-      <ProductSection
-        title="Recommended for You"
-        subtitle="Newest additions to the store"
-        linkText="View All"
-        linkTo={`${routePaths.products}?sort=-createdAt`}
-        products={newProducts}
-      />
+        <div className="mx-auto h-px max-w-7xl bg-gradient-to-r from-transparent via-border to-transparent" />
 
-      {/* 6. Best Sellers */}
-      <ProductSection
-        title="Best Sellers"
-        subtitle="Most loved by our customers"
-        linkText="View All"
-        linkTo={routePaths.products}
-        products={bestSellers}
-      />
+        <ProductSection
+          title="New Arrivals"
+          subtitle="Fresh products recently added to MarketFlow"
+          linkText="View All"
+          linkTo={`${routePaths.products}?sort=-createdAt`}
+          products={newProducts}
+        />
+      </div>
 
-      {/* 7. Newsletter — Join MarketFlow Club */}
-      <NewsletterSection />
+      {/* Top-rated products */}
+      <div className="relative z-10 bg-gradient-to-b from-transparent via-accent-50/45 to-transparent">
+        <ProductSection
+          title="Top Rated"
+          subtitle="Products with the highest customer ratings"
+          linkText="Explore Products"
+          linkTo={routePaths.products}
+          products={topRatedProducts}
+        />
+      </div>
 
-      {/* 8. Trust Bar — Benefits at bottom */}
-      <BenefitsRow />
+      {/* Newsletter */}
+      <div className="relative z-10 px-0 sm:px-2">
+        <NewsletterSection />
+      </div>
+
+      {/* Store benefits */}
+      <div className="relative z-10 border-t border-border/80 bg-white/75 backdrop-blur-sm">
+        <BenefitsRow />
+      </div>
     </main>
   );
 }

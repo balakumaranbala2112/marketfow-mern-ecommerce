@@ -35,48 +35,56 @@ function ResetPasswordPage() {
   };
 
   return (
-    <main className="mx-auto flex min-h-[75vh] max-w-md flex-col justify-center px-6 py-12">
-      <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
-        <div className="mb-6">
-          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50">
-            <ShieldCheck className="h-6 w-6 text-emerald-600" />
+    <main className="flex min-h-[80vh] items-center justify-center px-4 py-12 sm:px-6">
+      <div className="animate-fade-in w-full max-w-md">
+        <div className="rounded-2xl border border-gray-200 bg-white p-8 sm:p-10 shadow-xl shadow-gray-900/5">
+          {/* Header */}
+          <div className="mb-8">
+            <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50">
+              <ShieldCheck className="h-6 w-6 text-primary-600" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+              Reset password
+            </h1>
+            <p className="mt-2 text-sm text-gray-500">
+              Enter your new password below
+            </p>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Reset password</h1>
-          <p className="mt-1.5 text-sm text-slate-500">Enter your new password below</p>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <FormInput
+              label="New password"
+              id="reset-password"
+              type="password"
+              placeholder="At least 8 characters"
+              register={register("password", {
+                required: "Password is required",
+                minLength: { value: 8, message: "At least 8 characters" },
+              })}
+              error={errors.password?.message}
+            />
+
+            <FormInput
+              label="Confirm password"
+              id="reset-confirm-password"
+              type="password"
+              placeholder="Re-enter your password"
+              register={register("confirmPassword", {
+                required: "Confirm password is required",
+              })}
+              error={errors.confirmPassword?.message}
+            />
+
+            <button
+              type="submit"
+              disabled={resetMutation.isPending}
+              className="w-full rounded-lg bg-primary-600 py-3 text-sm font-semibold text-white shadow-sm shadow-primary-600/25 transition-all duration-200 hover:bg-primary-700 hover:shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {resetMutation.isPending ? "Resetting…" : "Reset password"}
+            </button>
+          </form>
         </div>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <FormInput
-            label="New password"
-            id="reset-password"
-            type="password"
-            placeholder="At least 8 characters"
-            register={register("password", {
-              required: "Password is required",
-              minLength: { value: 8, message: "At least 8 characters" },
-            })}
-            error={errors.password?.message}
-          />
-
-          <FormInput
-            label="Confirm password"
-            id="reset-confirm-password"
-            type="password"
-            placeholder="Re-enter your password"
-            register={register("confirmPassword", {
-              required: "Confirm password is required",
-            })}
-            error={errors.confirmPassword?.message}
-          />
-
-          <button
-            type="submit"
-            disabled={resetMutation.isPending}
-            className="w-full rounded-xl bg-slate-950 py-3 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:opacity-60"
-          >
-            {resetMutation.isPending ? "Resetting..." : "Reset password"}
-          </button>
-        </form>
       </div>
     </main>
   );

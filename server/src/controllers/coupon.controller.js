@@ -15,7 +15,7 @@ function isCouponStarted(coupon) {
 }
 
 function isCouponExpired(coupon) {
-  return coupon.expiresAt && coupon.expiresAt < new Date();
+  return coupon.expiresAt && coupon.expiresAt <= new Date();
 }
 
 function isCouponUsageLimitReached(coupon) {

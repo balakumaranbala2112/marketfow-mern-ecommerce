@@ -7,7 +7,7 @@ export const heroSlides = [
   {
     id: 1,
     badge: "New Collection",
-    heading: "Find Your Style,\nLove Your Look ✨",
+    heading: "Find Your Style,\nLove Your Look",
     copy: "Discover the latest trends in fashion, beauty, and lifestyle.",
     cta: "Shop Now",
     ctaLink: "/products?search=fashion",
@@ -17,17 +17,17 @@ export const heroSlides = [
   {
     id: 2,
     badge: "Up to 40% Off",
-    heading: "Tech Deals\nYou'll Love 🎧",
+    heading: "Tech Deals\nYou'll Love",
     copy: "Latest gadgets and electronics at unbeatable prices this season.",
     cta: "Shop Now",
     ctaLink: "/products?search=electronics",
     image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=600&fit=crop",
-    gradient: "from-blue-100 via-indigo-50 to-purple-50",
+    gradient: "from-blue-100 via-primary-50 to-purple-50",
   },
   {
     id: 3,
     badge: "Best Sellers",
-    heading: "Home Essentials\nFor Every Room 🏠",
+    heading: "Home Essentials\nFor Every Room",
     copy: "Everything you need to make your home beautiful and functional.",
     cta: "Shop Now",
     ctaLink: "/products?search=home",
@@ -37,7 +37,7 @@ export const heroSlides = [
   {
     id: 4,
     badge: "Fresh Drops",
-    heading: "Sport & Fitness\nGear Up Now 🏋️",
+    heading: "Sport & Fitness\nGear Up Now",
     copy: "Premium equipment to elevate your fitness journey.",
     cta: "Shop Now",
     ctaLink: "/products?search=fitness",

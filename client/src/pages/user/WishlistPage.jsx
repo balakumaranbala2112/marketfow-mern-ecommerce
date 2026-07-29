@@ -52,52 +52,65 @@ function WishlistPage() {
   }
 
   return (
-    <main className="mx-auto max-w-7xl px-6 py-10">
-      <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-600">Wishlist</p>
-      <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900">Your Wishlist</h1>
-      <p className="mt-1 text-sm text-slate-500">{products.length} item(s)</p>
+    <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <p className="text-xs font-bold uppercase tracking-widest text-primary-600">
+        Wishlist
+      </p>
+      <h1 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">
+        Your Wishlist
+      </h1>
+      <p className="mt-1 text-sm text-gray-500">{products.length} item(s)</p>
 
-      <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+      <div className="mt-8 grid grid-cols-2 gap-4 sm:gap-5 md:grid-cols-3 lg:grid-cols-4">
         {products.map((product) => {
           const image = product.images?.[0]?.url;
           const hasDiscount = product.discountPrice != null && product.discountPrice < product.price;
           const inStock = product.stock > 0 && product.isActive;
 
           return (
-            <div key={product._id} className="group rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+            <div
+              key={product._id}
+              className="group rounded-xl border border-gray-200 bg-white p-3 transition-all duration-300 hover:border-gray-300 hover:shadow-md"
+            >
               <Link to={`/products/${product._id}`}>
-                <div className="relative aspect-square overflow-hidden rounded-xl bg-slate-100">
+                <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
                   {image ? (
-                    <img src={image} alt={product.name} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+                    <img src={image} alt={product.name} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-slate-300"><ShoppingBag size={40} /></div>
+                    <div className="flex h-full items-center justify-center text-gray-300">
+                      <ShoppingBag size={40} />
+                    </div>
                   )}
                 </div>
               </Link>
-              <div className="mt-3 px-1">
-                <h3 className="line-clamp-1 text-sm font-semibold text-slate-900">{product.name}</h3>
-                <div className="mt-1 flex items-center gap-1.5">
+              <div className="mt-3 px-0.5">
+                <h3 className="line-clamp-1 text-sm font-semibold text-gray-900">{product.name}</h3>
+                <div className="mt-1.5 flex items-center gap-1.5">
                   <StarRating rating={product.ratingsAverage || 0} size={12} />
-                  <span className="text-xs text-slate-400">({product.ratingsCount || 0})</span>
+                  <span className="text-xs text-gray-400">({product.ratingsCount || 0})</span>
                 </div>
-                <div className="mt-1.5 flex items-center gap-2">
-                  <span className="text-base font-bold text-slate-900">
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-base font-bold text-gray-900">
                     ₹{(hasDiscount ? product.discountPrice : product.price)?.toLocaleString("en-IN")}
                   </span>
-                  {hasDiscount && <span className="text-xs text-slate-400 line-through">₹{product.price?.toLocaleString("en-IN")}</span>}
+                  {hasDiscount && (
+                    <span className="text-xs text-gray-400 line-through">
+                      ₹{product.price?.toLocaleString("en-IN")}
+                    </span>
+                  )}
                 </div>
                 <div className="mt-3 flex gap-2">
                   {inStock && (
                     <button
                       onClick={() => handleMoveToCart(product)}
-                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-slate-950 py-2 text-xs font-semibold text-white hover:bg-slate-800"
+                      className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-primary-600 py-2 text-xs font-semibold text-white transition-all duration-200 hover:bg-primary-700"
                     >
                       <ShoppingCart size={13} /> Add to Cart
                     </button>
                   )}
                   <button
                     onClick={() => handleRemove(product._id)}
-                    className="rounded-lg border border-slate-200 px-2.5 py-2 text-slate-400 hover:border-red-200 hover:text-red-500"
+                    className="rounded-lg border border-gray-200 px-2.5 py-2 text-gray-400 hover:border-red-200 hover:text-red-500 hover:bg-red-50 transition-all duration-200"
                   >
                     <Trash2 size={14} />
                   </button>

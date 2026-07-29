@@ -39,7 +39,7 @@ function AdminDashboardPage() {
       title: "Total Revenue",
       value: `₹${sales?.totalRevenue?.toLocaleString("en-IN") || 0}`,
       icon: TrendingUp,
-      color: "text-emerald-400 bg-emerald-500/10",
+      color: "text-primary-400 bg-primary-500/10",
       description: `Avg. Order: ₹${sales?.averageOrderValue?.toLocaleString("en-IN") || 0}`,
     },
     {
@@ -53,7 +53,7 @@ function AdminDashboardPage() {
       title: "Total Products",
       value: products?.totalProducts || 0,
       icon: Package,
-      color: "text-indigo-400 bg-indigo-500/10",
+      color: "text-primary-400 bg-primary-500/10",
       description: `${products?.lowStockProducts || 0} low stock items`,
     },
     {
@@ -79,7 +79,7 @@ function AdminDashboardPage() {
   return (
     <div className="space-y-8">
       <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.25em] text-emerald-400">
+        <p className="text-sm font-semibold uppercase tracking-[0.25em] text-primary-400">
           Admin Console
         </p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight text-white">
@@ -119,8 +119,8 @@ function AdminDashboardPage() {
               <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
@@ -137,7 +137,7 @@ function AdminDashboardPage() {
                 <Area
                   type="monotone"
                   dataKey="sales"
-                  stroke="#10b981"
+                  stroke="#6366f1"
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#colorSales)"
@@ -166,7 +166,7 @@ function AdminDashboardPage() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-8 text-center">
-                <p className="text-sm font-medium text-emerald-400">All products well stocked!</p>
+                <p className="text-sm font-medium text-primary-400">All products well stocked!</p>
               </div>
             )}
           </div>

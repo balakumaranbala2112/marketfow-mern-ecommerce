@@ -70,7 +70,7 @@ if (fs.existsSync(clientBuildPath)) {
 
 app.use("/", indexRoutes);
 
-app.use("/api/v1/auth", authRateLimiter, authRoutes);
+app.use("/api/v1/auth", authRateLimiter(), authRoutes);
 
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/categories", categoryRoutes);

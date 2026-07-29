@@ -9,14 +9,31 @@ function ProtectedRoute({ children, allowedRoles }) {
   const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
 
-  if (!accessToken || !user) {
+  const isAuthenticated = Boolean(accessToken && user);
+
+  if (!isAuthenticated) {
     return (
-      <Navigate to={routePaths.login} replace state={{ from: location }} />
+      <Navigate
+        to={routePaths.login}
+        replace
+        state={{ from: location }}
+      />
     );
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to={routePaths.home} replace />;
+  const isRoleRestricted =
+    Array.isArray(allowedRoles) && allowedRoles.length > 0;
+
+  const isAuthorized =
+    !isRoleRestricted || allowedRoles.includes(user.role);
+
+  if (!isAuthorized) {
+    return (
+      <Navigate
+        to={routePaths.unauthorized}
+        replace
+      />
+    );
   }
 
   return children;

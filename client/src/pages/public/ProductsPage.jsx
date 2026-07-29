@@ -4,6 +4,7 @@ import { Search, SlidersHorizontal, ShoppingBag, X } from "lucide-react";
 
 import { useProducts } from "../../features/products/hooks/useProducts.js";
 import { useCategories } from "../../features/categories/hooks/useCategories.js";
+import PageHeader from "../../components/common/PageHeader.jsx";
 import PageLoader from "../../components/common/PageLoader.jsx";
 import Pagination from "../../components/common/Pagination.jsx";
 import EmptyState from "../../components/common/EmptyState.jsx";
@@ -28,7 +29,6 @@ function ProductsPage() {
   if (maxPrice) params.maxPrice = maxPrice;
   if (isFeatured) params.isFeatured = isFeatured;
 
-  // Convert sort like "-createdAt" → sort=createdAt&order=desc
   if (sort) {
     if (sort.startsWith("-")) {
       params.sort = sort.slice(1);
@@ -71,26 +71,27 @@ function ProductsPage() {
   const hasFilters = search || category || minPrice || maxPrice || isFeatured;
 
   return (
-    <main className="mx-auto max-w-7xl px-4 sm:px-6 py-8 md:py-12">
-      {/* Header */}
-      <div className="mb-8 border-b border-slate-100 pb-6">
-        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">All Products</h1>
-        <p className="mt-2 text-sm text-slate-500">Discover our premium collection of handpicked items.</p>
-      </div>
+    <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <PageHeader
+        title="All Products"
+        description="Browse the full catalog. Filter by category, price, or sort to find what you need."
+      />
 
       <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar Filters */}
         <aside className={`w-full md:w-64 shrink-0 space-y-8 ${showFilters ? "block" : "hidden md:block"}`}>
           {/* Category */}
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">Category</h3>
-            <div className="mt-4 space-y-1">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">
+              Category
+            </h3>
+            <div className="space-y-1">
               <button
                 onClick={() => updateParam("category", "")}
-                className={`block w-full rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all ${
-                  !category 
-                    ? "bg-slate-900 text-white shadow-md shadow-slate-900/10" 
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                className={`block w-full rounded-lg px-4 py-2.5 text-left text-sm font-semibold transition-all duration-200 ${
+                  !category
+                    ? "bg-primary-600 text-white shadow-sm shadow-primary-600/25"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                 }`}
               >
                 All Categories
@@ -99,10 +100,10 @@ function ProductsPage() {
                 <button
                   key={cat._id}
                   onClick={() => updateParam("category", cat._id)}
-                  className={`block w-full rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-all ${
-                    category === cat._id 
-                      ? "bg-slate-900 text-white shadow-md shadow-slate-900/10" 
-                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  className={`block w-full rounded-lg px-4 py-2.5 text-left text-sm font-semibold transition-all duration-200 ${
+                    category === cat._id
+                      ? "bg-primary-600 text-white shadow-sm shadow-primary-600/25"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                   }`}
                 >
                   {cat.name}
@@ -113,30 +114,32 @@ function ProductsPage() {
 
           {/* Price Range */}
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">Price Range</h3>
-            <div className="mt-4 flex items-center gap-2">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">
+              Price Range
+            </h3>
+            <div className="flex items-center gap-2">
               <input
                 type="number"
                 placeholder="Min ₹"
                 value={minPrice}
                 onChange={(e) => updateParam("minPrice", e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-all focus:border-slate-400 focus:bg-white focus:ring-4 focus:ring-slate-100"
+                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm outline-none transition-all focus:border-primary-500 focus:bg-white focus:ring-2 focus:ring-primary-500/15"
               />
-              <span className="text-slate-400">-</span>
+              <span className="text-gray-400">-</span>
               <input
                 type="number"
                 placeholder="Max ₹"
                 value={maxPrice}
                 onChange={(e) => updateParam("maxPrice", e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none transition-all focus:border-slate-400 focus:bg-white focus:ring-4 focus:ring-slate-100"
+                className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm outline-none transition-all focus:border-primary-500 focus:bg-white focus:ring-2 focus:ring-primary-500/15"
               />
             </div>
           </div>
 
           {hasFilters && (
-            <button 
-              onClick={clearFilters} 
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-50 text-red-600 px-4 py-2.5 text-sm font-bold hover:bg-red-100 transition-colors"
+            <button
+              onClick={clearFilters}
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-red-50 text-red-600 px-4 py-2.5 text-sm font-bold hover:bg-red-100 transition-colors"
             >
               <X size={16} /> Clear All Filters
             </button>
@@ -146,18 +149,18 @@ function ProductsPage() {
         {/* Main Content */}
         <div className="flex-1 min-w-0">
           {/* Toolbar */}
-          <div className="mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl bg-white border border-slate-100 p-3 shadow-sm">
+          <div className="mb-6 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-xl bg-white border border-gray-200 p-3 shadow-sm">
             {/* Search */}
             <form onSubmit={handleSearch} className="flex w-full sm:max-w-md relative">
-              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                placeholder="Search products..."
-                className="w-full rounded-xl border-none bg-slate-50 py-2.5 pl-10 pr-24 text-sm outline-none transition-all focus:bg-white focus:ring-2 focus:ring-slate-200"
+                placeholder="Search products…"
+                className="w-full rounded-lg border-none bg-gray-50 py-2.5 pl-10 pr-24 text-sm outline-none transition-all focus:bg-white focus:ring-2 focus:ring-primary-500/15"
               />
-              <button type="submit" className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-lg bg-slate-900 px-4 py-1.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors">
+              <button type="submit" className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md bg-primary-600 px-4 py-1.5 text-xs font-bold text-white hover:bg-primary-700 transition-colors">
                 Search
               </button>
             </form>
@@ -167,7 +170,7 @@ function ProductsPage() {
               <select
                 value={sort}
                 onChange={(e) => updateParam("sort", e.target.value)}
-                className="w-full sm:w-auto rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none font-medium text-slate-700 transition-all focus:border-slate-400 focus:bg-white"
+                className="w-full sm:w-auto rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm outline-none font-medium text-gray-700 transition-all focus:border-primary-500 focus:bg-white"
               >
                 <option value="-createdAt">Newest First</option>
                 <option value="createdAt">Oldest First</option>
@@ -180,7 +183,7 @@ function ProductsPage() {
               {/* Mobile Filter Toggle */}
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="flex shrink-0 items-center justify-center h-10 w-10 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 md:hidden"
+                className="flex shrink-0 items-center justify-center h-10 w-10 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 md:hidden"
               >
                 <SlidersHorizontal size={18} />
               </button>
@@ -201,8 +204,8 @@ function ProductsPage() {
           ) : (
             <>
               <div className="mb-4 flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-500">
-                  Showing <span className="font-bold text-slate-900">{data?.meta?.count || products.length}</span> results
+                <p className="text-sm font-medium text-gray-500">
+                  Showing <span className="font-bold text-gray-900">{data?.meta?.count || products.length}</span> results
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
