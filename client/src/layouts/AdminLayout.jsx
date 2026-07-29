@@ -1,23 +1,28 @@
-import { useState } from "react";
-import { NavLink, Outlet, Link } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, NavLink, Outlet, useLocation } from "react-router";
 import {
-  LayoutDashboard,
-  Package,
-  Tag,
-  ShoppingBag,
-  Users,
-  Percent,
   ArrowLeft,
+  LayoutDashboard,
   LogOut,
   Menu,
+  Package,
+  Percent,
+  ShoppingBag,
+  Tag,
+  Users,
   X,
 } from "lucide-react";
+
 import useAuthStore from "../stores/authStore.js";
 import Toast from "../components/common/Toast.jsx";
 import routePaths from "../routes/routePaths.js";
 
 const adminNavItems = [
-  { label: "Dashboard", path: routePaths.adminDashboard, icon: LayoutDashboard },
+  {
+    label: "Dashboard",
+    path: routePaths.adminDashboard,
+    icon: LayoutDashboard,
+  },
   { label: "Products", path: routePaths.adminProducts, icon: Package },
   { label: "Categories", path: routePaths.adminCategories, icon: Tag },
   { label: "Orders", path: routePaths.adminOrders, icon: ShoppingBag },
@@ -26,147 +31,216 @@ const adminNavItems = [
 ];
 
 function AdminLayout() {
+  const location = useLocation();
   const user = useAuthStore((state) => state.user);
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
-  const navLinks = (
-    <>
-      {adminNavItems.map((item) => {
-        const Icon = item.icon;
-        return (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            onClick={() => setMobileNavOpen(false)}
-            className={({ isActive }) =>
-              `flex items-center gap-3 rounded-lg px-4 py-3 text-sm transition-all duration-200 ${
-                isActive
-                  ? "bg-primary-500/10 font-bold text-primary-400 border-l-2 border-primary-500 pl-3.5 rounded-l-none"
-                  : "text-gray-400 hover:bg-white/5 hover:text-gray-200"
-              }`
-            }
-          >
-            <Icon size={16} />
-            {item.label}
-          </NavLink>
-        );
-      })}
-    </>
-  );
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileNavOpen]);
+
+  const activeItem =
+    adminNavItems.find((item) => location.pathname.startsWith(item.path)) ||
+    adminNavItems[0];
 
   return (
-    <div className="min-h-screen bg-[#0b1329] text-gray-100 flex font-sans">
+    <div className="min-h-screen bg-surface-muted text-text">
       <Toast />
 
-      {mobileNavOpen ? (
+      {mobileNavOpen && (
         <button
           type="button"
-          className="fixed inset-0 z-40 bg-black/50 md:hidden"
-          aria-label="Close menu"
+          className="fixed inset-0 z-40 bg-primary-950/60 md:hidden"
+          aria-label="Close admin navigation"
           onClick={() => setMobileNavOpen(false)}
         />
-      ) : null}
+      )}
 
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-screen w-64 flex-col justify-between border-r border-gray-800/60 bg-[#070d1e] p-6 transition-transform duration-300 md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-[276px] flex-col border-r border-primary-800 bg-primary-950 text-white transition-transform duration-200 md:translate-x-0 ${
           mobileNavOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
       >
-        <div className="space-y-8">
+        <div className="flex h-16 items-center justify-between border-b border-white/10 px-5">
           <Link
             to={routePaths.adminDashboard}
-            className="flex items-center gap-2.5 font-extrabold text-lg tracking-tight text-white hover:opacity-90"
-            onClick={() => setMobileNavOpen(false)}
+            className="inline-flex items-center gap-3 rounded-md"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-600 text-sm font-black text-white shadow-md shadow-primary-600/30">
+            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-accent-400 text-sm font-black text-primary-950">
               M
             </span>
-            <span>
-              MarketFlow{" "}
-              <span className="ml-1 rounded-md border border-primary-500/15 bg-primary-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary-400">
-                Admin
+
+            <span className="min-w-0">
+              <span className="block text-base font-extrabold tracking-[-0.025em]">
+                MarketFlow
+              </span>
+              <span className="block text-[10px] font-bold uppercase tracking-[0.14em] text-primary-300">
+                Administration
               </span>
             </span>
           </Link>
 
-          <nav className="flex flex-col gap-1">{navLinks}</nav>
+          <button
+            type="button"
+            onClick={() => setMobileNavOpen(false)}
+            className="flex h-9 w-9 items-center justify-center rounded-md text-primary-300 transition hover:bg-white/10 hover:text-white md:hidden"
+            aria-label="Close navigation"
+          >
+            <X size={19} aria-hidden="true" />
+          </button>
         </div>
 
-        <div className="space-y-2">
+        <div className="flex-1 overflow-y-auto px-3 py-5">
+          <p className="px-3 text-[10px] font-extrabold uppercase tracking-[0.14em] text-primary-400">
+            Operations
+          </p>
+
+          <nav className="mt-3 space-y-1" aria-label="Admin navigation">
+            {adminNavItems.map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `group flex min-h-[44px] items-center gap-3 rounded-md px-3 text-sm font-semibold transition ${
+                      isActive
+                        ? "bg-accent-400 text-primary-950"
+                        : "text-primary-200 hover:bg-white/[0.07] hover:text-white"
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <span
+                        className={`flex h-8 w-8 items-center justify-center rounded-md ${
+                          isActive
+                            ? "bg-primary-950/10 text-primary-950"
+                            : "bg-white/[0.06] text-primary-300 group-hover:text-white"
+                        }`}
+                      >
+                        <Icon size={16} aria-hidden="true" />
+                      </span>
+                      <span>{item.label}</span>
+                    </>
+                  )}
+                </NavLink>
+              );
+            })}
+          </nav>
+        </div>
+
+        <div className="border-t border-white/10 p-3">
+          <div className="mb-3 flex items-center gap-3 rounded-md bg-white/[0.055] px-3 py-3">
+            {user?.avatar?.url ? (
+              <img
+                src={user.avatar.url}
+                alt=""
+                className="h-9 w-9 shrink-0 rounded-md object-cover"
+              />
+            ) : (
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary-800 text-xs font-extrabold text-primary-100">
+                {getInitial(user?.name)}
+              </span>
+            )}
+
+            <div className="min-w-0">
+              <p className="truncate text-sm font-extrabold text-white">
+                {user?.name || "Administrator"}
+              </p>
+              <p className="truncate text-xs text-primary-400">
+                {user?.email || "Admin account"}
+              </p>
+            </div>
+          </div>
+
           <Link
             to={routePaths.home}
-            className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-gray-400 transition-all hover:bg-white/5 hover:text-gray-200"
-            onClick={() => setMobileNavOpen(false)}
+            className="flex min-h-[42px] items-center gap-3 rounded-md px-3 text-sm font-semibold text-primary-300 transition hover:bg-white/[0.07] hover:text-white"
           >
-            <ArrowLeft size={16} />
-            Back to Store
+            <ArrowLeft size={16} aria-hidden="true" />
+            Back to store
           </Link>
+
           <button
             type="button"
             onClick={clearAuth}
-            className="flex w-full cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-sm text-red-400 transition-all hover:bg-red-500/10"
+            className="mt-1 flex min-h-[42px] w-full items-center gap-3 rounded-md px-3 text-sm font-semibold text-red-300 transition hover:bg-red-500/10 hover:text-red-200"
           >
-            <LogOut size={16} />
-            Logout
+            <LogOut size={16} aria-hidden="true" />
+            Sign out
           </button>
         </div>
       </aside>
 
-      <div className="flex min-h-screen flex-1 flex-col md:pl-64">
-        <header className="z-20 flex items-center justify-between border-b border-gray-800/60 bg-[#070d1e]/80 px-4 py-4 backdrop-blur-sm sm:px-6">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              className="rounded-lg p-2 text-gray-400 hover:bg-white/5 hover:text-white md:hidden"
-              onClick={() => setMobileNavOpen(true)}
-              aria-label="Open menu"
-            >
-              <Menu size={22} />
-            </button>
-            <p className="text-xs font-bold uppercase tracking-widest text-gray-500">
-              Admin Control Center
-            </p>
-          </div>
-          {user ? (
+      <div className="min-h-screen md:pl-[276px]">
+        <header className="sticky top-0 z-30 border-b border-border bg-white/95 backdrop-blur-sm">
+          <div className="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+            <div className="flex min-w-0 items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setMobileNavOpen(true)}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border bg-white text-primary-800 transition hover:bg-primary-50 md:hidden"
+                aria-label="Open admin navigation"
+              >
+                <Menu size={20} aria-hidden="true" />
+              </button>
+
+              <div className="min-w-0">
+                <p className="truncate text-xs font-bold uppercase tracking-[0.12em] text-text-soft">
+                  Admin control center
+                </p>
+                <h1 className="truncate text-lg font-extrabold tracking-[-0.02em] text-primary-950">
+                  {activeItem.label}
+                </h1>
+              </div>
+            </div>
+
             <div className="flex items-center gap-3">
-              <span className="hidden text-xs font-semibold text-gray-400 sm:inline">
-                {user.name}
+              <span className="hidden rounded-md border border-green-100 bg-green-50 px-2.5 py-1 text-xs font-bold text-green-700 sm:inline-flex">
+                Admin session
               </span>
-              {user.avatar?.url ? (
+
+              {user?.avatar?.url ? (
                 <img
                   src={user.avatar.url}
                   alt=""
-                  className="h-8 w-8 rounded-lg border border-gray-700 object-cover"
+                  className="h-9 w-9 rounded-md border border-border object-cover"
                 />
               ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-800 text-xs font-bold text-gray-300">
-                  {user.name?.[0]?.toUpperCase()}
-                </div>
+                <span className="flex h-9 w-9 items-center justify-center rounded-md border border-border bg-primary-100 text-xs font-extrabold text-primary-700">
+                  {getInitial(user?.name)}
+                </span>
               )}
             </div>
-          ) : null}
+          </div>
         </header>
 
-        <main className="flex-1 bg-[#0b1329] p-4 sm:p-6">
-          <div className="mx-auto max-w-6xl">
+        <main className="p-4 sm:p-6 lg:p-8">
+          <div className="mx-auto max-w-[1440px]">
             <Outlet />
           </div>
         </main>
       </div>
-
-      {mobileNavOpen ? (
-        <button
-          type="button"
-          className="fixed right-4 top-4 z-[60] rounded-lg bg-gray-800 p-2 text-white md:hidden"
-          onClick={() => setMobileNavOpen(false)}
-          aria-label="Close navigation"
-        >
-          <X size={20} />
-        </button>
-      ) : null}
     </div>
   );
+}
+
+function getInitial(name) {
+  return name?.trim()?.charAt(0)?.toUpperCase() || "A";
 }
 
 export default AdminLayout;

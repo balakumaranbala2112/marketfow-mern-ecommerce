@@ -1,451 +1,547 @@
-import { useState } from "react";
-import { NavLink, Outlet, Link, useNavigate, useLocation } from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { Link, Outlet, useLocation, useNavigate } from "react-router";
 import {
-  ShoppingCart,
+  ChevronDown,
   Heart,
-  User,
+  LayoutDashboard,
   LogOut,
   Menu,
-  X,
-  LayoutDashboard,
-  Search,
   Package,
-  ChevronDown,
+  Search,
+  ShoppingBag,
+  ShoppingCart,
+  User,
+  X,
 } from "lucide-react";
 
 import routePaths from "../routes/routePaths.js";
 import useAuthStore from "../stores/authStore.js";
 import { useCart } from "../features/cart/hooks/useCart.js";
+
 import Toast from "../components/common/Toast.jsx";
 import BrandMark from "../components/common/BrandMark.jsx";
 
 const navItems = [
   { label: "Home", path: routePaths.home },
   { label: "Products", path: routePaths.products },
-  { label: "Deals", path: `${routePaths.products}?isFeatured=true` },
+  {
+    label: "Deals",
+    path: `${routePaths.products}?isFeatured=true`,
+  },
 ];
 
 const footerShopLinks = [
-  { label: "All Products", to: routePaths.products },
-  { label: "Featured Deals", to: `${routePaths.products}?isFeatured=true` },
-  { label: "New Arrivals", to: `${routePaths.products}?sort=-createdAt` },
-  { label: "Best Sellers", to: routePaths.products },
-];
-
-const footerSupportLinks = [
-  { label: "Help Center", to: routePaths.products },
-  { label: "Shipping Info", to: routePaths.products },
-  { label: "Returns & Exchanges", to: routePaths.products },
-  { label: "Contact Us", to: routePaths.products },
+  { label: "All products", to: routePaths.products },
+  {
+    label: "Featured products",
+    to: `${routePaths.products}?isFeatured=true`,
+  },
+  {
+    label: "New arrivals",
+    to: `${routePaths.products}?sort=-createdAt`,
+  },
 ];
 
 const footerAccountLinks = [
-  { label: "My Profile", to: routePaths.profile },
-  { label: "My Orders", to: routePaths.orders },
+  { label: "Profile", to: routePaths.profile },
+  { label: "Orders", to: routePaths.orders },
   { label: "Wishlist", to: routePaths.wishlist },
   { label: "Cart", to: routePaths.cart },
 ];
 
 function PublicLayout() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const dropdownRef = useRef(null);
+
   const user = useAuthStore((state) => state.user);
   const clearAuth = useAuthStore((state) => state.clearAuth);
   const { data: cart } = useCart();
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
   const cartCount =
-    cart?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0;
+    cart?.items?.reduce(
+      (total, item) => total + Number(item.quantity || 0),
+      0,
+    ) || 0;
 
-  function handleSearch(e) {
-    e.preventDefault();
-    const q = searchQuery.trim();
-    if (q) {
-      navigate(`${routePaths.products}?search=${encodeURIComponent(q)}`);
-      setSearchQuery("");
-      setSearchOpen(false);
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setDropdownOpen(false);
+    setMobileSearchOpen(false);
+  }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    function handleOutsideClick(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
     }
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [mobileMenuOpen]);
+
+  function handleSearch(event) {
+    event.preventDefault();
+
+    const normalizedQuery = searchQuery.trim();
+
+    if (!normalizedQuery) return;
+
+    navigate(
+      `${routePaths.products}?search=${encodeURIComponent(normalizedQuery)}`,
+    );
+
+    setSearchQuery("");
+    setMobileSearchOpen(false);
   }
 
-  const isLinkActive = (item) => {
+  function isLinkActive(item) {
     const currentPath = location.pathname;
     const currentSearch = location.search;
 
     if (item.label === "Home") {
       return currentPath === routePaths.home;
     }
+
     if (item.label === "Products") {
       return (
         currentPath === routePaths.products &&
         !currentSearch.includes("isFeatured=true")
       );
     }
+
     if (item.label === "Deals") {
       return (
         currentPath === routePaths.products &&
         currentSearch.includes("isFeatured=true")
       );
     }
+
     return currentPath === item.path;
-  };
+  }
+
+  function handleLogout() {
+    clearAuth();
+    setDropdownOpen(false);
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col font-sans">
+    <div className="flex min-h-screen flex-col bg-surface-muted text-text">
       <Toast />
 
-      <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 py-3">
-          <BrandMark />
+      <header className="sticky top-0 z-40">
+        <div className="bg-primary-950 text-white">
+          <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 py-2 sm:px-6 lg:px-8">
+            <p className="truncate text-[11px] font-medium text-primary-200 sm:text-xs">
+              Browse products, manage orders, and shop through one MarketFlow
+              account.
+            </p>
 
-          {/* Desktop search */}
-          <form
-            onSubmit={handleSearch}
-            className="hidden md:flex flex-1 max-w-lg mx-6"
-          >
-            <div className="relative w-full">
-              <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search for products, brands, and more…"
-                className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-sm outline-none transition-all duration-200 placeholder:text-gray-400 focus:border-primary-500 focus:bg-white focus:ring-2 focus:ring-primary-500/15"
-              />
-            </div>
-          </form>
-
-          {/* Desktop nav links */}
-          <nav className="hidden lg:flex items-center gap-1">
-            {navItems.map((item) => {
-              const active = isLinkActive(item);
-              return (
-                <Link
-                  key={item.label}
-                  to={item.path}
-                  className={`relative rounded-lg px-3.5 py-2 text-sm font-semibold transition-all duration-200 ${active
-                    ? "text-primary-600 bg-primary-50"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                    }`}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
-
-          {/* Right side icons */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            {/* Mobile search toggle */}
-            <button
-              onClick={() => setSearchOpen(!searchOpen)}
-              className="p-2.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-all duration-200 md:hidden"
-              aria-label="Search"
-            >
-              <Search size={20} />
-            </button>
-
-            {/* Wishlist */}
-            {user && (
-              <Link
-                to={routePaths.wishlist}
-                className="hidden sm:flex p-2.5 rounded-lg text-gray-500 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200"
-                aria-label="Wishlist"
-              >
-                <Heart size={20} />
-              </Link>
-            )}
-
-            {/* Cart */}
             <Link
-              to={routePaths.cart}
-              className="relative p-2.5 rounded-lg text-gray-500 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200"
-              aria-label="Cart"
+              to={routePaths.orders}
+              className="hidden shrink-0 text-xs font-semibold text-primary-200 hover:text-white hover:underline sm:inline"
             >
-              <ShoppingCart size={20} />
-              {cartCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary-600 text-[10px] font-bold text-white shadow-sm border-2 border-white">
-                  {cartCount > 9 ? "9+" : cartCount}
-                </span>
-              )}
+              Track orders
             </Link>
-
-            {/* User menu / Auth */}
-            {user ? (
-              <div className="relative">
-                <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white p-1.5 pr-3 hover:bg-gray-50 hover:border-gray-300 focus:outline-none transition-all duration-200 cursor-pointer"
-                >
-                  {user.avatar?.url ? (
-                    <img
-                      src={user.avatar.url}
-                      alt=""
-                      className="h-7 w-7 rounded-md object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary-100 text-xs font-bold text-primary-700">
-                      {user.name?.[0]?.toUpperCase()}
-                    </div>
-                  )}
-                  <span className="text-sm font-semibold text-gray-700 hidden sm:inline truncate max-w-[80px]">
-                    {user.name}
-                  </span>
-                  <ChevronDown size={14} className="text-gray-400 hidden sm:block" />
-                </button>
-
-                {dropdownOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-30"
-                      onClick={() => setDropdownOpen(false)}
-                    />
-                    <div className="animate-fade-in absolute right-0 mt-2 w-56 rounded-xl border border-gray-200 bg-white p-1.5 shadow-xl shadow-black/8 z-40">
-                      <div className="px-3 py-2.5 border-b border-gray-100 mb-1">
-                        <p className="text-[11px] font-medium uppercase tracking-wider text-gray-400">
-                          Signed in as
-                        </p>
-                        <p className="text-sm font-bold text-gray-900 truncate mt-0.5">
-                          {user.name}
-                        </p>
-                      </div>
-                      {user.role === "admin" && (
-                        <Link
-                          to={routePaths.adminDashboard}
-                          onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors"
-                        >
-                          <LayoutDashboard size={16} /> Admin Panel
-                        </Link>
-                      )}
-                      <Link
-                        to={routePaths.profile}
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors"
-                      >
-                        <User size={16} /> My Profile
-                      </Link>
-                      <Link
-                        to={routePaths.wishlist}
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors"
-                      >
-                        <Heart size={16} /> Wishlist
-                      </Link>
-                      <Link
-                        to={routePaths.orders}
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors"
-                      >
-                        <Package size={16} /> My Orders
-                      </Link>
-                      <div className="border-t border-gray-100 mt-1 pt-1">
-                        <button
-                          onClick={() => {
-                            clearAuth();
-                            setDropdownOpen(false);
-                          }}
-                          className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                        >
-                          <LogOut size={16} /> Logout
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            ) : (
-              <div className="hidden md:flex items-center gap-2">
-                <Link
-                  to={routePaths.login}
-                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
-                >
-                  Login
-                </Link>
-                <Link
-                  to={routePaths.register}
-                  className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold !text-white hover:bg-primary-700 transition-all duration-200 shadow-sm shadow-primary-600/25"
-                >
-                  Register
-                </Link>
-              </div>
-            )}
-
-            {/* Mobile menu toggle */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 lg:hidden transition-all"
-            >
-              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
-            </button>
           </div>
         </div>
 
-        {/* Mobile search bar */}
-        {searchOpen && (
-          <div className="animate-fade-in border-t border-gray-100 bg-white px-4 sm:px-6 py-3 md:hidden">
-            <form onSubmit={handleSearch} className="flex gap-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search products…"
-                  autoFocus
-                  className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-sm outline-none focus:border-primary-500 focus:bg-white"
+        <div className="border-b border-border bg-white">
+          <div className="mx-auto flex min-h-[68px] max-w-[1440px] items-center gap-3 px-4 sm:px-6 lg:px-8">
+            <BrandMark />
+
+            <form
+              onSubmit={handleSearch}
+              className="mx-4 hidden min-w-0 max-w-2xl flex-1 md:block"
+              role="search"
+            >
+              <div className="relative flex min-h-[44px] overflow-hidden rounded-md border border-border-strong bg-white focus-within:border-accent-500 focus-within:shadow-[0_0_0_3px_rgba(245,154,0,0.16)]">
+                <Search
+                  size={18}
+                  className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-primary-500"
+                  aria-hidden="true"
                 />
+
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Search products"
+                  className="min-w-0 flex-1 border-0 bg-transparent py-2.5 pl-10 pr-3 text-sm text-text outline-none placeholder:text-text-soft"
+                />
+
+                <button
+                  type="submit"
+                  className="border-l border-accent-600 bg-accent-400 px-5 text-sm font-bold text-primary-950 transition hover:bg-accent-300"
+                >
+                  Search
+                </button>
               </div>
-              <button
-                type="submit"
-                className="rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-primary-700"
-              >
-                Go
-              </button>
             </form>
-          </div>
-        )}
 
-        {/* Mobile navigation */}
-        {mobileMenuOpen && (
-          <div className="animate-fade-in border-t border-gray-200 bg-white px-4 sm:px-6 py-4 lg:hidden space-y-1">
-            {navItems.map((item) => {
-              const active = isLinkActive(item);
-              return (
-                <Link
-                  key={item.label}
-                  to={item.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`block text-sm font-semibold py-3 px-4 rounded-lg transition-all ${active
-                    ? "bg-primary-50 text-primary-600"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+            <nav
+              className="hidden items-center gap-1 lg:flex"
+              aria-label="Primary navigation"
+            >
+              {navItems.map((item) => {
+                const active = isLinkActive(item);
+
+                return (
+                  <Link
+                    key={item.label}
+                    to={item.path}
+                    className={`min-h-[40px] rounded-md px-3.5 py-2.5 text-sm font-semibold transition ${
+                      active
+                        ? "bg-primary-950 text-white"
+                        : "text-primary-800 hover:bg-primary-50 hover:text-primary-950"
                     }`}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
 
-            {!user && (
-              <div className="pt-4 mt-2 border-t border-gray-100 flex gap-3">
+            <div className="ml-auto flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setMobileSearchOpen((current) => !current)}
+                className="flex h-10 w-10 items-center justify-center rounded-md text-primary-700 transition hover:bg-primary-50 md:hidden"
+                aria-label="Toggle search"
+                aria-expanded={mobileSearchOpen}
+              >
+                <Search size={20} aria-hidden="true" />
+              </button>
+
+              {user && (
                 <Link
-                  to={routePaths.login}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 rounded-lg border border-gray-300 py-2.5 text-center text-sm font-semibold text-gray-700 hover:bg-gray-50"
+                  to={routePaths.wishlist}
+                  className="hidden h-10 w-10 items-center justify-center rounded-md text-primary-700 transition hover:bg-primary-50 hover:text-red-600 sm:flex"
+                  aria-label="Wishlist"
                 >
-                  Login
+                  <Heart size={20} aria-hidden="true" />
                 </Link>
-                <Link
-                  to={routePaths.register}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex-1 rounded-lg bg-primary-600 py-2.5 text-center text-sm font-semibold !text-white hover:bg-primary-700"
-                >
-                  Register
-                </Link>
-              </div>
-            )}
+              )}
+
+              <Link
+                to={routePaths.cart}
+                className="relative flex h-10 w-10 items-center justify-center rounded-md text-primary-700 transition hover:bg-primary-50 hover:text-primary-950"
+                aria-label={`Cart with ${cartCount} items`}
+              >
+                <ShoppingCart size={20} aria-hidden="true" />
+
+                {cartCount > 0 && (
+                  <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full border-2 border-white bg-accent-500 px-1 text-[10px] font-extrabold text-primary-950">
+                    {cartCount > 99 ? "99+" : cartCount}
+                  </span>
+                )}
+              </Link>
+
+              {user ? (
+                <div className="relative" ref={dropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setDropdownOpen((current) => !current)}
+                    className="flex min-h-[42px] items-center gap-2 rounded-md border border-border bg-white p-1.5 pr-2.5 transition hover:bg-primary-50"
+                    aria-label="Open account menu"
+                    aria-expanded={dropdownOpen}
+                  >
+                    {user.avatar?.url ? (
+                      <img
+                        src={user.avatar.url}
+                        alt=""
+                        className="h-7 w-7 rounded-md object-cover"
+                      />
+                    ) : (
+                      <span className="flex h-7 w-7 items-center justify-center rounded-md bg-primary-100 text-xs font-extrabold text-primary-700">
+                        {getInitial(user.name)}
+                      </span>
+                    )}
+
+                    <span className="hidden max-w-[100px] truncate text-sm font-semibold text-primary-900 sm:inline">
+                      {user.name}
+                    </span>
+
+                    <ChevronDown
+                      size={14}
+                      className={`hidden text-primary-500 transition-transform sm:block ${
+                        dropdownOpen ? "rotate-180" : ""
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </button>
+
+                  {dropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-64 overflow-hidden rounded-lg border border-border bg-white shadow-[0_10px_30px_rgba(15,24,32,0.14)] animate-fade-in">
+                      <div className="border-b border-border bg-surface-subtle px-4 py-3">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-text-soft">
+                          Signed in as
+                        </p>
+
+                        <p className="mt-1 truncate text-sm font-extrabold text-primary-950">
+                          {user.name}
+                        </p>
+
+                        <p className="mt-0.5 truncate text-xs text-text-muted">
+                          {user.email}
+                        </p>
+                      </div>
+
+                      <div className="p-1.5">
+                        {user.role === "admin" && (
+                          <AccountMenuLink
+                            to={routePaths.adminDashboard}
+                            icon={LayoutDashboard}
+                            label="Admin panel"
+                          />
+                        )}
+
+                        <AccountMenuLink
+                          to={routePaths.profile}
+                          icon={User}
+                          label="Profile"
+                        />
+
+                        <AccountMenuLink
+                          to={routePaths.orders}
+                          icon={Package}
+                          label="Orders"
+                        />
+
+                        <AccountMenuLink
+                          to={routePaths.wishlist}
+                          icon={Heart}
+                          label="Wishlist"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="mt-1 flex min-h-[42px] w-full items-center gap-2.5 rounded-md border-t border-border px-3 text-sm font-semibold text-red-600 transition hover:bg-red-50"
+                        >
+                          <LogOut size={16} aria-hidden="true" />
+                          Sign out
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="hidden items-center gap-2 md:flex">
+                  <Link
+                    to={routePaths.login}
+                    className="inline-flex min-h-[40px] items-center justify-center rounded-md border border-border-strong bg-white px-4 text-sm font-semibold text-primary-900 transition hover:bg-primary-50"
+                  >
+                    Sign in
+                  </Link>
+
+                  <Link
+                    to={routePaths.register}
+                    className="inline-flex min-h-[40px] items-center justify-center rounded-md border border-accent-600 bg-accent-400 px-4 text-sm font-bold text-primary-950 transition hover:bg-accent-300"
+                  >
+                    Create account
+                  </Link>
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen((current) => !current)}
+                className="flex h-10 w-10 items-center justify-center rounded-md text-primary-700 transition hover:bg-primary-50 lg:hidden"
+                aria-label="Toggle navigation menu"
+                aria-expanded={mobileMenuOpen}
+              >
+                {mobileMenuOpen ? (
+                  <X size={21} aria-hidden="true" />
+                ) : (
+                  <Menu size={21} aria-hidden="true" />
+                )}
+              </button>
+            </div>
           </div>
+
+          {mobileSearchOpen && (
+            <div className="border-t border-border bg-white px-4 py-3 md:hidden">
+              <form
+                onSubmit={handleSearch}
+                className="relative flex min-h-[44px] overflow-hidden rounded-md border border-border-strong"
+                role="search"
+              >
+                <Search
+                  size={18}
+                  className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-primary-500"
+                  aria-hidden="true"
+                />
+
+                <input
+                  type="search"
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="Search products"
+                  autoFocus
+                  className="min-w-0 flex-1 py-2.5 pl-10 pr-3 text-sm outline-none placeholder:text-text-soft"
+                />
+
+                <button
+                  type="submit"
+                  className="border-l border-accent-600 bg-accent-400 px-4 text-sm font-bold text-primary-950"
+                >
+                  Search
+                </button>
+              </form>
+            </div>
+          )}
+        </div>
+
+        {mobileMenuOpen && (
+          <>
+            <button
+              type="button"
+              className="fixed inset-0 top-[108px] z-30 bg-primary-950/50 lg:hidden"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close navigation menu"
+            />
+
+            <div className="relative z-40 border-b border-border bg-white px-4 py-4 shadow-lg lg:hidden">
+              <nav className="space-y-1" aria-label="Mobile navigation">
+                {navItems.map((item) => {
+                  const active = isLinkActive(item);
+
+                  return (
+                    <Link
+                      key={item.label}
+                      to={item.path}
+                      className={`block min-h-[44px] rounded-md px-4 py-3 text-sm font-semibold ${
+                        active
+                          ? "bg-primary-950 text-white"
+                          : "text-primary-800 hover:bg-primary-50"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              {!user && (
+                <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-4">
+                  <Link
+                    to={routePaths.login}
+                    className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-border-strong bg-white text-sm font-semibold text-primary-900"
+                  >
+                    Sign in
+                  </Link>
+
+                  <Link
+                    to={routePaths.register}
+                    className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-accent-600 bg-accent-400 text-sm font-bold text-primary-950"
+                  >
+                    Create account
+                  </Link>
+                </div>
+              )}
+            </div>
+          </>
         )}
       </header>
 
-      {/* ─── MAIN CONTENT ─── */}
       <div className="flex-1">
         <Outlet />
       </div>
 
-      {/* ─── FOOTER ─── */}
-      <footer className="border-t border-gray-200 bg-white mt-auto">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-16">
-            {/* Brand */}
+      <footer className="mt-auto border-t border-primary-800 bg-primary-950 text-white">
+        <div className="mx-auto max-w-[1440px] px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
+          <div className="grid gap-9 sm:grid-cols-2 lg:grid-cols-[1.35fr_0.75fr_0.75fr] lg:gap-14">
             <div>
-              <div className="flex items-center gap-2.5 mb-4">
-                <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-600 text-white text-sm font-black shadow-sm shadow-primary-600/25">
-                  M
+              <div className="inline-flex items-center gap-2.5">
+                <span className="flex h-9 w-9 items-center justify-center rounded-md bg-accent-400 text-primary-950">
+                  <ShoppingBag size={19} strokeWidth={2.2} aria-hidden="true" />
                 </span>
-                <span className="font-extrabold text-lg text-gray-900">
+
+                <span className="text-lg font-extrabold tracking-[-0.025em]">
                   MarketFlow
                 </span>
               </div>
-              <p className="text-sm text-gray-500 leading-relaxed">
-                Your one-stop destination for quality products at the best
-                prices. Shop with confidence — fast delivery, secure payments,
-                easy returns.
+
+              <p className="mt-4 max-w-md text-sm leading-7 text-primary-300">
+                Browse products, manage saved items, and review orders through
+                one consistent shopping account.
               </p>
             </div>
 
-            {/* Shop links */}
-            <div>
-              <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">
-                Shop
-              </h4>
-              <ul className="space-y-3">
-                {footerShopLinks.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      to={link.to}
-                      className="text-sm text-gray-500 hover:text-primary-600 transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Support links */}
-            <div>
-              <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">
-                Customer Support
-              </h4>
-              <ul className="space-y-3">
-                {footerSupportLinks.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      to={link.to}
-                      className="text-sm text-gray-500 hover:text-primary-600 transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Account links */}
-            <div>
-              <h4 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">
-                My Account
-              </h4>
-              <ul className="space-y-3">
-                {footerAccountLinks.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      to={link.to}
-                      className="text-sm text-gray-500 hover:text-primary-600 transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <FooterColumn title="Shop" links={footerShopLinks} />
+            <FooterColumn title="Account" links={footerAccountLinks} />
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="border-t border-gray-100">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
-            <p>© 2026 MarketFlow. All rights reserved.</p>
-            <p className="text-gray-400">Secure checkout · Fast delivery</p>
+        <div className="border-t border-white/10">
+          <div className="mx-auto flex max-w-[1440px] flex-col gap-2 px-4 py-4 text-xs text-primary-400 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+            <p>© 2026 MarketFlow.</p>
+            <p>Account, cart, and order information in one place.</p>
           </div>
         </div>
       </footer>
     </div>
   );
+}
+
+function AccountMenuLink({ to, icon: Icon, label }) {
+  return (
+    <Link
+      to={to}
+      className="flex min-h-[42px] items-center gap-2.5 rounded-md px-3 text-sm font-semibold text-primary-800 transition hover:bg-primary-50 hover:text-primary-950"
+    >
+      <Icon size={16} aria-hidden="true" />
+      {label}
+    </Link>
+  );
+}
+
+function FooterColumn({ title, links }) {
+  return (
+    <div>
+      <h2 className="text-xs font-extrabold uppercase tracking-[0.14em] text-primary-400">
+        {title}
+      </h2>
+
+      <ul className="mt-4 space-y-3">
+        {links.map((link) => (
+          <li key={link.label}>
+            <Link
+              to={link.to}
+              className="text-sm text-primary-300 transition hover:text-white hover:underline"
+            >
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function getInitial(name) {
+  return name?.trim()?.charAt(0)?.toUpperCase() || "U";
 }
 
 export default PublicLayout;
