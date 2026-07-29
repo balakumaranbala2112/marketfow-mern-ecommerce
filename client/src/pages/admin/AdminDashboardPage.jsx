@@ -1,232 +1,510 @@
+import {
+  AlertTriangle,
+  ArrowRight,
+  CheckCircle2,
+  CreditCard,
+  Package,
+  ShoppingBag,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import { Link } from "react-router";
+
 import { useDashboardSummary } from "../../features/admin/hooks/useAdmin.js";
 import PageLoader from "../../components/common/PageLoader.jsx";
 import Badge from "../../components/common/Badge.jsx";
-import {
-  Users,
-  ShoppingBag,
-  CreditCard,
-  TrendingUp,
-  AlertTriangle,
-  Package,
-} from "lucide-react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import routePaths from "../../routes/routePaths.js";
 
 function AdminDashboardPage() {
   const { data: summary, isLoading, error } = useDashboardSummary();
 
-  if (isLoading) return <PageLoader />;
-  if (error) {
+  if (isLoading) {
     return (
-      <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-red-800">
-        <h2 className="text-lg font-bold">Failed to load dashboard analytics</h2>
-        <p className="mt-1 text-sm">{error.message || "Please try again later."}</p>
+      <div className="py-20">
+        <PageLoader />
       </div>
     );
   }
 
-  const { users, products, orders, payments, sales, recentOrders = [] } = summary || {};
+  if (error) {
+    return (
+      <section className="rounded-lg border border-red-200 bg-red-50 p-5 sm:p-6">
+        <div className="flex items-start gap-3">
+          <AlertTriangle
+            size={21}
+            className="mt-0.5 shrink-0 text-red-600"
+            aria-hidden="true"
+          />
+
+          <div>
+            <h1 className="text-lg font-extrabold text-red-800">
+              Dashboard analytics could not be loaded
+            </h1>
+
+            <p className="mt-1 text-sm leading-6 text-red-700">
+              {error.message || "Please try again later."}
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const {
+    users,
+    products,
+    orders,
+    payments,
+    sales,
+    recentOrders = [],
+  } = summary || {};
 
   const stats = [
     {
-      title: "Total Revenue",
-      value: `₹${sales?.totalRevenue?.toLocaleString("en-IN") || 0}`,
+      title: "Total revenue",
+      value: formatCurrency(sales?.totalRevenue),
+      description: `Average order ${formatCurrency(sales?.averageOrderValue)}`,
       icon: TrendingUp,
-      color: "text-primary-400 bg-primary-500/10",
-      description: `Avg. Order: ₹${sales?.averageOrderValue?.toLocaleString("en-IN") || 0}`,
+      tone: "success",
     },
     {
-      title: "Total Orders",
-      value: orders?.totalOrders || 0,
-      icon: CreditCard,
-      color: "text-blue-400 bg-blue-500/10",
-      description: `${orders?.pending || 0} pending, ${orders?.delivered || 0} delivered`,
+      title: "Total orders",
+      value: formatNumber(orders?.totalOrders),
+      description: `${formatNumber(orders?.pending)} pending · ${formatNumber(
+        orders?.delivered,
+      )} delivered`,
+      icon: ShoppingBag,
+      tone: "amber",
     },
     {
-      title: "Total Products",
-      value: products?.totalProducts || 0,
+      title: "Catalog products",
+      value: formatNumber(products?.totalProducts),
+      description: `${formatNumber(
+        products?.lowStockProducts,
+      )} low-stock products`,
       icon: Package,
-      color: "text-primary-400 bg-primary-500/10",
-      description: `${products?.lowStockProducts || 0} low stock items`,
+      tone: "blue",
     },
     {
-      title: "Active Users",
-      value: users?.activeUsers || 0,
+      title: "Active users",
+      value: formatNumber(users?.activeUsers),
+      description: `${formatNumber(users?.blockedUsers)} blocked accounts`,
       icon: Users,
-      color: "text-violet-400 bg-violet-500/10",
-      description: `${users?.blockedUsers || 0} blocked users`,
+      tone: "violet",
     },
   ];
 
-  // Dummy chart data for visualization since backend summary doesn't include historical time series
-  const chartData = [
-    { name: "Mon", sales: (sales?.totalRevenue || 0) * 0.1 },
-    { name: "Tue", sales: (sales?.totalRevenue || 0) * 0.15 },
-    { name: "Wed", sales: (sales?.totalRevenue || 0) * 0.12 },
-    { name: "Thu", sales: (sales?.totalRevenue || 0) * 0.2 },
-    { name: "Fri", sales: (sales?.totalRevenue || 0) * 0.18 },
-    { name: "Sat", sales: (sales?.totalRevenue || 0) * 0.25 },
-    { name: "Sun", sales: (sales?.totalRevenue || 0) * 0.3 },
+  const paymentBreakdown = [
+    {
+      label: "Successful payments",
+      value: payments?.successful ?? payments?.paid ?? payments?.completed ?? 0,
+      tone: "text-green-700",
+    },
+    {
+      label: "Pending payments",
+      value: payments?.pending ?? payments?.awaiting ?? 0,
+      tone: "text-accent-800",
+    },
+    {
+      label: "Failed payments",
+      value: payments?.failed ?? 0,
+      tone: "text-red-600",
+    },
+  ];
+
+  const orderBreakdown = [
+    {
+      label: "Pending",
+      value: orders?.pending || 0,
+    },
+    {
+      label: "Processing",
+      value: orders?.processing ?? orders?.confirmed ?? 0,
+    },
+    {
+      label: "Shipped",
+      value: orders?.shipped || 0,
+    },
+    {
+      label: "Delivered",
+      value: orders?.delivered || 0,
+    },
   ];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <p className="text-sm font-semibold uppercase tracking-[0.25em] text-primary-400">
-          Admin Console
-        </p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-white">
-          Dashboard Overview
-        </h1>
-      </div>
+    <div className="space-y-6">
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-accent-700">
+            Store operations
+          </p>
 
-      {/* Stats Grid */}
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, idx) => {
-          const Icon = stat.icon;
-          return (
-            <div
-              key={idx}
-              className="rounded-2xl border border-white/10 bg-slate-900/50 p-6 backdrop-blur-sm"
-            >
-              <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-400">{stat.title}</p>
-                <div className={`rounded-xl p-2.5 ${stat.color}`}>
-                  <Icon className="h-5 w-5" />
-                </div>
-              </div>
-              <p className="mt-4 text-3xl font-bold text-white">{stat.value}</p>
-              <p className="mt-2 text-xs text-slate-500">{stat.description}</p>
-            </div>
-          );
-        })}
-      </div>
+          <h1 className="mt-2 text-2xl font-extrabold tracking-[-0.03em] text-primary-950 sm:text-3xl">
+            Dashboard overview
+          </h1>
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Sales Chart */}
-        <div className="rounded-2xl border border-white/10 bg-slate-900/50 p-6 backdrop-blur-sm lg:col-span-2">
-          <h2 className="text-lg font-bold text-white">Revenue Analysis</h2>
-          <p className="text-xs text-slate-500">Weekly sales distribution</p>
-          <div className="mt-6 h-80 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" />
-                <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={11} tickLine={false} />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#0f172a",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: "12px",
-                  }}
-                  labelStyle={{ color: "#94a3b8" }}
-                />
-                <Area
-                  type="monotone"
-                  dataKey="sales"
-                  stroke="#6366f1"
-                  strokeWidth={2}
-                  fillOpacity={1}
-                  fill="url(#colorSales)"
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+          <p className="mt-2 text-sm leading-6 text-text-muted">
+            Monitor revenue, orders, inventory, users, and recent activity.
+          </p>
         </div>
 
-        {/* Low Stock Alert */}
-        <div className="rounded-2xl border border-white/10 bg-slate-900/50 p-6 backdrop-blur-sm">
-          <div className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-amber-500" />
-            <h2 className="text-lg font-bold text-white">Stock Warnings</h2>
-          </div>
-          <p className="text-xs text-slate-500">Products below {products?.lowStockThreshold || 5} units</p>
+        <span className="inline-flex w-fit items-center gap-2 rounded-md border border-green-100 bg-green-50 px-3 py-2 text-sm font-bold text-green-700">
+          <CheckCircle2 size={16} aria-hidden="true" />
+          Live summary
+        </span>
+      </header>
 
-          <div className="mt-6 space-y-4">
-            {products?.lowStockProducts > 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 text-center">
-                <Package className="h-10 w-10 text-slate-600" />
-                <p className="mt-3 text-sm font-medium text-slate-400">
-                  {products.lowStockProducts} products need restocking
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {stats.map((stat) => (
+          <StatCard key={stat.title} {...stat} />
+        ))}
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)]">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <SummaryPanel
+            title="Order pipeline"
+            description="Current order-status distribution"
+            icon={ShoppingBag}
+          >
+            <div className="space-y-3">
+              {orderBreakdown.map((item) => (
+                <MetricRow
+                  key={item.label}
+                  label={item.label}
+                  value={formatNumber(item.value)}
+                />
+              ))}
+            </div>
+
+            <Link
+              to={routePaths.adminOrders}
+              className="mt-5 inline-flex min-h-[42px] w-full items-center justify-center gap-2 rounded-md border border-border-strong bg-white px-4 text-sm font-bold text-primary-900 transition hover:bg-primary-50"
+            >
+              Manage orders
+              <ArrowRight size={16} aria-hidden="true" />
+            </Link>
+          </SummaryPanel>
+
+          <SummaryPanel
+            title="Payment snapshot"
+            description="Payment outcomes reported by the backend"
+            icon={CreditCard}
+          >
+            <div className="space-y-3">
+              {paymentBreakdown.map((item) => (
+                <MetricRow
+                  key={item.label}
+                  label={item.label}
+                  value={formatNumber(item.value)}
+                  valueClassName={item.tone}
+                />
+              ))}
+            </div>
+          </SummaryPanel>
+        </div>
+
+        <section
+          className={`rounded-lg border p-5 shadow-[0_1px_4px_rgba(15,24,32,0.06)] ${
+            Number(products?.lowStockProducts) > 0
+              ? "border-amber-200 bg-amber-50"
+              : "border-green-100 bg-green-50"
+          }`}
+        >
+          <div className="flex items-start gap-3">
+            <span
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${
+                Number(products?.lowStockProducts) > 0
+                  ? "bg-white text-amber-700"
+                  : "bg-white text-green-700"
+              }`}
+            >
+              {Number(products?.lowStockProducts) > 0 ? (
+                <AlertTriangle size={19} aria-hidden="true" />
+              ) : (
+                <CheckCircle2 size={19} aria-hidden="true" />
+              )}
+            </span>
+
+            <div>
+              <h2 className="text-lg font-extrabold text-primary-950">
+                Inventory status
+              </h2>
+
+              <p className="mt-1 text-xs leading-5 text-text-muted">
+                Low-stock threshold: {products?.lowStockThreshold || 5} units
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            {Number(products?.lowStockProducts) > 0 ? (
+              <>
+                <p className="text-4xl font-extrabold tracking-[-0.04em] text-amber-800">
+                  {formatNumber(products.lowStockProducts)}
                 </p>
-                <p className="text-xs text-slate-500">Check the products section to update stock.</p>
-              </div>
+
+                <p className="mt-2 text-sm leading-6 text-amber-900">
+                  Products need inventory review.
+                </p>
+              </>
             ) : (
-              <div className="flex flex-col items-center justify-center py-8 text-center">
-                <p className="text-sm font-medium text-primary-400">All products well stocked!</p>
-              </div>
+              <>
+                <p className="text-lg font-extrabold text-green-700">
+                  Inventory levels look healthy
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-green-800">
+                  No products are currently below the configured threshold.
+                </p>
+              </>
             )}
           </div>
+
+          <Link
+            to={routePaths.adminProducts}
+            className="mt-6 inline-flex min-h-[42px] w-full items-center justify-center gap-2 rounded-md border border-primary-950 bg-primary-950 px-4 text-sm font-bold text-white transition hover:bg-primary-800"
+          >
+            Review products
+            <ArrowRight size={16} aria-hidden="true" />
+          </Link>
+        </section>
+      </section>
+
+      <section className="overflow-hidden rounded-lg border border-border bg-white shadow-[0_1px_4px_rgba(15,24,32,0.06)]">
+        <div className="flex flex-col gap-3 border-b border-border bg-surface-subtle px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-lg font-extrabold text-primary-950">
+              Recent orders
+            </h2>
+
+            <p className="mt-1 text-xs text-text-muted">
+              Latest purchases recorded by the store
+            </p>
+          </div>
+
+          <Link
+            to={routePaths.adminOrders}
+            className="inline-flex w-fit items-center gap-1.5 text-sm font-bold text-blue-700 hover:text-blue-800 hover:underline"
+          >
+            View all orders
+            <ArrowRight size={16} aria-hidden="true" />
+          </Link>
         </div>
-      </div>
 
-      {/* Recent Orders */}
-      <div className="rounded-2xl border border-white/10 bg-slate-900/50 p-6 backdrop-blur-sm">
-        <h2 className="text-lg font-bold text-white">Recent Activity</h2>
-        <p className="text-xs text-slate-500">Latest orders placed across the store</p>
+        {recentOrders.length > 0 ? (
+          <>
+            <div className="hidden overflow-x-auto md:block">
+              <table className="w-full min-w-[820px] text-left text-sm">
+                <thead className="border-b border-border bg-white">
+                  <tr className="text-xs font-bold uppercase tracking-[0.08em] text-text-soft">
+                    <th className="px-5 py-3.5">Order</th>
+                    <th className="px-5 py-3.5">Customer</th>
+                    <th className="px-5 py-3.5">Total</th>
+                    <th className="px-5 py-3.5">Order status</th>
+                    <th className="px-5 py-3.5">Payment</th>
+                    <th className="px-5 py-3.5">Date</th>
+                  </tr>
+                </thead>
 
-        <div className="mt-6 overflow-x-auto">
-          <table className="w-full text-left text-sm text-slate-300">
-            <thead className="border-b border-white/10 text-xs uppercase text-slate-400">
-              <tr>
-                <th className="py-3 px-4">Order ID</th>
-                <th className="py-3 px-4">Customer</th>
-                <th className="py-3 px-4">Total</th>
-                <th className="py-3 px-4">Status</th>
-                <th className="py-3 px-4">Payment</th>
-                <th className="py-3 px-4">Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-border">
+                  {recentOrders.map((order) => (
+                    <tr
+                      key={order._id}
+                      className="transition hover:bg-primary-50/50"
+                    >
+                      <td className="px-5 py-4">
+                        <Link
+                          to={`/admin/orders/${order._id}`}
+                          className="font-mono text-xs font-bold text-blue-700 hover:text-blue-800 hover:underline"
+                        >
+                          #{order._id.slice(-8).toUpperCase()}
+                        </Link>
+                      </td>
+
+                      <td className="px-5 py-4">
+                        <p className="font-extrabold text-primary-950">
+                          {order.user?.name || "Deleted user"}
+                        </p>
+
+                        <p className="mt-0.5 max-w-[190px] truncate text-xs text-text-soft">
+                          {order.user?.email || "Email unavailable"}
+                        </p>
+                      </td>
+
+                      <td className="px-5 py-4 font-extrabold text-primary-950">
+                        {formatCurrency(order.totalPrice)}
+                      </td>
+
+                      <td className="px-5 py-4">
+                        <Badge variant={order.orderStatus}>
+                          {formatStatus(order.orderStatus)}
+                        </Badge>
+                      </td>
+
+                      <td className="px-5 py-4">
+                        <Badge variant={order.paymentStatus}>
+                          {formatStatus(order.paymentStatus)}
+                        </Badge>
+                      </td>
+
+                      <td className="px-5 py-4 text-xs text-text-muted">
+                        {formatDate(order.createdAt)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="divide-y divide-border md:hidden">
               {recentOrders.map((order) => (
-                <tr key={order._id} className="hover:bg-white/5">
-                  <td className="py-3.5 px-4 font-mono text-xs">
-                    #{order._id.slice(-8).toUpperCase()}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <p className="font-semibold text-white">{order.user?.name || "Deleted User"}</p>
-                    <p className="text-xs text-slate-500">{order.user?.email}</p>
-                  </td>
-                  <td className="py-3.5 px-4 font-semibold text-white">
-                    ₹{order.totalPrice?.toLocaleString("en-IN")}
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <Badge variant={order.orderStatus}>{order.orderStatus}</Badge>
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <Badge variant={order.paymentStatus}>{order.paymentStatus}</Badge>
-                  </td>
-                  <td className="py-3.5 px-4 text-xs text-slate-500">
-                    {new Date(order.createdAt).toLocaleDateString()}
-                  </td>
-                </tr>
+                <article key={order._id} className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <Link
+                        to={`/admin/orders/${order._id}`}
+                        className="font-mono text-xs font-bold text-blue-700 hover:underline"
+                      >
+                        #{order._id.slice(-8).toUpperCase()}
+                      </Link>
+
+                      <h3 className="mt-1 truncate font-extrabold text-primary-950">
+                        {order.user?.name || "Deleted user"}
+                      </h3>
+
+                      <p className="mt-1 text-xs text-text-muted">
+                        {formatDate(order.createdAt)}
+                      </p>
+                    </div>
+
+                    <p className="shrink-0 font-extrabold text-primary-950">
+                      {formatCurrency(order.totalPrice)}
+                    </p>
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <Badge variant={order.orderStatus}>
+                      {formatStatus(order.orderStatus)}
+                    </Badge>
+
+                    <Badge variant={order.paymentStatus}>
+                      {formatStatus(order.paymentStatus)}
+                    </Badge>
+                  </div>
+                </article>
               ))}
-              {recentOrders.length === 0 && (
-                <tr>
-                  <td colSpan="6" className="py-8 text-center text-slate-500">
-                    No orders recorded yet.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </div>
+          </>
+        ) : (
+          <div className="px-5 py-14 text-center">
+            <ShoppingBag
+              size={28}
+              className="mx-auto text-primary-300"
+              aria-hidden="true"
+            />
+
+            <h3 className="mt-3 font-extrabold text-primary-950">
+              No orders recorded yet
+            </h3>
+
+            <p className="mt-1 text-sm text-text-muted">
+              New orders will appear here.
+            </p>
+          </div>
+        )}
+      </section>
     </div>
   );
+}
+
+function StatCard({ title, value, description, icon: Icon, tone }) {
+  const toneClasses = {
+    success: "bg-green-50 text-green-700",
+    amber: "bg-amber-50 text-amber-700",
+    blue: "bg-blue-50 text-blue-700",
+    violet: "bg-violet-50 text-violet-700",
+  };
+
+  return (
+    <article className="rounded-lg border border-border bg-white p-5 shadow-[0_1px_4px_rgba(15,24,32,0.06)]">
+      <div className="flex items-start justify-between gap-4">
+        <p className="text-sm font-semibold text-text-muted">{title}</p>
+
+        <span
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${
+            toneClasses[tone]
+          }`}
+        >
+          <Icon size={19} aria-hidden="true" />
+        </span>
+      </div>
+
+      <p className="mt-5 text-3xl font-extrabold tracking-[-0.04em] text-primary-950">
+        {value}
+      </p>
+
+      <p className="mt-2 text-xs leading-5 text-text-soft">{description}</p>
+    </article>
+  );
+}
+
+function SummaryPanel({ title, description, icon: Icon, children }) {
+  return (
+    <section className="rounded-lg border border-border bg-white p-5 shadow-[0_1px_4px_rgba(15,24,32,0.06)]">
+      <div className="flex items-start gap-3">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary-50 text-primary-700">
+          <Icon size={18} aria-hidden="true" />
+        </span>
+
+        <div>
+          <h2 className="text-lg font-extrabold text-primary-950">{title}</h2>
+
+          <p className="mt-1 text-xs leading-5 text-text-muted">
+            {description}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-5">{children}</div>
+    </section>
+  );
+}
+
+function MetricRow({ label, value, valueClassName = "text-primary-950" }) {
+  return (
+    <div className="flex items-center justify-between gap-4 border-b border-border pb-3 last:border-0 last:pb-0">
+      <span className="text-sm text-text-muted">{label}</span>
+
+      <span className={`font-extrabold ${valueClassName}`}>{value}</span>
+    </div>
+  );
+}
+
+function formatCurrency(value) {
+  return `₹${Number(value || 0).toLocaleString("en-IN")}`;
+}
+
+function formatNumber(value) {
+  return Number(value || 0).toLocaleString("en-IN");
+}
+
+function formatDate(value) {
+  if (!value) return "Date unavailable";
+
+  return new Date(value).toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function formatStatus(value) {
+  if (!value) return "Unknown";
+
+  return value
+    .replace(/[_-]/g, " ")
+    .replace(/\b\w/g, (character) => character.toUpperCase());
 }
 
 export default AdminDashboardPage;
