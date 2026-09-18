@@ -108,23 +108,20 @@ function validateCreateCoupon(body) {
     errors.push("Usage limit must be a positive integer");
   }
 
-  if (
-    body.startsAt !== undefined &&
-    (!isNonEmptyString(body.startsAt) || !isValidDateString(body.startsAt))
-  ) {
+  const hasStartsAt = body.startsAt !== undefined && body.startsAt !== null && body.startsAt !== "";
+  const hasExpiresAt = body.expiresAt !== undefined && body.expiresAt !== null && body.expiresAt !== "";
+
+  if (hasStartsAt && !isValidDateString(body.startsAt)) {
     errors.push("startsAt must be a valid date string");
   }
 
-  if (
-    body.expiresAt !== undefined &&
-    (!isNonEmptyString(body.expiresAt) || !isValidDateString(body.expiresAt))
-  ) {
+  if (hasExpiresAt && !isValidDateString(body.expiresAt)) {
     errors.push("expiresAt must be a valid date string");
   }
 
   if (
-    body.startsAt !== undefined &&
-    body.expiresAt !== undefined &&
+    hasStartsAt &&
+    hasExpiresAt &&
     isValidDateString(body.startsAt) &&
     isValidDateString(body.expiresAt) &&
     new Date(body.startsAt) >= new Date(body.expiresAt)

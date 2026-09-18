@@ -30,7 +30,7 @@ function ProtectedRoute({ children, allowedRoles }) {
   if (!isAuthorized) {
     return (
       <Navigate
-        to={routePaths.unauthorized}
+        to={routePaths.home}
         replace
       />
     );

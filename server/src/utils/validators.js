@@ -5,7 +5,7 @@ function isNonEmptyString(value) {
 }
 
 function isOptionalString(value) {
-  return value === undefined || typeof value === "string";
+  return value === undefined || value === null || typeof value === "string";
 }
 
 function isBoolean(value) {
@@ -13,7 +13,7 @@ function isBoolean(value) {
 }
 
 function isOptionalBoolean(value) {
-  return value === undefined || typeof value === "boolean";
+  return value === undefined || value === null || typeof value === "boolean";
 }
 
 function isNumber(value) {
@@ -21,7 +21,7 @@ function isNumber(value) {
 }
 
 function isOptionalNumber(value) {
-  return value === undefined || isNumber(value);
+  return value === undefined || value === null || isNumber(value);
 }
 
 function isNonNegativeNumber(value) {
@@ -29,7 +29,7 @@ function isNonNegativeNumber(value) {
 }
 
 function isOptionalNonNegativeNumber(value) {
-  return value === undefined || isNonNegativeNumber(value);
+  return value === undefined || value === null || isNonNegativeNumber(value);
 }
 
 function isMongoId(value) {
@@ -41,7 +41,7 @@ function isPlainObject(value) {
 }
 
 function isOptionalImageObject(value) {
-  if (value === undefined) {
+  if (value === undefined || value === null) {
     return true;
   }
 
@@ -49,16 +49,16 @@ function isOptionalImageObject(value) {
     return false;
   }
 
-  const isValidUrl = value.url === undefined || typeof value.url === "string";
+  const isValidUrl = value.url === undefined || value.url === null || typeof value.url === "string";
 
   const isValidPublicId =
-    value.publicId === undefined || typeof value.publicId === "string";
+    value.publicId === undefined || value.publicId === null || typeof value.publicId === "string";
 
   return isValidUrl && isValidPublicId;
 }
 
 function isOptionalArray(value) {
-  return value === undefined || Array.isArray(value);
+  return value === undefined || value === null || Array.isArray(value);
 }
 
 export {

@@ -21,11 +21,18 @@ import {
 const ONLINE_PAYMENT_EXPIRY_MINUTES = 30;
 
 function ensureRazorpayConfigured(next) {
-  if (!env.payment.razorpay.keyId || !env.payment.razorpay.keySecret) {
+  const { keyId, keySecret } = env.payment.razorpay;
+
+  if (
+    !keyId ||
+    !keySecret ||
+    keyId.startsWith("your_") ||
+    keySecret.startsWith("your_")
+  ) {
     next(
       new AppError(
         StatusCodes.INTERNAL_SERVER_ERROR,
-        "Razorpay is not configured",
+        "Razorpay payment gateway is not configured with valid API keys. Please update RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in server/.env",
       ),
     );
 
@@ -196,13 +203,20 @@ async function clearCart(cart) {
 }
 
 async function createRazorpayProviderOrder({ amount, receipt }) {
-  const razorpay = createRazorpayInstance();
+  try {
+    const razorpay = createRazorpayInstance();
 
-  return razorpay.orders.create({
-    amount: convertRupeesToPaise(amount),
-    currency: env.payment.razorpay.currency,
-    receipt,
-  });
+    return await razorpay.orders.create({
+      amount: convertRupeesToPaise(amount),
+      currency: env.payment.razorpay.currency,
+      receipt,
+    });
+  } catch (error) {
+    throw new AppError(
+      StatusCodes.INTERNAL_SERVER_ERROR,
+      `Razorpay gateway error: ${error.error?.description || error.message || "Invalid Razorpay API credentials"}`,
+    );
+  }
 }
 
 async function createRazorpayOrderFromCart(req, res, next) {

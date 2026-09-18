@@ -150,7 +150,9 @@ userSchema.methods.changePasswordAfter = function (jwtIssuedAt) {
 // Admin user screens commonly filter users by role/status and newest accounts.
 userSchema.index({ role: 1, createdAt: -1 });
 userSchema.index({ isBlocked: 1, createdAt: -1 });
+userSchema.index({ passwordResetToken: 1 }, { sparse: true });
 
 const User = mongoose.model("User", userSchema);
 
 export default User;
+

@@ -52,6 +52,49 @@ if (!jwtAccessSecret || jwtAccessSecret.length < 32) {
   throw new Error("JWT_ACCESS_SECRET must be at least 32 characters");
 }
 
+// Warn about missing/placeholder credentials in production.
+if (nodeEnv === "production") {
+  const productionWarnings = [];
+
+  if (
+    !process.env.RAZORPAY_KEY_ID ||
+    process.env.RAZORPAY_KEY_ID.startsWith("your_")
+  ) {
+    productionWarnings.push("RAZORPAY_KEY_ID is not configured");
+  }
+
+  if (
+    !process.env.RAZORPAY_KEY_SECRET ||
+    process.env.RAZORPAY_KEY_SECRET.startsWith("your_")
+  ) {
+    productionWarnings.push("RAZORPAY_KEY_SECRET is not configured");
+  }
+
+  if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY) {
+    productionWarnings.push("Cloudinary credentials are not configured");
+  }
+
+  if (process.env.CLIENT_URL?.includes("localhost")) {
+    productionWarnings.push(
+      "CLIENT_URL still points to localhost — update for production",
+    );
+  }
+
+  if (process.env.CORS_ALLOWED_ORIGINS?.includes("localhost")) {
+    productionWarnings.push(
+      "CORS_ALLOWED_ORIGINS still includes localhost — update for production",
+    );
+  }
+
+  if (productionWarnings.length > 0) {
+    console.warn(
+      "\n⚠️  PRODUCTION CONFIGURATION WARNINGS:\n" +
+        productionWarnings.map((w) => `   • ${w}`).join("\n") +
+        "\n",
+    );
+  }
+}
+
 const env = {
   port: Number(process.env.PORT) || 5000,
   nodeEnv,

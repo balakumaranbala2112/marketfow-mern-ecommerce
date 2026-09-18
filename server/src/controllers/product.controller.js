@@ -25,6 +25,16 @@ function validateProductId(productId, next) {
   return true;
 }
 
+function validateCategoryId(categoryId, next) {
+  if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+    next(new AppError(StatusCodes.BAD_REQUEST, "Valid categoryId is required"));
+
+    return false;
+  }
+
+  return true;
+}
+
 async function createProduct(req, res, next) {
   const {
     name,
@@ -42,7 +52,7 @@ async function createProduct(req, res, next) {
     specifications,
   } = req.body;
 
-  if (!validateProductId(category, next)) {
+  if (!validateCategoryId(category, next)) {
     return;
   }
 

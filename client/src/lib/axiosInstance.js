@@ -19,7 +19,11 @@ apiClient.interceptors.request.use(
     requestConfig.headers = requestConfig.headers || {};
 
     if (accessToken) {
-      requestConfig.headers.Authorization = `Bearer ${accessToken}`;
+      if (typeof requestConfig.headers.set === "function") {
+        requestConfig.headers.set("Authorization", `Bearer ${accessToken}`);
+      } else {
+        requestConfig.headers.Authorization = `Bearer ${accessToken}`;
+      }
     }
 
     return requestConfig;

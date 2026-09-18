@@ -26,9 +26,9 @@ import useToastStore from "../../stores/toastStore.js";
 import PageLoader from "../../components/common/PageLoader.jsx";
 import routePaths from "../../routes/routePaths.js";
 
-const DEFAULT_IMAGE = {
-  url: "https://images.unsplash.com/photo-1523275335684-37898b6baf30",
-  publicId: "placeholder",
+const INITIAL_IMAGE = {
+  url: "",
+  publicId: "manually-added",
   alt: "",
 };
 
@@ -68,7 +68,7 @@ function AdminProductFormPage() {
       sku: "",
       isActive: true,
       isFeatured: false,
-      images: [DEFAULT_IMAGE],
+      images: [INITIAL_IMAGE],
       specifications: [],
     },
   });

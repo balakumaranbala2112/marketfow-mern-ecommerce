@@ -32,7 +32,7 @@ export function useProductReviews(productId) {
     queryFn: () => getProductReviews(productId),
     select: (res) => ({
       reviews: res.data.data,
-      count: res.data.meta?.count || 0,
+      count: res.data.count ?? res.data.meta?.count ?? (res.data.data?.length || 0),
     }),
     enabled: !!productId,
   });

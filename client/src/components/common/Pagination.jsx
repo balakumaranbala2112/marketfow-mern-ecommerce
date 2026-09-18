@@ -41,9 +41,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
             >
               1
             </button>
-            {start > 2 && (
-              <span className="px-1 text-sm text-gray-400">…</span>
-            )}
+            {start > 2 && <span className="px-1 text-sm text-gray-400">…</span>}
           </>
         )}
 

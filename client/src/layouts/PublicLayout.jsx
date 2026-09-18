@@ -192,7 +192,7 @@ function PublicLayout() {
 
                 <button
                   type="submit"
-                  className="border-l border-accent-600 bg-accent-400 px-5 text-sm font-bold text-primary-950 transition hover:bg-accent-300"
+                  className="bg-primary-600 px-5 text-sm font-bold text-white transition hover:bg-primary-700"
                 >
                   Search
                 </button>
@@ -210,11 +210,10 @@ function PublicLayout() {
                   <Link
                     key={item.label}
                     to={item.path}
-                    className={`min-h-[40px] rounded-md px-3.5 py-2.5 text-sm font-semibold transition ${
-                      active
-                        ? "bg-primary-950 text-white"
-                        : "text-primary-800 hover:bg-primary-50 hover:text-primary-950"
-                    }`}
+                    className={`min-h-[40px] rounded-lg px-3.5 py-2 text-sm font-bold transition ${active
+                        ? "bg-primary-600 text-white shadow-xs"
+                        : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                      }`}
                   >
                     {item.label}
                   </Link>
@@ -284,9 +283,8 @@ function PublicLayout() {
 
                     <ChevronDown
                       size={14}
-                      className={`hidden text-primary-500 transition-transform sm:block ${
-                        dropdownOpen ? "rotate-180" : ""
-                      }`}
+                      className={`hidden text-primary-500 transition-transform sm:block ${dropdownOpen ? "rotate-180" : ""
+                        }`}
                       aria-hidden="true"
                     />
                   </button>
@@ -350,14 +348,14 @@ function PublicLayout() {
                 <div className="hidden items-center gap-2 md:flex">
                   <Link
                     to={routePaths.login}
-                    className="inline-flex min-h-[40px] items-center justify-center rounded-md border border-border-strong bg-white px-4 text-sm font-semibold text-primary-900 transition hover:bg-primary-50"
+                    className="inline-flex min-h-[40px] items-center justify-center rounded-lg border border-gray-300 bg-white px-4 text-sm font-bold text-gray-800 shadow-xs transition hover:border-gray-400 hover:bg-gray-50 hover:text-gray-900"
                   >
                     Sign in
                   </Link>
 
                   <Link
                     to={routePaths.register}
-                    className="inline-flex min-h-[40px] items-center justify-center rounded-md border border-accent-600 bg-accent-400 px-4 text-sm font-bold text-primary-950 transition hover:bg-accent-300"
+                    className="inline-flex min-h-[40px] items-center justify-center rounded-lg bg-primary-600 px-4 text-sm font-bold text-white shadow-xs transition hover:bg-primary-700"
                   >
                     Create account
                   </Link>
@@ -404,7 +402,7 @@ function PublicLayout() {
 
                 <button
                   type="submit"
-                  className="border-l border-accent-600 bg-accent-400 px-4 text-sm font-bold text-primary-950"
+                  className="bg-primary-600 px-4 text-sm font-bold text-white transition hover:bg-primary-700"
                 >
                   Search
                 </button>
@@ -431,11 +429,10 @@ function PublicLayout() {
                     <Link
                       key={item.label}
                       to={item.path}
-                      className={`block min-h-[44px] rounded-md px-4 py-3 text-sm font-semibold ${
-                        active
-                          ? "bg-primary-950 text-white"
-                          : "text-primary-800 hover:bg-primary-50"
-                      }`}
+                      className={`block min-h-[44px] rounded-lg px-4 py-3 text-sm font-bold transition ${active
+                          ? "bg-primary-600 text-white"
+                          : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                        }`}
                     >
                       {item.label}
                     </Link>
@@ -447,14 +444,14 @@ function PublicLayout() {
                 <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-4">
                   <Link
                     to={routePaths.login}
-                    className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-border-strong bg-white text-sm font-semibold text-primary-900"
+                    className="inline-flex min-h-[44px] items-center justify-center rounded-lg border border-gray-300 bg-white text-sm font-bold text-gray-800 transition hover:bg-gray-50"
                   >
                     Sign in
                   </Link>
 
                   <Link
                     to={routePaths.register}
-                    className="inline-flex min-h-[44px] items-center justify-center rounded-md border border-accent-600 bg-accent-400 text-sm font-bold text-primary-950"
+                    className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-primary-600 text-sm font-bold text-white transition hover:bg-primary-700"
                   >
                     Create account
                   </Link>

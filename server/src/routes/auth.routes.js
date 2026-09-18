@@ -9,7 +9,6 @@ import {
 } from "../controllers/auth.controller.js";
 
 import { protect } from "../middlewares/auth.middleware.js";
-import { authRateLimiter } from "../middlewares/security.middleware.js";
 import validateRequest from "../middlewares/validateRequest.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
@@ -22,18 +21,20 @@ import {
 
 const router = express.Router();
 
+// NOTE: authRateLimiter is already applied at the route-group level in app.js
+// (app.use("/api/v1/auth", authRateLimiter(), authRoutes)), so individual
+// per-route rate limiters are not needed here.
+
 router.post(
   "/register",
-  authRateLimiter(),
   validateRequest(validateRegister),
   asyncHandler(registerUser),
 );
 
-router.post("/login", authRateLimiter(), validateRequest(validateLogin), asyncHandler(loginUser));
+router.post("/login", validateRequest(validateLogin), asyncHandler(loginUser));
 
 router.post(
   "/forgot-password",
-  authRateLimiter(),
   validateRequest(validateForgotPassword),
   asyncHandler(forgotPassword),
 );
@@ -41,14 +42,12 @@ router.post(
 // Alias for the common "/forget-password" misspelling.
 router.post(
   "/forget-password",
-  authRateLimiter(),
   validateRequest(validateForgotPassword),
   asyncHandler(forgotPassword),
 );
 
 router.post(
   "/reset-password/:resetToken",
-  authRateLimiter(),
   validateRequest(validateResetPassword),
   asyncHandler(resetPassword),
 );

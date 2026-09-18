@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
 
 import env from "./config/env.js";
 
@@ -38,7 +39,9 @@ import {
 
 
 const app = express();
-const clientBuildPath = path.join(process.cwd(), "../client/dist");
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const clientBuildPath = path.resolve(__dirname, "../../client/dist");
+
 
 if (env.isProduction) {
   app.set("trust proxy", 1);

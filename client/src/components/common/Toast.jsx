@@ -1,66 +1,76 @@
-import { X, CheckCircle, AlertTriangle, Info } from "lucide-react";
+import { CheckCircle2, AlertCircle, Info, X } from "lucide-react";
+
 import useToastStore from "../../stores/toastStore.js";
 
-const icons = {
-  success: CheckCircle,
-  error: AlertTriangle,
-  info: Info,
-};
-
-const colors = {
-  success: "bg-emerald-50 text-emerald-800 border-emerald-200/60",
-  error: "bg-red-50 text-red-800 border-red-200/60",
-  info: "bg-primary-50 text-primary-800 border-primary-200/60",
-};
-
-const iconColors = {
-  success: "text-emerald-500",
-  error: "text-red-500",
-  info: "text-primary-500",
-};
-
-const progressColors = {
-  success: "bg-emerald-400",
-  error: "bg-red-400",
-  info: "bg-primary-400",
+const toastConfig = {
+  success: {
+    icon: CheckCircle2,
+    wrapper: "border-green-200 bg-green-50",
+    icon: "text-green-700",
+    progress: "bg-green-600",
+  },
+  error: {
+    icon: AlertCircle,
+    wrapper: "border-red-200 bg-red-50",
+    icon: "text-red-600",
+    progress: "bg-red-600",
+  },
+  info: {
+    icon: Info,
+    wrapper: "border-blue-200 bg-blue-50",
+    icon: "text-blue-700",
+    progress: "bg-blue-600",
+  },
 };
 
 function Toast() {
-  const toasts = useToastStore((s) => s.toasts);
-  const removeToast = useToastStore((s) => s.removeToast);
+  const toasts = useToastStore((state) => state.toasts);
+  const removeToast = useToastStore((state) => state.removeToast);
 
-  if (toasts.length === 0) return null;
+  if (!toasts.length) return null;
 
   return (
-    <div className="fixed right-4 top-4 z-[100] flex flex-col gap-3">
+    <div
+      className="fixed inset-x-4 top-4 z-[100] flex flex-col gap-3 sm:left-auto sm:right-5 sm:w-[390px]"
+      aria-live="polite"
+    >
       {toasts.map((toast) => {
-        const Icon = icons[toast.type] || Info;
+        const config = toastConfig[toast.type] || toastConfig.info;
+        const Icon = config.icon;
+
         return (
-          <div
+          <article
             key={toast.id}
-            className={`animate-slide-in-right overflow-hidden rounded-xl border shadow-xl shadow-black/8 backdrop-blur-sm ${colors[toast.type] || colors.info}`}
-            style={{ minWidth: 320, maxWidth: 440 }}
+            className={`animate-slide-in-right overflow-hidden rounded-lg border bg-white shadow-[0_8px_24px_rgba(15,24,32,0.12)] ${config.wrapper}`}
+            role="status"
           >
             <div className="flex items-start gap-3 px-4 py-3.5">
-              <Icon
-                className={`mt-0.5 h-5 w-5 shrink-0 ${iconColors[toast.type] || iconColors.info}`}
-              />
-              <p className="flex-1 text-sm font-medium leading-relaxed">
+              <span
+                className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white ${config.icon}`}
+              >
+                <Icon size={17} strokeWidth={2.3} />
+              </span>
+
+              <p className="flex-1 pt-1 text-sm font-semibold leading-5 text-primary-950">
                 {toast.message}
               </p>
+
               <button
+                type="button"
                 onClick={() => removeToast(toast.id)}
-                className="shrink-0 rounded-md p-0.5 opacity-50 transition-opacity hover:opacity-100"
+                className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-primary-500 transition hover:bg-black/5 hover:text-primary-950"
+                aria-label="Close notification"
               >
-                <X className="h-4 w-4" />
+                <X size={16} />
               </button>
             </div>
-            <div className="h-0.5 w-full bg-black/5">
+
+            <div className="h-1 bg-black/5">
               <div
-                className={`h-full animate-toast-progress rounded-full ${progressColors[toast.type] || progressColors.info}`}
+                className={`h-full animate-toast-progress rounded-r-full ${config.progress}`}
               />
             </div>
-          </div>
+          </article>
         );
       })}
     </div>

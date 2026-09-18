@@ -79,7 +79,7 @@ function CartPage() {
   const cartSubtotal = Number(cart?.cartTotal) || 0;
   const discountAmount = Number(cart?.discountPrice) || 0;
   const discountedSubtotal =
-    Number(cart?.finalTotal) || Math.max(0, cartSubtotal - discountAmount);
+    Number(cart?.payableTotal) || Math.max(0, cartSubtotal - discountAmount);
 
   const shippingFee =
     cartSubtotal >= FREE_SHIPPING_THRESHOLD ? 0 : STANDARD_SHIPPING_FEE;

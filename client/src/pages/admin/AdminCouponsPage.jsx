@@ -51,18 +51,32 @@ function AdminCouponsPage() {
 
   function onSubmit(data) {
     const payload = {
-      ...data,
       code: data.code.trim().toUpperCase(),
-      description: data.description?.trim() || "",
+      discountType: data.discountType,
       discountValue: Number(data.discountValue),
       minOrderAmount: Number(data.minOrderAmount || 0),
-      maxDiscountAmount: data.maxDiscountAmount
-        ? Number(data.maxDiscountAmount)
-        : null,
-      usageLimit: data.usageLimit ? Number(data.usageLimit) : null,
-      startsAt: data.startsAt ? new Date(data.startsAt) : null,
-      expiresAt: data.expiresAt ? new Date(data.expiresAt) : null,
+      isActive: Boolean(data.isActive),
     };
+
+    if (data.description?.trim()) {
+      payload.description = data.description.trim();
+    }
+
+    if (data.maxDiscountAmount !== "" && data.maxDiscountAmount != null) {
+      payload.maxDiscountAmount = Number(data.maxDiscountAmount);
+    }
+
+    if (data.usageLimit !== "" && data.usageLimit != null) {
+      payload.usageLimit = Number(data.usageLimit);
+    }
+
+    if (data.startsAt) {
+      payload.startsAt = new Date(data.startsAt).toISOString();
+    }
+
+    if (data.expiresAt) {
+      payload.expiresAt = new Date(data.expiresAt).toISOString();
+    }
 
     createCouponMutation.mutate(payload, {
       onSuccess: () => {
@@ -75,9 +89,12 @@ function AdminCouponsPage() {
         refetch();
       },
       onError: (error) => {
+        const errorMsg = error.errors?.length
+          ? error.errors.join(", ")
+          : error.message || "Failed to create coupon";
         addToast({
           type: "error",
-          message: error.message || "Failed to create coupon",
+          message: errorMsg,
         });
       },
     });

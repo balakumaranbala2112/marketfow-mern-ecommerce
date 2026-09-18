@@ -10,11 +10,13 @@ import sendResponse from "../utils/sendResponse.js";
 import { verifyRazorpayWebhookSignature } from "../utils/razorpay.js";
 
 function ensureWebhookConfigured(next) {
-  if (!env.payment.razorpay.webhookSecret) {
+  const { webhookSecret } = env.payment.razorpay;
+
+  if (!webhookSecret || webhookSecret.startsWith("your_")) {
     next(
       new AppError(
         StatusCodes.INTERNAL_SERVER_ERROR,
-        "Razorpay webhook is not configured",
+        "Razorpay webhook is not configured with a valid secret key. Please set RAZORPAY_WEBHOOK_SECRET in server/.env",
       ),
     );
 
